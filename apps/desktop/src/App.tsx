@@ -640,6 +640,7 @@ export const App: React.FC = () => {
                 uxMode={uxMode}
                 onChangeUxMode={handleUxModeChange}
                 onNavigate={handleNavigate}
+                onOpenOnboarding={() => setShowOnboarding(true)}
               />
             )}
 

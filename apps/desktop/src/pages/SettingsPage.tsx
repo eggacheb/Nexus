@@ -87,6 +87,7 @@ interface SettingsPageProps {
   uxMode?: UserExperienceMode;
   onChangeUxMode?: (mode: UserExperienceMode) => void;
   onNavigate?: (page: any) => void;
+  onOpenOnboarding?: () => void;
 }
 
 export type SettingsRoute =
@@ -121,6 +122,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   uxMode = "standard",
   onChangeUxMode,
   onNavigate: _onNavigate,
+  onOpenOnboarding,
 }) => {
   const { t, language, setLanguage } = useTranslation();
   const isZh = language === "zh-CN";
@@ -2909,6 +2911,32 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <div className="text-[10px] font-mono text-theme-muted">
                   87 MCP Tools &bull; Nexus Skills v1 &bull; Secure MCP Tunnel &bull; Full Control &bull; Laya Decision Intelligence &bull; Code Intelligence &bull; Persistent Runtime
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* License & Onboarding Notice */}
+          <div className="p-6 bg-theme-card border border-theme-subtle rounded-xl space-y-4 text-xs shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-semibold text-theme-primary text-sm">
+                <ShieldCheck className="w-4 h-4 text-sky-500" />
+                <span>{isZh ? "开源许可协议与启动引导" : "License & Onboarding Wizard"}</span>
+              </div>
+              {onOpenOnboarding && (
+                <button
+                  type="button"
+                  onClick={onOpenOnboarding}
+                  className="px-3 py-1.5 bg-theme-card-muted hover:bg-theme-card-hover text-theme-primary border border-theme-subtle rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-2xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-sky-500" />
+                  <span>{isZh ? "重新打开开始界面" : "Reopen Start Screen"}</span>
+                </button>
+              )}
+            </div>
+            <div className="p-3.5 rounded-xl bg-theme-card-muted/70 border border-theme-subtle flex items-start gap-3 text-[11px] text-theme-muted leading-relaxed">
+              <ShieldCheck className="w-4 h-4 text-theme-secondary shrink-0 mt-0.5" />
+              <div>
+                {t.onboarding.licenseAgreementText}
               </div>
             </div>
           </div>
