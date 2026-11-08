@@ -946,7 +946,7 @@ export const zhCN: I18nDictionary = {
     downloadLayaBtn: "下载 Laya",
     getStartedBtn: "开始使用",
     skipForNowBtn: "暂时跳过",
-    licenseAgreementText: "本项目遵循 Apache-2.0 协议发布（完全开源，免费支持个人与商业用途）。继续即表示您同意该许可协议。",
+    licenseAgreementText: "本项目遵循 GNU AGPL-3.0 协议发布（完全开源，免费支持个人与商业用途，并附带第 7 条附加条款）。继续即表示您同意该许可协议。",
   },
   statusMap: {
     running: "运行中",

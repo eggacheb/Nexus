@@ -499,4 +499,4 @@ LocalBridge v1.0 标志着功能冻结（Feature Freeze）与生产级全方位�
 
 ## 开源协议
 
-本项目遵循 [Apache-2.0](LICENSE) 开源许可证发布。
+本项目遵循 [GNU AGPL-3.0](LICENSE) 开源许可证发布。

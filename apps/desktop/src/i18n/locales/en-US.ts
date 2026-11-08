@@ -946,7 +946,7 @@ export const enUS: I18nDictionary = {
     downloadLayaBtn: "Download Laya",
     getStartedBtn: "Get Started",
     skipForNowBtn: "Skip for Now",
-    licenseAgreementText: "Nexus is released under the Apache-2.0 License (open-source and free for both personal and commercial use). Continuing signifies your acceptance.",
+    licenseAgreementText: "WebAgent is released under the GNU AGPL-3.0 License with Section 7 Additional Terms (open-source and free for both personal and commercial use). Continuing signifies your acceptance.",
   },
   statusMap: {
     running: "Running",
