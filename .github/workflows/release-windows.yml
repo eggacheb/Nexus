@@ -47,11 +47,6 @@ jobs:
           node-version: 24.21.0
           cache: "pnpm"
 
-      - name: Configure node-gyp for VS 2022
-        shell: pwsh
-        run: |
-          npm config set msvs_version 2022 --global
-
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
