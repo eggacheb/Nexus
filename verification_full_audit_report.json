@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-10-03T12:12:09.205Z",
+  "tests": {
+    "testA": {
+      "passed": true,
+      "callsMade": 1,
+      "terminalCalls": 0,
+      "latencyMs": 85.97,
+      "instanceID": -4624,
+      "verified": true,
+      "sceneIntegrity": {
+        "cameraUnchanged": true,
+        "lightUnchanged": true,
+        "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+      }
+    },
+    "testB": {
+      "passed": true,
+      "color": "#FFC0CB",
+      "colorProperty": "_Color",
+      "shader": "Standard",
+      "verified": true,
+      "callsMade": 1,
+      "terminalCalls": 0,
+      "latencyMs": 106.8
+    },
+    "testC": {
+      "passed": true,
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    "testD": {
+      "passed": true,
+      "createdCount": 5,
+      "distinctIds": [
+        -4656,
+        -4674,
+        -4692,
+        -4710,
+        -4728
+      ],
+      "avgLatencyMs": 107.57,
+      "cameraUntouched": true
+    },
+    "testE": {
+      "passed": true,
+      "completed100Reads": true,
+      "zeroInstantiationWarnings": true
+    },
+    "testF": {
+      "passed": true,
+      "isPlaying": false,
+      "isSharedMaterialUsedInEditMode": true
+    },
+    "testG": {
+      "passed": true,
+      "terminalCalls": 0,
+      "mcpExternalCalls": 7,
+      "gatewayCalls": 7,
+      "policy": "Terminal calls strictly forbidden for Unity operations when Unity MCP is READY"
+    }
+  },
+  "callCounts": {
+    "terminal": 0,
+    "mcpExternal": 7,
+    "gateway": 7
+  },
+  "latencies": {
+    "testA": 85.9661000000001,
+    "testB": 106.798
+  },
+  "baseline": {
+    "canonicalToolsCount": 332,
+    "canonicalRegistrySha256": "28C1C7F4459BDAE61C41A2511FD225A0E4C987101FCDA14B6B50AF85ED859796",
+    "shaMatch": true,
+    "port38980Closed": true,
+    "port38980References": 0
+  }
+}

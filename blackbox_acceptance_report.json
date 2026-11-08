@@ -1,0 +1,540 @@
+{
+  "timestamp": "2026-10-03T22:36:31.357Z",
+  "aiModel": "gemini-3.8-flash",
+  "totalTerminalCalls": 0,
+  "totalMcpCalls": 9,
+  "tests": {
+    "test1": {
+      "userPrompt": "在当前场景中创建一个粉色的胶囊体。",
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "passed": true,
+      "instanceID": -1644,
+      "actualColor": "#FFC0CB",
+      "shader": "Standard",
+      "colorProperty": "_Color",
+      "cameraIntact": true,
+      "lightIntact": true,
+      "totalLatencyMs": 561.55
+    },
+    "test5": {
+      "passed": true,
+      "redCube": "PASS",
+      "blueSphereAbsent": "ABSENT (PASS)",
+      "pinkCapsule": "PASS",
+      "capsulePosition": "(2, 0, 0) (PASS)",
+      "camera": "UNCHANGED",
+      "light": "UNCHANGED",
+      "terminalCalls": 0
+    }
+  },
+  "primitiveMatrix": {
+    "Cube": {
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "passed": true,
+      "latencyMs": 584.37
+    },
+    "Sphere": {
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "passed": true,
+      "latencyMs": 985.09
+    },
+    "Cylinder": {
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "passed": true,
+      "latencyMs": 419.28
+    },
+    "Capsule": {
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "passed": true,
+      "latencyMs": 561.55
+    }
+  },
+  "integrity": {
+    "Reflection": "PASS",
+    "Camera": "PASS",
+    "Light": "PASS",
+    "ObjectIdentity": "PASS",
+    "Material": "PASS",
+    "PlayMode": "PASS"
+  },
+  "performance": {},
+  "traces": [
+    {
+      "stepId": "TEST_1",
+      "userPrompt": "在当前场景中创建一个粉色的胶囊体。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "PinkCapsule",
+          "primitiveType": "Capsule",
+          "color": "pink"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Capsule' to atomic configured tool.",
+        "selectionLatency": 436.1915000000008
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 125.36,
+      "totalLatencyMs": 561.55,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1644,
+        "name": "PinkCapsule",
+        "primitiveType": "Capsule",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "material": {
+          "shader": "Standard",
+          "colorProperty": "_Color",
+          "requestedColor": "#FFC0CB",
+          "actualColor": "#FFC0CB",
+          "verified": true
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'PinkCapsule' (ID: -1644, Type: Capsule) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "TEST_2_CUBE",
+      "userPrompt": "在当前场景中创建一个 Cube。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "Cube",
+          "primitiveType": "Cube"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Cube' to atomic configured tool.",
+        "selectionLatency": 465.53729999999996
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 118.83,
+      "totalLatencyMs": 584.37,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1662,
+        "name": "Cube",
+        "primitiveType": "Cube",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'Cube' (ID: -1662, Type: Cube) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "TEST_3_SPHERE",
+      "userPrompt": "在当前场景中创建一个 Sphere。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "Sphere",
+          "primitiveType": "Sphere"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Sphere' to atomic configured tool.",
+        "selectionLatency": 871.5010000000002
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 113.59,
+      "totalLatencyMs": 985.09,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1676,
+        "name": "Sphere",
+        "primitiveType": "Sphere",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'Sphere' (ID: -1676, Type: Sphere) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "TEST_4_CYLINDER",
+      "userPrompt": "在当前场景中创建一个 Cylinder。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "Cylinder",
+          "primitiveType": "Cylinder"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Cylinder' to atomic configured tool.",
+        "selectionLatency": 384.00219999999536
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 35.28,
+      "totalLatencyMs": 419.28,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1690,
+        "name": "Cylinder",
+        "primitiveType": "Cylinder",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'Cylinder' (ID: -1690, Type: Cylinder) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "PIPE_1",
+      "userPrompt": "创建一个红色 Cube。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "RedCube",
+          "primitiveType": "Cube",
+          "color": "red"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Cube' to atomic configured tool.",
+        "selectionLatency": 474.9424999999974
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 19.95,
+      "totalLatencyMs": 494.89,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1704,
+        "name": "RedCube",
+        "primitiveType": "Cube",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "material": {
+          "shader": "Standard",
+          "colorProperty": "_Color",
+          "requestedColor": "#FF0000",
+          "actualColor": "#FF0000",
+          "verified": true
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'RedCube' (ID: -1704, Type: Cube) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "PIPE_2",
+      "userPrompt": "创建一个蓝色 Sphere。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "BlueSphere",
+          "primitiveType": "Sphere",
+          "color": "blue"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Sphere' to atomic configured tool.",
+        "selectionLatency": 523.1255999999994
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 112.75,
+      "totalLatencyMs": 635.87,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1722,
+        "name": "BlueSphere",
+        "primitiveType": "Sphere",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "material": {
+          "shader": "Standard",
+          "colorProperty": "_Color",
+          "requestedColor": "#0000FF",
+          "actualColor": "#0000FF",
+          "verified": true
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'BlueSphere' (ID: -1722, Type: Sphere) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "PIPE_3",
+      "userPrompt": "创建一个粉色 Capsule。",
+      "aiDecision": {
+        "selectedTool": "gameobject-create-configured",
+        "arguments": {
+          "name": "PinkCapsule",
+          "primitiveType": "Capsule",
+          "color": "pink"
+        },
+        "rationale": "Autonomous selection matching primitive creation 'Capsule' to atomic configured tool.",
+        "selectionLatency": 533.3862999999983
+      },
+      "selectedTool": "gameobject-create-configured",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 35.81,
+      "totalLatencyMs": 569.19,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1740,
+        "name": "PinkCapsule",
+        "primitiveType": "Capsule",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "material": {
+          "shader": "Standard",
+          "colorProperty": "_Color",
+          "requestedColor": "#FFC0CB",
+          "actualColor": "#FFC0CB",
+          "verified": true
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'PinkCapsule' (ID: -1740, Type: Capsule) created, configured, and verified successfully in 1 atomic call."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "PIPE_4",
+      "userPrompt": "把 PinkCapsule 移动到 (2, 0, 0)。",
+      "aiDecision": {
+        "selectedTool": "gameobject-configure-transform",
+        "arguments": {
+          "name": "PinkCapsule",
+          "position": {
+            "x": 2,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "rationale": "Autonomous selection matching transform modification to atomic configure-transform tool.",
+        "selectionLatency": 411.8779000000068
+      },
+      "selectedTool": "gameobject-configure-transform",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 68.15,
+      "totalLatencyMs": 480.03,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1606,
+        "name": "PinkCapsule",
+        "primitiveType": "",
+        "position": {
+          "x": 2,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "Transform configured on 'PinkCapsule' (Pos: (2.00, 0.00, 0.00)). Scene integrity verified."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    },
+    {
+      "stepId": "PIPE_5",
+      "userPrompt": "删除 BlueSphere。",
+      "aiDecision": {
+        "selectedTool": "gameobject-destroy-safe",
+        "arguments": {
+          "name": "BlueSphere"
+        },
+        "rationale": "Autonomous selection matching deletion intent to atomic destroy-safe tool.",
+        "selectionLatency": 429.141100000008
+      },
+      "selectedTool": "gameobject-destroy-safe",
+      "mcpCalls": 1,
+      "terminalCalls": 0,
+      "mcpLatencyMs": 96.56,
+      "totalLatencyMs": 525.7,
+      "parsedResult": {
+        "success": true,
+        "verified": true,
+        "instanceID": -1722,
+        "name": "BlueSphere",
+        "primitiveType": "",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "sceneIntegrity": {
+          "cameraUnchanged": true,
+          "lightUnchanged": true,
+          "details": "All critical scene objects (Camera, Light) verified intact and unchanged."
+        },
+        "verificationDetails": "GameObject 'BlueSphere' (ID: -1722) safely destroyed. Scene integrity verified."
+      },
+      "cameraIntact": true,
+      "lightIntact": true
+    }
+  ]
+}

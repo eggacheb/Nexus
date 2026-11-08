@@ -1,0 +1,87 @@
+name: Build macOS Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release Tag or Version (e.g. v1.3.2)"
+        required: false
+        default: "v1.3.2"
+  push:
+    branches:
+      - main
+      - v1.3.1-chatgpt-pure
+      - "release/**"
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: Package macOS (.dmg) - ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow_failure || false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            arch: aarch64
+            name: "Apple Silicon (M1/M2/M3/M4)"
+            allow_failure: false
+          - os: macos-13
+            arch: x86_64
+            name: "Intel (x64)"
+            allow_failure: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: "pnpm"
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build Core Packages
+        run: pnpm -r --filter=./packages/* run build
+
+      - name: Package Desktop & macOS Installer (.dmg)
+        run: |
+          pnpm --filter=@localbridge/desktop exec tauri build --bundles dmg,app
+
+      - name: Upload macOS Artifacts (.dmg)
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebAgent-v1.3.1-macOS-${{ matrix.arch }}
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            apps/desktop/src-tauri/target/release/bundle/macos/*.app
+            apps/desktop/src-tauri/target/*/release/bundle/dmg/*.dmg
+            apps/desktop/src-tauri/target/*/release/bundle/macos/*.app
+          retention-days: 30
+
+      - name: Upload macOS DMG to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            apps/desktop/src-tauri/target/*/release/bundle/dmg/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
