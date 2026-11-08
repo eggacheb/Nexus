@@ -36,11 +36,6 @@ jobs:
       - name: Setup MSVC developer environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Configure node-gyp for VS 2022
-        shell: pwsh
-        run: |
-          npm config set msvs_version 2022 --global
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -51,6 +46,11 @@ jobs:
         with:
           node-version: 24.21.0
           cache: "pnpm"
+
+      - name: Configure node-gyp for VS 2022
+        shell: pwsh
+        run: |
+          npm config set msvs_version 2022 --global
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
