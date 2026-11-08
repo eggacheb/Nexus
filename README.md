@@ -1,7 +1,7 @@
-# Nexus
+# WebAgent
 
 <p align="center">
-  <b>Dedicated Local AI Control Plane for ChatGPT & Anthropic Claude</b><br>
+  <b>Dedicated Local AI Control Plane for ChatGPT, DeepSeek & Modern Web AI Assistants</b><br>
   <i>Powered by the LocalBridge 332 Canonical MCP Tool Architecture & Durable Action Ledger</i>
 </p>
 
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/tag/v1.20.0"><img src="https://img.shields.io/badge/version-1.20.0-blue.svg" alt="Version 1.20.0"></a>
+  <a href="https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1"><img src="https://img.shields.io/badge/version-1.3.1-blue.svg" alt="Version 1.3.1"></a>
   <img src="https://img.shields.io/badge/MCP_Tools-332_Canonical-success.svg" alt="332 MCP Tools">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-red.svg" alt="License AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-brightgreen.svg" alt="Platforms">
@@ -24,24 +24,24 @@
 
 ### 1. Overview
 
-**Nexus** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, Anthropic Claude, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP / SSE with OAuth 2.0 & Bearer tokens).
+**WebAgent** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, DeepSeek, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP / SSE with OAuth 2.0 & Bearer tokens).
 
-Nexus allows AI agents to inspect, edit, build, debug, and orchestrate complex local engineering workflows within strictly enforced sandbox boundaries—without exposing your full filesystem or transmitting proprietary code to untrusted cloud intermediaries.
+WebAgent allows AI agents to inspect, edit, build, debug, and orchestrate complex local engineering workflows within strictly enforced sandbox boundaries—without exposing your full filesystem or transmitting proprietary code to untrusted cloud intermediaries.
 
 ```text
- ChatGPT / Claude Desktop / Cursor
+ ChatGPT / DeepSeek / Web AI Assistants
                │
                │ Secure MCP Tunnel (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   Nexus Desktop Control Center (Tauri 2)               │
+│                   WebAgent Desktop Control Center (Tauri 2)               │
 │                                                                        │
 │  Fastify MCP & REST API Server (Port 18080)   SQLite Persistence (WAL) │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │ Bidirectional JSON-RPC 2.0 (WebSocket)
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   Nexus Local Runner Daemon                            │
+│                   WebAgent Local Runner Daemon                            │
 │                                                                        │
 │  ├── 332 Canonical MCP Tools Across 24 Capabilities                    │
 │  ├── Action Ledger WAL (Crash Recovery & Idempotent Replay)            │
@@ -93,12 +93,12 @@ Nexus allows AI agents to inspect, edit, build, debug, and orchestrate complex l
 ### 3. Monorepo Project Layout
 
 ```text
-Nexus-Web-ChatGPT/
+WebAgent/
 ├── apps/
 │   ├── desktop/          # Tauri 2 + React + Vite Desktop Control Center
 │   ├── runner/           # Local execution daemon (332 tools, Action Ledger, Computer Use)
 │   ├── server/           # Fastify MCP Server with SQLite WAL persistence & REST API
-│   └── bridge/           # Standalone Nexus MCP Bridge (OAuth 2.0 / Gemini / ChatGPT)
+│   └── bridge/           # Standalone WebAgent MCP Bridge (OAuth 2.0 / ChatGPT / DeepSeek)
 ├── packages/
 │   ├── protocol/         # Pure protocol types, 332 Canonical tool definitions, RPC schemas
 │   ├── security/         # Sandboxing, path verification, and command risk engine
@@ -114,21 +114,22 @@ Nexus-Web-ChatGPT/
 ### 4. Quick Start
 
 #### Option A: Desktop Installer (Recommended)
-1. Download the pre-built installer for your platform from [GitHub Releases (v1.20.0)](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/tag/v1.20.0):
-   - **Windows (x64 NSIS Setup)**: [`Nexus_1.20.0_x64-setup.exe`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_x64-setup.exe)
-   - **Windows (x64 Enterprise MSI)**: [`Nexus_1.20.0_x64_en-US.msi`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_x64_en-US.msi)
-   - **macOS (Apple Silicon DMG)**: [`Nexus_1.20.0_aarch64.dmg`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**: [`Nexus_1.20.0_amd64.deb`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_amd64.deb)
-   - **Linux (Universal `.AppImage`)**: [`Nexus_1.20.0_amd64.AppImage`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_amd64.AppImage)
-2. Run the installer. Nexus launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
+1. Download the pre-built installer for your platform from [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1):
+   - **Windows (x64 Setup)**: [`WebAgent_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_x64-setup.exe)
+   - **macOS (Universal DMG)**: [`WebAgent_1.3.1_universal.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**: [`WebAgent_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**: [`WebAgent_1.3.1_amd64.deb`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.deb)
+   - **Linux (Universal `.AppImage`)**: [`WebAgent_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.AppImage)
+   - **Tampermonkey Userscript**: [`webagent-1.3.1.user.js`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/webagent-1.3.1.user.js)
+2. Run the installer. WebAgent launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
 
 #### Option B: Build & Run from Source
 Prerequisites: **Node.js >= 24**, **pnpm >= 10**, **Rust stable**.
 
 ```powershell
 # 1. Clone the repository
-git clone https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT.git
-cd Nexus-Web-ChatGPT
+git clone https://github.com/ysunyang4/WebAgent.git
+cd WebAgent
 
 # 2. Install workspace dependencies
 pnpm install
@@ -145,7 +146,7 @@ pnpm --filter @localbridge/desktop dev
 ### 5. Connecting AI Clients
 
 #### Step 1: Authorize a Local Project
-1. Open Nexus Desktop Control Center.
+1. Open WebAgent Desktop Control Center.
 2. Under **Workspace -> Projects**, click **Authorize Project** and select your directory (e.g., `D:\projects\my-app`).
 3. Set **Access Mode** (`read-only` or `read-write`) and **Execution Mode** (`disabled`, `safe-only`, or `project-code`)—both can be dynamically switched at any time without restarting.
 
@@ -162,16 +163,15 @@ http://127.0.0.1:18080/mcp
 ```
 Header: `Authorization: Bearer lb_your_token_here`
 
-**Claude Desktop (`claude_desktop_config.json`)**:
+**Standard MCP Client Configuration (`mcp_config.json` / Client Settings)**:
 ```json
 {
   "mcpServers": {
-    "nexus": {
-      "command": "node",
-      "args": ["<path-to-nexus>/apps/desktop/src-tauri/resources/bridge/index.js"],
-      "env": {
-        "NEXUS_ENDPOINT": "http://127.0.0.1:18080/mcp",
-        "NEXUS_TOKEN": "lb_your_token_here"
+    "webagent": {
+      "url": "http://127.0.0.1:18080/mcp",
+      "headers": {
+        "Authorization": "Bearer lb_your_token_here",
+        "MCP-Protocol-Version": "2024-11-05"
       }
     }
   }
@@ -219,17 +219,17 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ### 1. 项目概述
 
-**Nexus** 是一套专为 ChatGPT、Anthropic Claude 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 OAuth 2.0 与 Bearer 令牌的 Streamable HTTP / SSE 协议），将远端大模型安全连接至开发者的本地工作站。
+**WebAgent** 是一套专为 ChatGPT、DeepSeek 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 OAuth 2.0 与 Bearer 令牌的 Streamable HTTP / SSE 协议），将远端大模型安全连接至开发者的本地工作站。
 
-Nexus 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测试与编排完整研发工作流的能力，从根本上杜绝整盘泄露风险，且绝不将私有源码转传给任何不可信第三方云端中继。
+WebAgent 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测试与编排完整研发工作流的能力，从根本上杜绝整盘泄露风险，且绝不将私有源码转传给任何不可信第三方云端中继。
 
 ```text
- ChatGPT / Claude Desktop / Cursor 客户端
+ ChatGPT / DeepSeek / Web AI Assistants 客户端
                │
                │ 安全 MCP 隧道 (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   Nexus 桌面控制中心 (Tauri 2 + React)                 │
+│                   WebAgent 桌面控制中心 (Tauri 2 + React)                 │
 │                                                                        │
 │  Fastify MCP & REST 核心服务 (Port 18080)    SQLite 持久化引擎 (WAL)   │
 └──────────────────────────────────┬─────────────────────────────────────┘
@@ -288,12 +288,12 @@ Nexus 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测�
 ### 3. 代码仓库结构
 
 ```text
-Nexus-Web-ChatGPT/
+WebAgent/
 ├── apps/
 │   ├── desktop/          # Tauri 2 + React + Vite 桌面控制中心
 │   ├── runner/           # 本地执行守护进程（332 工具集、Action Ledger、Computer Use）
 │   ├── server/           # Fastify MCP 服务端（SQLite WAL 持久化 & REST API）
-│   └── bridge/           # Nexus MCP 独立网桥（兼容 OAuth 2.0 / Gemini / ChatGPT）
+│   └── bridge/           # WebAgent MCP 独立网桥（兼容 OAuth 2.0 / ChatGPT / DeepSeek）
 ├── packages/
 │   ├── protocol/         # 纯协议类型层、332 工具规范定义、RPC JSON-Schema
 │   ├── security/         # 沙箱隔离防护、路径规范化验证、命令风控引擎
@@ -309,12 +309,13 @@ Nexus-Web-ChatGPT/
 ### 4. 快速上手
 
 #### 方式 A：使用桌面端安装包（推荐）
-1. 从 [GitHub Releases (v1.20.0)](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/tag/v1.20.0) 下载对应平台的最新安装包：
-   - **Windows (x64 NSIS 安装程序)**：[`Nexus_1.20.0_x64-setup.exe`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_x64-setup.exe)
-   - **Windows (x64 企业级 MSI)**：[`Nexus_1.20.0_x64_en-US.msi`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_x64_en-US.msi)
-   - **macOS (Apple Silicon DMG)**：[`Nexus_1.20.0_aarch64.dmg`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**：[`Nexus_1.20.0_amd64.deb`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_amd64.deb)
-   - **Linux (通用 `.AppImage`)**：[`Nexus_1.20.0_amd64.AppImage`](https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT/releases/download/v1.20.0/Nexus_1.20.0_amd64.AppImage)
+1. 从 [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1) 下载对应平台的最新安装包：
+   - **Windows (x64 安装包)**：[`WebAgent_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_x64-setup.exe)
+   - **macOS (Universal 通用 DMG)**：[`WebAgent_1.3.1_universal.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**：[`WebAgent_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**：[`WebAgent_1.3.1_amd64.deb`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.deb)
+   - **Linux (通用 `.AppImage`)**：[`WebAgent_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.AppImage)
+   - **油猴脚本 (Tampermonkey)**：[`webagent-1.3.1.user.js`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/webagent-1.3.1.user.js)
 2. 双击安装。Nexus 随系统托盘启动，内置自包含 Node.js 运行时、语言服务器和后台执行守护进程，开箱即用。
 
 #### 方式 B：从源码编译与启动
@@ -322,8 +323,8 @@ Nexus-Web-ChatGPT/
 
 ```powershell
 # 1. 克隆代码仓库
-git clone https://github.com/ysunyang979-sys/Nexus-Web-ChatGPT.git
-cd Nexus-Web-ChatGPT
+git clone https://github.com/ysunyang4/WebAgent.git
+cd WebAgent
 
 # 2. 安装项目依赖
 pnpm install
@@ -357,16 +358,15 @@ http://127.0.0.1:18080/mcp
 ```
 Header 添加：`Authorization: Bearer lb_your_token_here`
 
-**Claude Desktop（`claude_desktop_config.json`）**：
+**标准 MCP 客户端配置（`mcp_config.json` 或客户端设置）**：
 ```json
 {
   "mcpServers": {
-    "nexus": {
-      "command": "node",
-      "args": ["<path-to-nexus>/apps/desktop/src-tauri/resources/bridge/index.js"],
-      "env": {
-        "NEXUS_ENDPOINT": "http://127.0.0.1:18080/mcp",
-        "NEXUS_TOKEN": "lb_your_token_here"
+    "webagent": {
+      "url": "http://127.0.0.1:18080/mcp",
+      "headers": {
+        "Authorization": "Bearer lb_your_token_here",
+        "MCP-Protocol-Version": "2024-11-05"
       }
     }
   }

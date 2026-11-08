@@ -96,3 +96,6 @@ scratch/
 stress-test.js
 test-*.ps1
 tmp/
+
+*.user.js
+*.user.js.bak

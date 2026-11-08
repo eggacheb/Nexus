@@ -9,7 +9,7 @@
 
 ## 1. Scope, System Architecture & Trust Boundaries
 
-LocalBridge connects autonomous AI developer agents (such as Claude, ChatGPT, Codex, Cursor) to local software repositories on a user's computer via the Model Context Protocol (MCP 2026-07-28).
+LocalBridge connects autonomous AI developer agents (such as DeepSeek, ChatGPT, Codex, Cursor) to local software repositories on a user's computer via the Model Context Protocol (MCP 2026-07-28).
 
 The system consists of four primary components:
 1. **AI Client**: External or local process connecting via `POST /mcp` using a Bearer token (`lb_...`).
@@ -21,7 +21,7 @@ The system consists of four primary components:
                TRUST BOUNDARY 1: Untrusted / Semi-Trusted AI Input
                                       │
                                       ▼
-             [ AI Client (Claude, ChatGPT, Codex, Cursor) ]
+             [ AI Client (DeepSeek, ChatGPT, Codex, Cursor) ]
                                       │
                  MCP 2026-07-28 Streamable HTTP (POST /mcp)
                     Bearer Token Domain: lb_*

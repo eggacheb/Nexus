@@ -117,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         },
         {
           id: "nexus-apps",
-          label: isZh ? "Nexus 专属应用" : "Nexus Apps",
+          label: isZh ? "WebAgent 专属应用" : "WebAgent Apps",
           icon: LayoutGrid,
         },
       ],
@@ -173,14 +173,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-2.5 min-w-0">
               <img
                 src={nexusLogo}
-                alt="Nexus"
+                alt="WebAgent"
                 className="w-6 h-6 rounded-md shadow-sm object-cover border border-theme-subtle shrink-0"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = "/nexus.png";
                 }}
               />
               <span className="font-semibold text-xs tracking-wider text-theme-primary">
-                NEXUS
+                WEBAGENT
               </span>
               <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-sky-500/10 text-sky-500 dark:text-sky-400 border border-sky-500/20">
                 1.3.1
@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <img
               src={nexusLogo}
-              alt="Nexus"
+              alt="WebAgent"
               className="w-6 h-6 rounded-md shadow-sm object-cover border border-theme-subtle"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src = "/nexus.png";

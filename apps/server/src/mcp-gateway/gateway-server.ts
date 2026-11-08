@@ -26,7 +26,7 @@ export interface McpGatewayOptions {
 export function createGatewayMcpServer(nexusClient: NexusClient): McpServer {
   const server = new McpServer({
     name: "nexus-mcp-gateway",
-    version: "1.0.0",
+    version: "1.3.1",
   });
 
   registerProjectTools(server, nexusClient);
@@ -124,9 +124,9 @@ export function createGatewayHttpServer(
         JSON.stringify(
           {
             ok: true,
-            service: "nexus-mcp-gateway",
+            service: "webagent-mcp-gateway",
             version: "1.0.0",
-            nexus: {
+            webagent: {
               connected: nexusHealth.ok,
               url: options.coreUrl || "http://127.0.0.1:18080",
               projectsCount,
@@ -134,7 +134,7 @@ export function createGatewayHttpServer(
             },
             protocol: {
               target: "Standard MCP (2024-11-05 Streamable HTTP)",
-              supportedClients: ["Gemini Spark", "Claude", "Cursor", "Antigravity"],
+              supportedClients: ["ChatGPT", "DeepSeek", "Cursor", "WebAgent"],
             },
             uptime: process.uptime(),
           },

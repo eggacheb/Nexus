@@ -171,8 +171,8 @@ export const ApplicationsPage: React.FC = () => {
     }
   };
 
-  // Copy Claude Config
-  const handleCopyClaudeConfig = (service?: ManagedMcpStateDto) => {
+  // Copy MCP Config
+  const handleCopyMcpConfig = (service?: ManagedMcpStateDto) => {
     let configObj: any;
     if (service) {
       configObj = {
@@ -246,7 +246,7 @@ export const ApplicationsPage: React.FC = () => {
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             type="button"
-            onClick={() => handleCopyClaudeConfig()}
+            onClick={() => handleCopyMcpConfig()}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-theme-card hover:bg-theme-card-hover border border-theme-subtle text-xs text-theme-primary transition shadow-xs"
           >
             {copiedId === "global" ? (
@@ -257,7 +257,7 @@ export const ApplicationsPage: React.FC = () => {
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5 text-theme-muted" />
-                <span>{isZh ? "复制全局 Claude 配置" : "Copy Claude Config"}</span>
+                <span>{isZh ? "复制全局 MCP 配置" : "Copy Global MCP Config"}</span>
               </>
             )}
           </button>
@@ -498,7 +498,7 @@ export const ApplicationsPage: React.FC = () => {
                   <div className="pt-2 border-t border-theme-subtle/40 flex items-center justify-between text-[11px] text-theme-muted">
                     <button
                       type="button"
-                      onClick={() => handleCopyClaudeConfig(s)}
+                      onClick={() => handleCopyMcpConfig(s)}
                       className="hover:text-theme-primary flex items-center gap-1 transition"
                     >
                       {copiedId === s.config.id ? (

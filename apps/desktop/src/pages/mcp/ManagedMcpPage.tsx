@@ -433,7 +433,7 @@ export const ManagedMcpPage: React.FC = () => {
         <span className="text-sky-400 font-bold text-sm shrink-0">💡</span>
         <div className="space-y-1">
           <div className="font-semibold text-theme-primary">
-            {isZh ? "为什么在外部 AI 客户端（Claude / GPT）要使用 8787 桥接端点？" : "Why use 8787 Bridge endpoint in Claude Desktop / GPT?"}
+            {isZh ? "为什么在外部 AI 客户端（ChatGPT / DeepSeek）要使用 8787 桥接端点？" : "Why use 8787 Bridge endpoint in external AI clients (ChatGPT / DeepSeek)?"}
           </div>
           <div className="text-theme-muted leading-relaxed">
             {isZh
@@ -499,14 +499,14 @@ export const ManagedMcpPage: React.FC = () => {
                         },
                       }, null, 2);
                       navigator.clipboard.writeText(cfg);
-                      setCopiedId(`claude-${svc.config.id}`);
+                      setCopiedId(`mcp-${svc.config.id}`);
                       setTimeout(() => setCopiedId(null), 2500);
                     }}
                     className="flex items-center gap-1 px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-lg text-xs font-semibold transition"
-                    title={isZh ? "复制用于 Claude Desktop 或 GPT 的配置 JSON" : "Copy configuration for Claude Desktop / GPT"}
+                    title={isZh ? "复制用于 ChatGPT / DeepSeek 的配置 JSON" : "Copy configuration for ChatGPT / DeepSeek"}
                   >
-                    {copiedId === `claude-${svc.config.id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === `claude-${svc.config.id}` ? (isZh ? "已复制配置" : "Copied!") : (isZh ? "复制 Claude 配置" : "Copy Config")}</span>
+                    {copiedId === `mcp-${svc.config.id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === `mcp-${svc.config.id}` ? (isZh ? "已复制配置" : "Copied!") : (isZh ? "复制 MCP 配置" : "Copy Config")}</span>
                   </button>
 
                   <span
@@ -917,8 +917,8 @@ export const ManagedMcpPage: React.FC = () => {
 
             <p className="text-xs text-theme-muted">
               {isZh
-                ? "支持粘贴 Claude Desktop 格式或单个 MCP 服务器配置，无需手动找文件，直接填入即可自动创建管理卡片。"
-                : "Paste Claude Desktop mcpServers JSON or single server config to auto-create managed process cards."}
+                ? "支持粘贴 MCP 服务器配置，无需手动找文件，直接填入即可自动创建管理卡片。"
+                : "Paste MCP mcpServers JSON or single server config to auto-create managed process cards."}
             </p>
 
             {jsonError && (
@@ -950,8 +950,8 @@ export const ManagedMcpPage: React.FC = () => {
                 />
                 <label htmlFor="wrapSupergateway" className="text-[11px] cursor-pointer">
                   {isZh
-                    ? "自动使用 supergateway 将 stdio 桥接为 Streamable HTTP 协议 (推荐，供 Claude/ChatGPT Web 端直接调用)"
-                    : "Auto-bridge stdio to Streamable HTTP via supergateway (recommended for Claude / ChatGPT Web)"}
+                    ? "自动使用 supergateway 将 stdio 桥接为 Streamable HTTP 协议 (推荐，供 ChatGPT/DeepSeek Web 端直接调用)"
+                    : "Auto-bridge stdio to Streamable HTTP via supergateway (recommended for ChatGPT / DeepSeek Web)"}
                 </label>
               </div>
 
@@ -1075,7 +1075,7 @@ export const ManagedMcpPage: React.FC = () => {
                     className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-lg text-xs font-semibold text-emerald-300 transition"
                   >
                     {copiedId === `auto-${autoInstallResult.serviceId}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === `auto-${autoInstallResult.serviceId}` ? (isZh ? "已复制配置" : "Copied!") : (isZh ? "复制 Claude / GPT 配置" : "Copy Config")}</span>
+                    <span>{copiedId === `auto-${autoInstallResult.serviceId}` ? (isZh ? "已复制配置" : "Copied!") : (isZh ? "复制 MCP 配置" : "Copy Config")}</span>
                   </button>
 
                   <button

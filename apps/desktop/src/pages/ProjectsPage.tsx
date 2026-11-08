@@ -427,7 +427,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 <Box className="w-8 h-8 mx-auto opacity-30 text-sky-400" />
                 <p>暂无正在执行的自动化工程蓝图</p>
                 <p className="text-[11px] text-theme-secondary">
-                  您可以从 Web AI (ChatGPT/Claude) 经由 Public MCP 提交工程蓝图，或点击上方“加载示例 Unity Blueprint”。
+                  您可以从 Web AI (ChatGPT/DeepSeek) 经由 Public MCP 提交工程蓝图，或点击上方“加载示例 Unity Blueprint”。
                 </p>
               </div>
             )}

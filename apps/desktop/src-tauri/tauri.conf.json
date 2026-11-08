@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Nexus Control Center",
+        "title": "WebAgent Control Center",
         "width": 1180,
         "height": 780,
         "minWidth": 960,
@@ -34,8 +34,8 @@
       "deb",
       "appimage"
     ],
-    "publisher": "Nexus",
-    "copyright": "Copyright © 2026 Nexus",
+    "publisher": "WebAgent",
+    "copyright": "Copyright © 2026 WebAgent",
     "license": "AGPL-3.0-only",
     "licenseFile": "../../../LICENSE",
     "icon": [

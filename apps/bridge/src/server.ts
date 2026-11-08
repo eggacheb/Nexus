@@ -902,7 +902,7 @@ export function createMcpServer(nexusClient: NexusClient, targetProviderId?: str
       return cloned;
     };
 
-    // Sanitize tools: dereference schemas to satisfy OpenAI / Claude schema parser
+    // Sanitize tools: dereference schemas to satisfy standard MCP schema parser
     const sanitizeTool = (t: any) => ({
       name: t.name,
       description: isP3Enabled && t.description && t.description.length > 200
@@ -2229,7 +2229,7 @@ export async function handleMcpHttpRequest(
   body: any,
   nexusClient: NexusClient
 ): Promise<void> {
-  // Normalize Accept header to accommodate standard MCP clients (OpenAI oai-tunnel-client, Gemini, Claude, curl, etc.)
+  // Normalize Accept header to accommodate standard MCP clients (OpenAI oai-tunnel-client, curl, etc.)
   // WebStandardStreamableHTTPServerTransport requires both application/json and text/event-stream
   const currentAccept = req.headers.accept || "";
   if (!currentAccept.includes("text/event-stream") || !currentAccept.includes("application/json")) {

@@ -1,8 +1,8 @@
-# Nexus
+# WebAgent
 
-> ChatGPT 专用的 Local AI Control Plane，基于 LocalBridge 运行时架构构建。
+> ChatGPT、DeepSeek 专用的 Local AI Control Plane，基于 LocalBridge 运行时架构构建。
 
-Nexus 是专门面向 ChatGPT 打造的本地 AI 控制面（Local AI Control Plane）。它通过高性能、强安全的 Secure MCP Tunnel，将 ChatGPT 深度连接至本地开发环境，使 ChatGPT 能够在严格权限约束与沙箱保护下，对本地项目执行检索、修改、构建、运行与测试，而无需暴露整机磁盘或将源代码泄露给第三方。
+WebAgent 是专门面向 ChatGPT、DeepSeek 打造的本地 AI 控制面（Local AI Control Plane）。它通过高性能、强安全的 Secure MCP Tunnel，将 ChatGPT 深度连接至本地开发环境，使 ChatGPT 能够在严格权限约束与沙箱保护下，对本地项目执行检索、修改、构建、运行与测试，而无需暴露整机磁盘或将源代码泄露给第三方。
 
 ---
 
@@ -11,11 +11,11 @@ ChatGPT
    │
    │ Secure MCP Tunnel (Streamable HTTP / SSE, Bearer lb_xxx)
    ▼
-Nexus (Local AI Control Plane)
+WebAgent (Local AI Control Plane)
    │
    ├── 本地已授权项目 (Local Projects / 沙箱与规范路径校验)
    ├── 62 个原生 MCP 工具 (Model Context Protocol)
-   ├── Nexus Skills v1 (声明式确定性任务工作流)
+   ├── WebAgent Skills v1 (声明式确定性任务工作流)
    ├── Git CLI 与托管工作树 (Managed Worktrees)
    ├── 常驻运行时 (Persistent Runtime) 与后台任务 (Jobs)
    ├── 代码智能分析 (Code Intelligence / LSP)
@@ -82,11 +82,11 @@ LocalBridge 既可作为预打包的独立桌面应用（Tauri 安装包）运�
 
 #### 第四步：创建 MCP 客户端 Token
 1. 进入 **令牌 (Tokens)** 标签页。
-2. 点击 **生成令牌 (Generate Token)**，类型选择 `MCP Client Token`（以 `lb_` 为前缀），填写用途备注（例如 `Claude Desktop`）。
+2. 点击 **生成令牌 (Generate Token)**，类型选择 `MCP Client Token`（以 `lb_` 为前缀），填写用途备注（例如 `ChatGPT / DeepSeek`）。
 3. 复制生成的 256 位高熵 Token。*（注意：明文仅展示一次，数据库绝不持久化明文）*。
 
 #### 第五步：接入 AI 客户端
-在你的 AI 桌面应用配置文件中（例如 Claude Desktop 的 `claude_desktop_config.json` 或 Cursor MCP 设置），添加 LocalBridge 端点：
+在你的 AI 桌面应用配置文件中（例如 AI 客户端的 MCP 设置或油猴脚本），添加 LocalBridge 端点：
 
 ```json
 {
@@ -418,7 +418,7 @@ LocalBridge Phase 9 引入了面向长时间运行的构建、测试及项目脚
 
 ### 12. MCP 2026-07-28 服务端与 AI 客户端集成 (Phase 10)
 
-LocalBridge Phase 10 通过官方 Model Context Protocol (MCP) 规范版本 `"2026-07-28"`（基于 Streamable HTTP `POST /mcp`），向外部 AI 助手（如 ChatGPT、Claude、Codex 等）提供 23 个安全、类型化且仅限用户授权范围的工具能力。
+LocalBridge Phase 10 通过官方 Model Context Protocol (MCP) 规范版本 `"2026-07-28"`（基于 Streamable HTTP `POST /mcp`），向外部 AI 助手（如 ChatGPT、DeepSeek 等）提供 23 个安全、类型化且仅限用户授权范围的工具能力。
 
 #### 协议合规性与无状态传输
 - **接入端点**：`POST /mcp`
@@ -493,7 +493,7 @@ LocalBridge v1.0 标志着功能冻结（Feature Freeze）与生产级全方位�
 
 - [STRIDE 威胁建模与 14 类威胁防御规范 (THREAT_MODEL.md)](docs/THREAT_MODEL.md)
 - [系统架构设计 (architecture.md)](docs/architecture.md)
-- [Nexus 产品概览 (NEXUS_OVERVIEW.md)](docs/NEXUS_OVERVIEW.md)
+- [WebAgent 产品概览 (WEBAGENT_OVERVIEW.md)](docs/WEBAGENT_OVERVIEW.md)
 
 ---
 

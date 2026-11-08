@@ -6,7 +6,7 @@ LocalBridge is an open-source system designed to bridge AI clients running the M
 
 ### Flow
 
-1. AI Client (e.g. Claude Desktop, ChatGPT macOS, Codex) connects to LocalBridge Server via HTTPS MCP (`POST /mcp`, Bearer `lb_...`).
+1. AI Client (e.g. ChatGPT / DeepSeek, ChatGPT macOS, Codex) connects to LocalBridge Server via HTTPS MCP (`POST /mcp`, Bearer `lb_...`).
 2. LocalBridge Server verifies the client's Bearer token against stored hashes in SQLite.
 3. When the AI issues a tool invocation (e.g. `file_read`, `git_status`, `command_run`), the Server translates it into a typed JSON-RPC 2.0 request (`file.read`, `git.status`, `shell.run`).
 4. The request is dispatched over an authenticated WebSocket (`lbr_...`) to the user's local Runner daemon.
