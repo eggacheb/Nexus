@@ -15,6 +15,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure node-gyp for VS 2022
+        shell: pwsh
+        run: |
+          npm config set msvs_version 2022 --global
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -30,6 +38,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
+        env:
+          GYP_MSVS_VERSION: "2022"
+          npm_config_msvs_version: "2022"
         run: pnpm install --frozen-lockfile
 
       - name: Build Core Packages

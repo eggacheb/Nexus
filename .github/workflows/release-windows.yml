@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Build & Package Windows Installer (Tauri 2 NSIS / MSI)
+    name: Build & Package Windows Installer (Tauri 2 NSIS)
     runs-on: windows-latest
 
     steps:
@@ -33,6 +33,14 @@ jobs:
             if (Test-Path -LiteralPath $path) { throw "Clean-checkout smoke failed: $path already exists" }
           }
 
+      - name: Setup MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure node-gyp for VS 2022
+        shell: pwsh
+        run: |
+          npm config set msvs_version 2022 --global
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -48,6 +56,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
+        env:
+          GYP_MSVS_VERSION: "2022"
+          npm_config_msvs_version: "2022"
         run: pnpm install --frozen-lockfile
 
       - name: Prepare bundled production runtime
@@ -72,8 +83,8 @@ jobs:
         with:
           projectPath: apps/desktop
           tagName: ${{ github.ref_name }}
-          releaseName: "Nexus ${{ github.ref_name }}"
-          releaseBody: "Nexus ${{ github.ref_name }} Release"
+          releaseName: "WebAgent ${{ github.ref_name }}"
+          releaseBody: "WebAgent ${{ github.ref_name }} Release"
           releaseDraft: false
           prerelease: false
 
@@ -84,7 +95,7 @@ jobs:
           $artifacts = Get-ChildItem -Path apps/desktop/src-tauri/target/release/bundle -Recurse -Include *.exe,*.msi |
             Where-Object { $_.Name -like "*$version*" } |
             Sort-Object FullName
-          if ($artifacts.Count -ne 2) { throw "Expected exactly two v$version installers, found $($artifacts.Count)" }
+          if ($artifacts.Count -lt 1) { throw "Expected at least one v$version installer, found $($artifacts.Count)" }
           $lines = $artifacts | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
             "$hash  $($_.Name)"

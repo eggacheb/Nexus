@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release Tag or Version (e.g. v1.3.2)"
+        description: "Release Tag or Version (e.g. v1.3.1)"
         required: false
-        default: "v1.3.2"
+        default: "v1.3.1"
   push:
     branches:
       - main
@@ -27,13 +27,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
+          - os: macos-15
             arch: aarch64
+            target: aarch64-apple-darwin
             name: "Apple Silicon (M1/M2/M3/M4)"
             allow_failure: false
-          - os: macos-13
-            arch: x86_64
-            name: "Intel (x64)"
+          - os: macos-15
+            arch: universal
+            target: universal-apple-darwin
+            name: "Universal (Apple Silicon + Intel)"
             allow_failure: true
 
     steps:
@@ -54,6 +56,11 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Add Rust targets
+        run: |
+          rustup target add aarch64-apple-darwin
+          rustup target add x86_64-apple-darwin
+
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
@@ -62,12 +69,16 @@ jobs:
 
       - name: Package Desktop & macOS Installer (.dmg)
         run: |
-          pnpm --filter=@localbridge/desktop exec tauri build --bundles dmg,app
+          if [ "${{ matrix.target }}" = "universal-apple-darwin" ]; then
+            pnpm --filter=@localbridge/desktop exec tauri build --target universal-apple-darwin --bundles dmg,app
+          else
+            pnpm --filter=@localbridge/desktop exec tauri build --bundles dmg,app
+          fi
 
       - name: Upload macOS Artifacts (.dmg)
         uses: actions/upload-artifact@v4
         with:
-          name: WebAgent-v1.3.1-macOS-${{ matrix.arch }}
+          name: WebAgent-macOS-${{ matrix.arch }}
           path: |
             apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
             apps/desktop/src-tauri/target/release/bundle/macos/*.app
