@@ -561,7 +561,7 @@ export const UNIVERSAL_META_TOOLS = [
         detail: {
           type: "boolean",
           default: false,
-          description: "是否返回完整参数细节 Schema 与调用示例。默认为 false（启用 WebCodex Tier-1 紧凑签名以节省 90%+ Token），设为 true 可查看完整 Schema",
+          description: "是否返回完整参数细节 Schema 与调用示例。默认为 false（启用 Nexus 紧凑工具签名模式以减少 Token 占用），设为 true 可查看完整 Schema",
         },
         limit: {
           type: "number",
@@ -1512,7 +1512,7 @@ export function createMcpServer(nexusClient: NexusClient, targetProviderId?: str
         const isDetail = Boolean(args.detail) || topMatches.length === 1;
 
         if (!isDetail) {
-          // Tier-1 WebCodex Compact Summary Mode
+          // Nexus Compact Tool Summary Mode
           const compactTools = topMatches.map((t) => {
             const reqSet = new Set(t.required || []);
             const paramsFormatted = (t.parameters || []).map((p: string) => reqSet.has(p) ? `${p}*` : p);

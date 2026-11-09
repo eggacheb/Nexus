@@ -1,7 +1,7 @@
 /**
  * Nexus Token Guardrail Engine (token-guardrail.ts)
  * 
- * Deeply optimizes LLM context tokens following WebCodex architectural patterns:
+ * Optimizes LLM context token usage through payload sanitization, image externalization, and bounded tool outputs:
  * 1. Image Payload Stripping: Intercepts Base64 image data (data URLs or JSON base64Data),
  *    saves them to persistent local files, and replaces them with clean file paths & metadata,
  *    reducing 30,000+ text tokens per screenshot down to ~50 tokens (99.8% token savings).
