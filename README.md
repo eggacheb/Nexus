@@ -115,12 +115,12 @@ Nexus/
 
 #### Option A: Desktop Installer (Recommended)
 1. Download the pre-built installer for your platform from [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1):
-   - **Windows (x64 Setup)**: [`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_x64-setup.exe)
-   - **macOS (Universal DMG)**: [`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_universal.dmg)
-   - **macOS (Apple Silicon DMG)**: [`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**: [`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.deb)
-   - **Linux (Universal `.AppImage`)**: [`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.AppImage)
-   - **Tampermonkey Userscript**: [`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/nexus-1.3.1.user.js)
+   - **Windows (x64 Setup)**: [`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_x64-setup.exe)
+   - **macOS (Universal DMG)**: [`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**: [`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**: [`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.deb)
+   - **Linux (Universal `.AppImage`)**: [`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.AppImage)
+   - **Tampermonkey Userscript**: [`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/latest/download/nexus-1.3.1.user.js)
 2. Run the installer. Nexus launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
 
 #### Option B: Build & Run from Source
@@ -310,12 +310,12 @@ Nexus/
 
 #### 方式 A：使用桌面端安装包（推荐）
 1. 从 [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1) 下载对应平台的最新安装包：
-   - **Windows (x64 安装包)**：[`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_x64-setup.exe)
-   - **macOS (Universal 通用 DMG)**：[`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_universal.dmg)
-   - **macOS (Apple Silicon DMG)**：[`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**：[`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.deb)
-   - **Linux (通用 `.AppImage`)**：[`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.AppImage)
-   - **油猴脚本 (Tampermonkey)**：[`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/nexus-1.3.1.user.js)
+   - **Windows (x64 安装包)**：[`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_x64-setup.exe)
+   - **macOS (Universal 通用 DMG)**：[`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**：[`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**：[`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.deb)
+   - **Linux (通用 `.AppImage`)**：[`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.AppImage)
+   - **油猴脚本 (Tampermonkey)**：[`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/latest/download/nexus-1.3.1.user.js)
 2. 双击安装。Nexus 随系统托盘启动，内置自包含 Node.js 运行时、语言服务器和后台执行守护进程，开箱即用。
 
 #### 方式 B：从源码编译与启动
