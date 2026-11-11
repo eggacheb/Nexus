@@ -497,18 +497,27 @@ LocalBridge v1.0 标志着功能冻结（Feature Freeze）与生产级全方位�
 
 ---
 
+## 本地配置文件说明
+
+仓库只跟踪 `config.example.json`，不再跟踪包含设备本地设置的 `config.json`。需要自定义配置时，可在项目根目录执行 `Copy-Item config.example.json config.json`（PowerShell），根据实际需要修改；没有该文件时，配置加载器会使用内置默认值。请勿提交真实 Token、密码或运行日志。
+
 ## 开源许可证与品牌声明
 
-本项目遵循 **[GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE)** 开源许可证发布，并附带 **Section 7 附加声明（署名保留、防来源冒充与商标保留）**。
+Nexus v1.3.1 依据 **[GNU Affero General Public License v3.0 (AGPL-3.0-only)](LICENSE)** 发布。
 
-### 1. 软件使用与商业权利
-- **自由使用与商业应用**：在严格遵守 AGPL-3.0 协议条款的前提下，任何人均可自由安装、运行、学习、修改及分发本项目，亦可将本项目用于个人学习或企业内部生产环境。
-- **开源传染与源码开放义务**：任何基于本项目二次开发、二次打包或通过网络（包括提供 SaaS 云服务或远程 MCP 代理）向用户提供交互式服务的系统，**必须按照 AGPL-3.0 协议向其用户完整开源提供全部对应源代码（Corresponding Source Code）**。
+### 1. 个人使用、商业使用及源码义务
+- **允许使用与再分发**：AGPL 允许个人和企业使用、研究、修改及再分发软件，包括商业用途，但须遵守适用的许可证条件。
+- **何时需要提供源码**：分发受 AGPL 约束的程序或修改版，以及让用户通过网络与修改版交互等适用情形，可能触发对应源码及声明的提供义务；单纯在本地私下修改并不当然要求公开。详见许可证第 4–6、13 条。
+- **授权终止与恢复**：应遵循 AGPL 第 8 条，不因 README 中的额外描述自动终止授权。
 
-### 2. 品牌与商标保护（Brand & Trademark）
-- **非商标授权**：获得本项目源码的 AGPL-3.0 许可，并不自动包含使用 `Nexus` 商号、官方 Logo 或原作者署名进行商业宣传或官方背书的权利。
-- **品牌规则与规范**：详见独立的 **[品牌与商标使用规则 (BRAND_GUIDELINES.md)](BRAND_GUIDELINES.md)**。严禁伪造官方身份或冒充原作者。
+### 2. 作者署名、品牌与来源说明
+- **署名义务**：按照 AGPL 保留要求保留的版权、许可证及其他法律声明，并根据许可证要求标明修改。
+- **不冒充官方**：软件许可证并不当然授予 Nexus 商标使用权，也不允许虚假宣称官方认证或作者背书。详见 [BRAND_GUIDELINES.md](BRAND_GUIDELINES.md)；品牌规则不能剥夺 AGPL 已授予的软件自由。
 
-### 3. 第三方开源组件致谢
-- 本项目遵循宽松开源许可证集成了多项第三方组件与工具（如 Fastify、React、Tauri、better-sqlite3、WebCodex 架构启发等）。
-- 完整第三方版权声明与许可证清单详见：**[第三方版权通告 (THIRD_PARTY_NOTICES.md)](THIRD_PARTY_NOTICES.md)**。
+### 3. 第三方组件与架构参考
+- 第三方组件及其许可证遵循各自条款。WebCodex 若仅作为架构讨论的参考，应当与实际代码复用分开表述，不得混淆。
+- 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+### 4. 发布信息
+- 历史版本源码见 [v1.3.1 Tag](https://github.com/ysunyang4/Nexus/tree/v1.3.1)；当前 `main` 可能包含后续文档与构建修订。
+- 安装文件请以 [v1.3.1 Releases 页面的实际 Assets](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1) 为准；未列出的文件不应被当作已发布产物。

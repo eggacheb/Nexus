@@ -113,15 +113,10 @@ Nexus/
 
 ### 4. Quick Start
 
-#### Option A: Desktop Installer (Recommended)
-1. Download the pre-built installer for your platform from [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1):
-   - **Windows (x64 Setup)**: [`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_x64-setup.exe)
-   - **macOS (Universal DMG)**: [`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_universal.dmg)
-   - **macOS (Apple Silicon DMG)**: [`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**: [`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.deb)
-   - **Linux (Universal `.AppImage`)**: [`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/latest/download/Nexus_1.3.1_amd64.AppImage)
-   - **Tampermonkey Userscript**: [`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/latest/download/nexus-1.3.1.user.js)
-2. Run the installer. Nexus launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
+#### Option A: Desktop Installer (when a verified build is available)
+1. Open the [v1.3.1 release page](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1) and check the **Assets** section for available downloads and their exact file names. The source tag and later `main` documentation updates may not contain the same changes.
+2. Download only an asset actually listed for your platform. Verify any published checksum or signature before running it. **Do not assume a Windows, macOS, Linux or userscript asset exists unless it appears on the release page.**
+3. If no verified installer is listed, use the source-build steps below instead. Builds from the historical `v1.3.1` tag and from `main` may differ.
 
 #### Option B: Build & Run from Source
 Prerequisites: **Node.js >= 24**, **pnpm >= 10**, **Rust stable**.
@@ -133,6 +128,10 @@ cd Nexus
 
 # 2. Install workspace dependencies
 pnpm install
+
+# Optional: create an untracked, machine-local configuration file.
+# The application also has built-in defaults if config.json is absent.
+# PowerShell: Copy-Item config.example.json config.json
 
 # 3. Build core packages and applications
 pnpm run build
@@ -205,9 +204,11 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ### 7. License, Anti-Rebranding & Security Disclaimer
 
-- **License ([GNU AGPL-3.0](LICENSE))**: This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0-only)** with **Section 7 Additional Terms**.
-  - Any modification, derivative work, packaged installer, or network-hosted service interacting with users **must disclose its complete corresponding source code** under the same AGPL-3.0 license.
-  - **Anti-Rebranding & Attribution (AGPL-3.0 Section 7)**: Removing or obscuring original copyright notices, author credits, or license disclosures in the UI, tray menu, CLI, or About dialogs—or misrepresenting a repackaged version as an original proprietary commercial product ("skinning / rebranding")—is strictly prohibited and terminates license rights immediately.
+- **Software license ([GNU AGPL-3.0](LICENSE))**: Nexus v1.3.1 is distributed under the GNU Affero General Public License v3.0 (AGPL-3.0-only), which permits personal **and commercial** use, modification and redistribution subject to its terms.
+  - **When source obligations apply**: Distributing covered works (including modified binaries), and allowing users to interact over a network with a modified version, can trigger the license's corresponding-source and notice requirements. Private modifications not conveyed or offered as a modified network service are not automatically required to be publicly published. Refer to the actual [AGPL-3.0 license](LICENSE), especially Sections 4–6 and 13, for the precise scope.
+  - **Attribution and accurate origin**: Preserve copyright, license and other legal notices as the AGPL requires, indicate relevant changes, and do not falsely represent modified builds as official releases. The AGPL's termination and reinstatement provisions are governed by Section 8; this README does not add an automatic-termination rule.
+  - **Branding**: The software license does not automatically grant trademark rights or permission to imply official endorsement. See [Brand Guidelines](BRAND_GUIDELINES.md). These guidelines do not override AGPL-granted software freedoms.
+  - **Third-party notices**: See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependencies and a separate architecture-reference acknowledgement.
 - **Security & Unrestricted Mode Disclaimer ([SECURITY.md](SECURITY.md))**:
   - By default, Nexus enforces strict path sandboxing (`read-only`) and AST command risk filtering (`safe-only`).
   - If you explicitly enable `read-write`, `project-code`, Computer Use UI automation, or **Unrestricted / Full-Control Mode**, you assume full responsibility for all commands executed and files modified by connected AI models. Always back up critical work or use Git version control.
@@ -398,13 +399,11 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ---
 
-### 7. Open-Source License, Anti-Rebranding & Security Disclaimer
+### 7. 开源许可证、署名与安全说明
 
-- **Open-Source License ([GNU AGPL-3.0](LICENSE))**: This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0-only)** with **Section 7 Additional Terms**:
-  - **Copyleft & Network Service Disclosure**: Anyone is free to use, modify, and distribute this software for personal or commercial purposes. However, any derivative work, repackaged binary, or network-hosted service (such as remote MCP proxies or cloud SaaS) interacting with users **must disclose its complete corresponding source code** under the same AGPL-3.0 license.
-  - **Preservation of Attribution & Anti-Rebranding (AGPL-3.0 Section 7)**: All copyright notices, author credits, and license disclosures in the UI, tray menu, CLI, and About dialogs must be preserved. Misrepresenting a repackaged version as an original proprietary creation is strictly prohibited.
-  - **Brand & Trademark Protection**: The AGPL license does not grant rights to use the `Nexus` product name or logos for commercial endorsements. See **[Brand Guidelines (BRAND_GUIDELINES.md)](BRAND_GUIDELINES.md)**.
-  - **Third-Party Open-Source Attributions**: Detailed notices and acknowledgments for all third-party components (including WebCodex architectural attribution and bundled runtimes) are maintained in **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**.
-- **Security Architecture & Unrestricted Mode Disclaimer ([SECURITY.md](SECURITY.md))**:
-  - Nexus defaults to a strict physical path sandbox (`read-only`) and AST command risk-control interception (`safe-only`).
-  - Enabling `read-write`, `project-code`, Computer Use, or **Unrestricted Mode** constitutes explicit user authorization for the connected AI to perform local actions within those boundaries. Users assume full responsibility for data management and system backups.
+- **软件许可证**：Nexus v1.3.1 依据 [GNU AGPL-3.0](LICENSE) 发布，允许个人与商业使用、学习、修改和再分发，但须遵守许可证原文。
+  - **源码提供义务的适用范围**：分发受 AGPL 约束的程序或修改版，以及让用户通过网络与修改版交互等适用情形，可能触发相应源码和许可声明义务。仅在本地私下修改、不进行相应分发或网络交互服务，并不当然要求公开源码。具体以 AGPL 第 4–6、13 条等规定为准。
+  - **署名与来源**：依许可证保留必须保留的版权、许可证和法律声明，标明适用的修改；不得冒充 Nexus 官方版本。许可终止及恢复遵循 AGPL 第 8 条，而非 README 单方面规定立即终止。
+  - **品牌保护**：[BRAND_GUIDELINES.md](BRAND_GUIDELINES.md) 仅用于说明独立的商标、品牌标识及防混淆问题，不剥夺 AGPL 授予的软件权利。
+  - **第三方归属**：[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 列明第三方组件，并将概念性架构参考与实际代码依赖分开说明。
+- **安全提醒**：请阅读 [SECURITY.md](SECURITY.md)。启用读写、命令执行、桌面接管或全盘访问会扩大远程 AI 可执行操作的范围，应采取备份、审批和最小权限措施。

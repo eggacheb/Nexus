@@ -1,6 +1,6 @@
 # Nexus v1.3.1 — Open-source Cloud + Local edition
 
-**Scope**: only `E:\workspace\cod_v1.3.1`. Nexus v1.3.7 at `E:\workspace\cod` was not modified.
+**Scope**: This document describes the publicly released Nexus v1.3.1 codebase. It does not describe or authorize changes to any other version.
 
 ## Policy
 
@@ -13,10 +13,12 @@ External MCP client (scoped client bearer credential) -> HTTPS Cloudflare Worker
 Cloud-native read-only tools: `nexus_cloud_dns_lookup`, `nexus_cloud_rdap_lookup`, `nexus_cloud_http_headers`, `nexus_cloud_http_probe`.
 Local tools, including filesystem, terminal, process, desktop, Ego Nova, Blender, Unity, native Git and external native MCP, remain local. They are callable through cloud ONLY when an Agent is online **and** the operator explicitly allowlists the exact tool names. The Agent never auto-exposes all tools.
 
-Cloud URL: https://nexus-open-cloud-tools.example-domain5628.workers.dev
-Health: https://nexus-open-cloud-tools.example-domain5628.workers.dev/health
-MCP (requires scoped client token): https://nexus-open-cloud-tools.example-domain5628.workers.dev/d/<device-id>/mcp
-Remote Agent (uses separate device token): wss://nexus-open-cloud-tools.example-domain5628.workers.dev/d/<device-id>/relay/agent
+Example endpoint patterns (illustrative placeholders, not a publicly verified running deployment):
+
+- Cloud URL: `https://<your-worker-domain>`
+- Health: `https://<your-worker-domain>/health`
+- MCP (scoped client credential): `https://<your-worker-domain>/d/<device-id>/mcp`
+- Remote Agent (separate device credential): `wss://<your-worker-domain>/d/<device-id>/relay/agent`
 
 ## Encryption / data isolation
 
@@ -81,11 +83,15 @@ Remove-Item Env:NEXUS_VAULT_PASSPHRASE
 
 Use a new output path. Snapshots do not overwrite source databases. Do not place passphrases in Git.
 
-## Publication gate — pending
+## Publication and verification status
 
-`node apps/nexus-open-cloud/local/check-release.mjs` currently flags tracked `config.json` and `nexus-token-telemetry.jsonl`. This edition must **not** be pushed as a public repository until tracked files, commit history, bundled third-party assets, and licenses have been audited. The codebase currently declares AGPL-3.0-only; review third-party provenance before release.
+The Nexus v1.3.1 source repository is **already public**. This document is a technical reference, not a prepublication approval checklist. Publishing source code does **not** prove that every installer, bundled binary, third-party asset, or deployment endpoint has been independently audited.
 
-No GitHub public push was performed. The public Cloudflare Worker and local source code are separate from publishing the whole project.
+- The repository uses AGPL-3.0-only; preserve its licensing obligations and third-party notices.
+- Root `config.json` is treated as machine-local configuration. New clones can use schema defaults or create it from `config.example.json`. Never commit real credentials or runtime telemetry.
+- The `check-release.mjs` audit should be run and its findings reviewed before any future release; any warnings are actionable and do not automatically indicate that this already-public repository is private or unpublished.
+- Verify GitHub Actions and actual Release assets separately. A published source tag does not guarantee installers exist on the Release page.
+- Check Git history and bundled third-party components for license provenance and sensitive data. Changes to current tracking do not erase old commits.
 
 ## Current limits
 

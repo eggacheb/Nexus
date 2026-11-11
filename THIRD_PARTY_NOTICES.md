@@ -4,15 +4,14 @@ Nexus (v1.3.1) incorporates, links, or distributes certain open-source software 
 
 ---
 
-## 1. Architectural & Concept Attribution
+## 1. Architectural reference (separate from bundled software)
 
 ### WebCodex
-- **Original Project**: [yyjeqhc/webcodex](https://github.com/yyjeqhc/webcodex)
-- **License**: Apache License, Version 2.0
-- **Copyright**: Copyright © 2026 yyjeqhc and WebCodex Contributors
-- **Notice**:
-  Nexus references and builds upon architectural principles initially explored in WebCodex, specifically the separation of server/runner daemons and local MCP tool routing concepts. The codebase has been extensively redesigned and re-implemented with a native Tauri 2.0 desktop frontend, Fastify JSON-RPC gateway, Windows native OS automation, and security sandboxing policies.
-- **License Text Summary**: Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at `http://www.apache.org/licenses/LICENSE-2.0`.
+- **Reference project**: [yyjeqhc/webcodex](https://github.com/yyjeqhc/webcodex)
+- **Project license**: Apache License, Version 2.0, as stated by that upstream project
+- **Acknowledgement**: WebCodex is acknowledged as a reference discussed during Nexus architecture and feature research (including local execution and MCP workflows).
+- **Provenance scope**: This acknowledgement **does not assert that WebCodex source code is included in Nexus, or that Nexus is a fork or derivative of WebCodex**. Any actual source reuse must be verified at the file level and documented separately with the required copyright notices and license terms. Architectural ideas and interface concepts are not equivalent to copied implementation code.
+- **Upstream license**: [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) (applies to covered upstream code, if used; not automatically to Nexus's own implementation).
 
 ---
 

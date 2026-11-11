@@ -19,6 +19,8 @@ pnpm-debug.log*
 localbridge.db*
 
 # Environment & local config
+/config.json
+# Keep config.example.json tracked; only local config.json is ignored.
 .env
 .env.local
 .env.*.local
