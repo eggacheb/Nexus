@@ -35,6 +35,7 @@ import { EmergencyStopModal } from "./components/modals/EmergencyStopModal.js";
 import { ResolveApprovalModal } from "./components/modals/ResolveApprovalModal.js";
 import { OnboardingModal } from "./components/modals/OnboardingModal.js";
 import { FullControlModal } from "./components/modals/FullControlModal.js";
+import { SponsorModal } from "./components/modals/SponsorModal.js";
 import { AppErrorBoundary } from "./components/common/AppErrorBoundary.js";
 import { bridge, type TunnelStatusDto } from "./api/bridge.js";
 import { useTranslation } from "./i18n/useTranslation.js";
@@ -97,6 +98,7 @@ export const App: React.FC = () => {
   const refreshGeneration = useRef(0);
 
   // Modals
+  const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
   const [isAuthorizeModalOpen, setIsAuthorizeModalOpen] = useState(false);
   const [isCreateTokenModalOpen, setIsCreateTokenModalOpen] = useState(false);
   const [isEmergencyStopModalOpen, setIsEmergencyStopModalOpen] = useState(false);
@@ -495,6 +497,7 @@ export const App: React.FC = () => {
         serverStatus={serverStatus}
         runnersCount={serverStatus?.runners_connected ?? 0}
         uxMode={uxMode}
+        onOpenSponsorModal={() => setIsSponsorModalOpen(true)}
       />
 
       {/* Main Container */}
@@ -641,6 +644,7 @@ export const App: React.FC = () => {
                 onChangeUxMode={handleUxModeChange}
                 onNavigate={handleNavigate}
                 onOpenOnboarding={() => setShowOnboarding(true)}
+                onOpenSponsorModal={() => setIsSponsorModalOpen(true)}
               />
             )}
 
@@ -729,6 +733,11 @@ export const App: React.FC = () => {
         isOpen={Boolean(selectedApproval)}
         onClose={() => setSelectedApproval(null)}
         onSuccess={loadData}
+      />
+
+      <SponsorModal
+        isOpen={isSponsorModalOpen}
+        onClose={() => setIsSponsorModalOpen(false)}
       />
 
       <FullControlModal

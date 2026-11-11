@@ -501,6 +501,34 @@ LocalBridge v1.0 标志着功能冻结（Feature Freeze）与生产级全方位�
 
 仓库只跟踪 `config.example.json`，不再跟踪包含设备本地设置的 `config.json`。需要自定义配置时，可在项目根目录执行 `Copy-Item config.example.json config.json`（PowerShell），根据实际需要修改；没有该文件时，配置加载器会使用内置默认值。请勿提交真实 Token、密码或运行日志。
 
+---
+
+## ☕ 赞助与支持 (Sponsor & Support)
+
+如果 Nexus 对你的工作、学习或日常开发有所帮助，欢迎请作者喝杯咖啡 ☕！
+
+你的每一份支持都是维持开源项目长期维护、持续迭代新功能与修复缺陷的重要动力。
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="260">
+        <img src="docs/assets/wechat-pay.jpg" width="220" alt="微信支付赞助码" /><br />
+        <br />
+        <b>微信支付 (WeChat Pay)</b>
+      </td>
+      <td align="center" width="260">
+        <img src="docs/assets/alipay.jpg" width="220" alt="支付宝赞助码" /><br />
+        <br />
+        <b>支付宝 (Alipay)</b>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+
 ## 开源许可证与品牌声明
 
 Nexus v1.3.1 依据 **[GNU Affero General Public License v3.0 (AGPL-3.0-only)](LICENSE)** 发布。

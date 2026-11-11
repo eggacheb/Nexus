@@ -26,6 +26,7 @@ import {
   FolderOpen,
   Unlock,
   HardDrive,
+  Heart,
 } from "lucide-react";
 import { bridge, type TunnelStatusDto } from "../api/bridge.js";
 import { useTranslation } from "../i18n/useTranslation.js";
@@ -88,6 +89,7 @@ interface SettingsPageProps {
   onChangeUxMode?: (mode: UserExperienceMode) => void;
   onNavigate?: (page: any) => void;
   onOpenOnboarding?: () => void;
+  onOpenSponsorModal?: () => void;
 }
 
 export type SettingsRoute =
@@ -123,6 +125,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   onChangeUxMode,
   onNavigate: _onNavigate,
   onOpenOnboarding,
+  onOpenSponsorModal,
 }) => {
   const { t, language, setLanguage } = useTranslation();
   const isZh = language === "zh-CN";
@@ -2913,6 +2916,31 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Sponsor Section */}
+          <div className="p-6 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-transparent border border-rose-500/30 rounded-xl space-y-4 text-xs shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-semibold text-theme-primary text-sm">
+                <Heart className="w-4 h-4 text-rose-500 fill-rose-500/20" />
+                <span>{isZh ? "☕ 赞助与支持 (Sponsor & Support)" : "☕ Sponsor & Support"}</span>
+              </div>
+              {onOpenSponsorModal && (
+                <button
+                  type="button"
+                  onClick={onOpenSponsorModal}
+                  className="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
+                >
+                  <Heart className="w-3.5 h-3.5 fill-white/20" />
+                  <span>{isZh ? "打开赞助打赏码" : "Open Donation QR"}</span>
+                </button>
+              )}
+            </div>
+            <p className="text-theme-secondary leading-relaxed">
+              {isZh
+                ? "如果 Nexus 对你的工作、学习或日常开发有所帮助，欢迎赞助作者喝杯咖啡！你的每一份支持都是维持开源项目长期维护、持续迭代新功能与修复缺陷的重要动力。"
+                : "If Nexus has helped your daily workflow or projects, consider supporting the author with a coffee! Every bit of support fuels active open-source maintenance and updates."}
+            </p>
           </div>
 
           {/* License & Onboarding Notice */}

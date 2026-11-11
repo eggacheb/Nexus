@@ -399,6 +399,31 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ---
 
+### ☕ Sponsor & Support (赞助与支持)
+
+If Nexus has helped your workflow, research, or daily development, consider buying the author a coffee ☕!
+
+Your generous support helps sustain active open-source maintenance, feature evolution, and bug fixes.
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="260">
+        <img src="docs/assets/wechat-pay.jpg" width="220" alt="WeChat Pay (微信支付)" /><br />
+        <br />
+        <b>WeChat Pay (微信支付)</b>
+      </td>
+      <td align="center" width="260">
+        <img src="docs/assets/alipay.jpg" width="220" alt="Alipay (支付宝)" /><br />
+        <br />
+        <b>Alipay (支付宝)</b>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ### 7. 开源许可证、署名与安全说明
 
 - **软件许可证**：Nexus v1.3.1 依据 [GNU AGPL-3.0](LICENSE) 发布，允许个人与商业使用、学习、修改和再分发，但须遵守许可证原文。

@@ -948,6 +948,17 @@ export const zhCN: I18nDictionary = {
     skipForNowBtn: "暂时跳过",
     licenseAgreementText: "本项目遵循 GNU AGPL-3.0 协议发布（完全开源，免费支持个人与商业用途，并附带第 7 条附加条款）。继续即表示您同意该许可协议。",
   },
+  sponsor: {
+    title: "赞助与支持",
+    subtitle: "如果 Nexus 对你的工作或日常开发有所帮助，欢迎请作者喝杯咖啡 ☕",
+    wechatPay: "微信支付",
+    wechatPayDesc: "使用微信扫码赞助",
+    alipay: "支付宝",
+    alipayDesc: "使用支付宝扫码赞助",
+    thankYou: "感谢支持开源",
+    thankYouDesc: "你的每一份认可与支持，都是维持 Nexus 长期维护与持续迭代的重要动力。",
+    close: "关闭",
+  },
   statusMap: {
     running: "运行中",
     stopped: "已停止",

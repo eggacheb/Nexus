@@ -948,6 +948,17 @@ export const enUS: I18nDictionary = {
     skipForNowBtn: "Skip for Now",
     licenseAgreementText: "Nexus is released under the GNU AGPL-3.0 License with Section 7 Additional Terms (open-source and free for both personal and commercial use). Continuing signifies your acceptance.",
   },
+  sponsor: {
+    title: "Sponsor & Support",
+    subtitle: "If Nexus helps your daily development and workflow, consider buying the author a coffee ☕",
+    wechatPay: "WeChat Pay",
+    wechatPayDesc: "Scan with WeChat to donate",
+    alipay: "Alipay",
+    alipayDesc: "Scan with Alipay to donate",
+    thankYou: "Thank you for supporting open source!",
+    thankYouDesc: "Every bit of support helps sustain maintenance, active improvements, and feature updates.",
+    close: "Close",
+  },
   statusMap: {
     running: "Running",
     stopped: "Stopped",

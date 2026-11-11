@@ -948,6 +948,17 @@ export interface I18nDictionary {
     skipForNowBtn: string;
     licenseAgreementText: string;
   };
+  sponsor: {
+    title: string;
+    subtitle: string;
+    wechatPay: string;
+    wechatPayDesc: string;
+    alipay: string;
+    alipayDesc: string;
+    thankYou: string;
+    thankYouDesc: string;
+    close: string;
+  };
   statusMap: {
     running: string;
     stopped: string;

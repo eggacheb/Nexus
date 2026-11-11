@@ -12,6 +12,7 @@ import {
   Settings,
   AppWindow,
   LayoutGrid,
+  Heart,
 } from "lucide-react";
 import nexusLogo from "../assets/nexus.png";
 import type { ServerStatus, UserExperienceMode } from "../types.js";
@@ -65,6 +66,7 @@ interface SidebarProps {
   serverStatus: ServerStatus | null;
   runnersCount?: number;
   uxMode?: UserExperienceMode;
+  onOpenSponsorModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -73,6 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   serverStatus,
   runnersCount,
   uxMode: _uxMode = "standard",
+  onOpenSponsorModal,
 }) => {
   const { language } = useTranslation();
   const isZh = language.startsWith("zh");
@@ -337,13 +340,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer: Settings & Status Strip */}
-      <div className="p-2 border-t border-theme-subtle space-y-1.5 shrink-0 bg-theme-sidebar">
+      <div className="p-2 border-t border-theme-subtle space-y-1 shrink-0 bg-theme-sidebar">
+        {onOpenSponsorModal && (
+          <button
+            type="button"
+            onClick={onOpenSponsorModal}
+            title={isZh ? "赞助与支持" : "Sponsor & Support"}
+            className={`w-full flex items-center rounded-md text-xs transition ${
+              collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-1.5"
+            } text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 border border-transparent`}
+          >
+            <Heart className="w-3.5 h-3.5 text-rose-500 shrink-0 fill-rose-500/20" />
+            {!collapsed && <span className="font-medium">{isZh ? "赞助与支持" : "Sponsor"}</span>}
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => onSelectPage("settings")}
           title={isZh ? "应用设置" : "Settings"}
           className={`w-full flex items-center rounded-md text-xs transition ${
-            collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-2"
+            collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-1.5"
           } ${
             currentPage === "settings"
               ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 font-medium border border-sky-500/20 shadow-xs"
