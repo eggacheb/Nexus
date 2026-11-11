@@ -91,7 +91,7 @@ export const StartupScreen: React.FC<StartupScreenProps> = ({
             </div>
             <div>
               <div className="font-bold text-base tracking-wide flex items-center gap-2">
-                WEBAGENT CONTROL CENTER
+                NEXUS CONTROL CENTER
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
                   v1.3.1
                 </span>
@@ -122,7 +122,7 @@ export const StartupScreen: React.FC<StartupScreenProps> = ({
           <div className="space-y-6">
             <div className="text-center space-y-1">
               <h2 className="text-lg font-semibold text-white tracking-tight">
-                正在启动 WebAgent…
+                正在启动 Nexus…
               </h2>
               <p className="text-xs text-slate-400">
                 正在启动并初始化本地服务与运行时，请稍候...
@@ -197,7 +197,7 @@ export const StartupScreen: React.FC<StartupScreenProps> = ({
               <AlertOctagon className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-rose-300">
-                  WebAgent 启动失败
+                  Nexus 启动失败
                 </h3>
                 <p className="text-xs text-rose-200/80">
                   Core Server 未能就绪。
@@ -277,7 +277,7 @@ export const StartupScreen: React.FC<StartupScreenProps> = ({
                   className="flex items-center gap-2 px-3.5 py-2 bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 rounded-lg text-xs font-medium transition border border-rose-800/40"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span>退出 WebAgent</span>
+                  <span>退出 Nexus</span>
                 </button>
               </div>
             </div>

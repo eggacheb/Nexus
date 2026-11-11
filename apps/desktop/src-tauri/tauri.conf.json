@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "WebAgent",
+  "productName": "Nexus",
   "version": "1.3.1",
-  "identifier": "com.webagent.desktop",
+  "identifier": "com.nexus.desktop",
   "build": {
     "beforeDevCommand": "pnpm run dev",
     "devUrl": "http://127.0.0.1:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "WebAgent Control Center",
+        "title": "Nexus Control Center",
         "width": 1180,
         "height": 780,
         "minWidth": 960,
@@ -34,8 +34,8 @@
       "deb",
       "appimage"
     ],
-    "publisher": "WebAgent",
-    "copyright": "Copyright © 2026 WebAgent",
+    "publisher": "Nexus",
+    "copyright": "Copyright © 2026 Nexus",
     "license": "AGPL-3.0-only",
     "licenseFile": "../../../LICENSE",
     "icon": [

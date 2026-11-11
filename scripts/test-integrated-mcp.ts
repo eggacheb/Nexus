@@ -5,7 +5,7 @@ import { format } from "node:util";
 
 const GATEWAY_URL = process.env.NEXUS_GATEWAY_URL || "http://127.0.0.1:8787";
 const CORE_URL = process.env.NEXUS_CORE_URL || "http://127.0.0.1:18080";
-const BRIDGE_TOKEN = process.env.NEXUS_BRIDGE_TOKEN || "webagent-secure-token-2026";
+const BRIDGE_TOKEN = process.env.NEXUS_BRIDGE_TOKEN || "nexus-secure-token-2026";
 
 interface TestResult {
   id: string;
@@ -116,7 +116,7 @@ async function main() {
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "webagent-test", version: "1.0.0" },
+        clientInfo: { name: "nexus-test", version: "1.0.0" },
       },
     });
 

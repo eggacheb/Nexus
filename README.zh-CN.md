@@ -1,8 +1,8 @@
-# WebAgent
+# Nexus
 
 > ChatGPT、DeepSeek 专用的 Local AI Control Plane，基于 LocalBridge 运行时架构构建。
 
-WebAgent 是专门面向 ChatGPT、DeepSeek 打造的本地 AI 控制面（Local AI Control Plane）。它通过高性能、强安全的 Secure MCP Tunnel，将 ChatGPT 深度连接至本地开发环境，使 ChatGPT 能够在严格权限约束与沙箱保护下，对本地项目执行检索、修改、构建、运行与测试，而无需暴露整机磁盘或将源代码泄露给第三方。
+Nexus 是专门面向 ChatGPT、DeepSeek 打造的本地 AI 控制面（Local AI Control Plane）。它通过高性能、强安全的 Secure MCP Tunnel，将 ChatGPT 深度连接至本地开发环境，使 ChatGPT 能够在严格权限约束与沙箱保护下，对本地项目执行检索、修改、构建、运行与测试，而无需暴露整机磁盘或将源代码泄露给第三方。
 
 ---
 
@@ -11,11 +11,11 @@ ChatGPT
    │
    │ Secure MCP Tunnel (Streamable HTTP / SSE, Bearer lb_xxx)
    ▼
-WebAgent (Local AI Control Plane)
+Nexus (Local AI Control Plane)
    │
    ├── 本地已授权项目 (Local Projects / 沙箱与规范路径校验)
    ├── 62 个原生 MCP 工具 (Model Context Protocol)
-   ├── WebAgent Skills v1 (声明式确定性任务工作流)
+   ├── Nexus Skills v1 (声明式确定性任务工作流)
    ├── Git CLI 与托管工作树 (Managed Worktrees)
    ├── 常驻运行时 (Persistent Runtime) 与后台任务 (Jobs)
    ├── 代码智能分析 (Code Intelligence / LSP)
@@ -493,10 +493,22 @@ LocalBridge v1.0 标志着功能冻结（Feature Freeze）与生产级全方位�
 
 - [STRIDE 威胁建模与 14 类威胁防御规范 (THREAT_MODEL.md)](docs/THREAT_MODEL.md)
 - [系统架构设计 (architecture.md)](docs/architecture.md)
-- [WebAgent 产品概览 (WEBAGENT_OVERVIEW.md)](docs/WEBAGENT_OVERVIEW.md)
+- [Nexus 产品概览 (NEXUS_OVERVIEW.md)](docs/NEXUS_OVERVIEW.md)
 
 ---
 
-## 开源协议
+## 开源许可证与品牌声明
 
-本项目遵循 [GNU AGPL-3.0](LICENSE) 开源许可证发布。
+本项目遵循 **[GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE)** 开源许可证发布，并附带 **Section 7 附加声明（署名保留、防来源冒充与商标保留）**。
+
+### 1. 软件使用与商业权利
+- **自由使用与商业应用**：在严格遵守 AGPL-3.0 协议条款的前提下，任何人均可自由安装、运行、学习、修改及分发本项目，亦可将本项目用于个人学习或企业内部生产环境。
+- **开源传染与源码开放义务**：任何基于本项目二次开发、二次打包或通过网络（包括提供 SaaS 云服务或远程 MCP 代理）向用户提供交互式服务的系统，**必须按照 AGPL-3.0 协议向其用户完整开源提供全部对应源代码（Corresponding Source Code）**。
+
+### 2. 品牌与商标保护（Brand & Trademark）
+- **非商标授权**：获得本项目源码的 AGPL-3.0 许可，并不自动包含使用 `Nexus` 商号、官方 Logo 或原作者署名进行商业宣传或官方背书的权利。
+- **品牌规则与规范**：详见独立的 **[品牌与商标使用规则 (BRAND_GUIDELINES.md)](BRAND_GUIDELINES.md)**。严禁伪造官方身份或冒充原作者。
+
+### 3. 第三方开源组件致谢
+- 本项目遵循宽松开源许可证集成了多项第三方组件与工具（如 Fastify、React、Tauri、better-sqlite3、WebCodex 架构启发等）。
+- 完整第三方版权声明与许可证清单详见：**[第三方版权通告 (THIRD_PARTY_NOTICES.md)](THIRD_PARTY_NOTICES.md)**。

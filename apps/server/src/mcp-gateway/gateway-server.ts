@@ -124,9 +124,9 @@ export function createGatewayHttpServer(
         JSON.stringify(
           {
             ok: true,
-            service: "webagent-mcp-gateway",
+            service: "nexus-mcp-gateway",
             version: "1.0.0",
-            webagent: {
+            nexus: {
               connected: nexusHealth.ok,
               url: options.coreUrl || "http://127.0.0.1:18080",
               projectsCount,
@@ -134,7 +134,7 @@ export function createGatewayHttpServer(
             },
             protocol: {
               target: "Standard MCP (2024-11-05 Streamable HTTP)",
-              supportedClients: ["ChatGPT", "DeepSeek", "Cursor", "WebAgent"],
+              supportedClients: ["ChatGPT", "DeepSeek", "Cursor", "Nexus"],
             },
             uptime: process.uptime(),
           },

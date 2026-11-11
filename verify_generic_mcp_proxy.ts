@@ -87,7 +87,7 @@ async function main() {
   results["Dynamic_Tool_Count"] = toolCount;
 
   const AUTH_HEADER = {
-    Authorization: "Bearer webagent-secure-token-2026",
+    Authorization: "Bearer nexus-secure-token-2026",
     Accept: "application/json, text/event-stream",
   };
 

@@ -99,3 +99,11 @@ tmp/
 
 *.user.js
 *.user.js.bak
+
+# Thesis Word formatting ephemeral test artifacts
+.thesis_format_*
+checkpoint_*.docx
+\[备份\]_*
+\[已排版\]_*
+\[排版报告\]_*
+run_log.jsonl

@@ -80,7 +80,7 @@ jobs:
       - name: Upload Linux Artifacts (.deb, .AppImage)
         uses: actions/upload-artifact@v4
         with:
-          name: WebAgent-Linux-x86_64
+          name: Nexus-Linux-x86_64
           path: |
             apps/desktop/src-tauri/target/release/bundle/deb/*.deb
             apps/desktop/src-tauri/target/release/bundle/appimage/*.AppImage

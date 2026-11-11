@@ -1,4 +1,4 @@
-# WebAgent
+# Nexus
 
 <p align="center">
   <b>Dedicated Local AI Control Plane for ChatGPT, DeepSeek & Modern Web AI Assistants</b><br>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1"><img src="https://img.shields.io/badge/version-1.3.1-blue.svg" alt="Version 1.3.1"></a>
+  <a href="https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1"><img src="https://img.shields.io/badge/version-1.3.1-blue.svg" alt="Version 1.3.1"></a>
   <img src="https://img.shields.io/badge/MCP_Tools-332_Canonical-success.svg" alt="332 MCP Tools">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-red.svg" alt="License AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-brightgreen.svg" alt="Platforms">
@@ -24,9 +24,9 @@
 
 ### 1. Overview
 
-**WebAgent** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, DeepSeek, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP / SSE with OAuth 2.0 & Bearer tokens).
+**Nexus** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, DeepSeek, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP / SSE with OAuth 2.0 & Bearer tokens).
 
-WebAgent allows AI agents to inspect, edit, build, debug, and orchestrate complex local engineering workflows within strictly enforced sandbox boundaries—without exposing your full filesystem or transmitting proprietary code to untrusted cloud intermediaries.
+Nexus allows AI agents to inspect, edit, build, debug, and orchestrate complex local engineering workflows within strictly enforced sandbox boundaries—without exposing your full filesystem or transmitting proprietary code to untrusted cloud intermediaries.
 
 ```text
  ChatGPT / DeepSeek / Web AI Assistants
@@ -34,14 +34,14 @@ WebAgent allows AI agents to inspect, edit, build, debug, and orchestrate comple
                │ Secure MCP Tunnel (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   WebAgent Desktop Control Center (Tauri 2)               │
+│                   Nexus Desktop Control Center (Tauri 2)               │
 │                                                                        │
 │  Fastify MCP & REST API Server (Port 18080)   SQLite Persistence (WAL) │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │ Bidirectional JSON-RPC 2.0 (WebSocket)
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   WebAgent Local Runner Daemon                            │
+│                   Nexus Local Runner Daemon                            │
 │                                                                        │
 │  ├── 332 Canonical MCP Tools Across 24 Capabilities                    │
 │  ├── Action Ledger WAL (Crash Recovery & Idempotent Replay)            │
@@ -93,12 +93,12 @@ WebAgent allows AI agents to inspect, edit, build, debug, and orchestrate comple
 ### 3. Monorepo Project Layout
 
 ```text
-WebAgent/
+Nexus/
 ├── apps/
 │   ├── desktop/          # Tauri 2 + React + Vite Desktop Control Center
 │   ├── runner/           # Local execution daemon (332 tools, Action Ledger, Computer Use)
 │   ├── server/           # Fastify MCP Server with SQLite WAL persistence & REST API
-│   └── bridge/           # Standalone WebAgent MCP Bridge (OAuth 2.0 / ChatGPT / DeepSeek)
+│   └── bridge/           # Standalone Nexus MCP Bridge (OAuth 2.0 / ChatGPT / DeepSeek)
 ├── packages/
 │   ├── protocol/         # Pure protocol types, 332 Canonical tool definitions, RPC schemas
 │   ├── security/         # Sandboxing, path verification, and command risk engine
@@ -114,22 +114,22 @@ WebAgent/
 ### 4. Quick Start
 
 #### Option A: Desktop Installer (Recommended)
-1. Download the pre-built installer for your platform from [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1):
-   - **Windows (x64 Setup)**: [`WebAgent_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_x64-setup.exe)
-   - **macOS (Universal DMG)**: [`WebAgent_1.3.1_universal.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_universal.dmg)
-   - **macOS (Apple Silicon DMG)**: [`WebAgent_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**: [`WebAgent_1.3.1_amd64.deb`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.deb)
-   - **Linux (Universal `.AppImage`)**: [`WebAgent_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.AppImage)
-   - **Tampermonkey Userscript**: [`webagent-1.3.1.user.js`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/webagent-1.3.1.user.js)
-2. Run the installer. WebAgent launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
+1. Download the pre-built installer for your platform from [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1):
+   - **Windows (x64 Setup)**: [`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_x64-setup.exe)
+   - **macOS (Universal DMG)**: [`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**: [`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**: [`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.deb)
+   - **Linux (Universal `.AppImage`)**: [`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.AppImage)
+   - **Tampermonkey Userscript**: [`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/nexus-1.3.1.user.js)
+2. Run the installer. Nexus launches in the system tray with a self-contained Node.js runtime, bundled Language Server, and background execution daemon ready out of the box.
 
 #### Option B: Build & Run from Source
 Prerequisites: **Node.js >= 24**, **pnpm >= 10**, **Rust stable**.
 
 ```powershell
 # 1. Clone the repository
-git clone https://github.com/ysunyang4/WebAgent.git
-cd WebAgent
+git clone https://github.com/ysunyang4/Nexus.git
+cd Nexus
 
 # 2. Install workspace dependencies
 pnpm install
@@ -146,7 +146,7 @@ pnpm --filter @localbridge/desktop dev
 ### 5. Connecting AI Clients
 
 #### Step 1: Authorize a Local Project
-1. Open WebAgent Desktop Control Center.
+1. Open Nexus Desktop Control Center.
 2. Under **Workspace -> Projects**, click **Authorize Project** and select your directory (e.g., `D:\projects\my-app`).
 3. Set **Access Mode** (`read-only` or `read-write`) and **Execution Mode** (`disabled`, `safe-only`, or `project-code`)—both can be dynamically switched at any time without restarting.
 
@@ -167,7 +167,7 @@ Header: `Authorization: Bearer lb_your_token_here`
 ```json
 {
   "mcpServers": {
-    "webagent": {
+    "nexus": {
       "url": "http://127.0.0.1:18080/mcp",
       "headers": {
         "Authorization": "Bearer lb_your_token_here",
@@ -219,9 +219,9 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ### 1. 项目概述
 
-**WebAgent** 是一套专为 ChatGPT、DeepSeek 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 OAuth 2.0 与 Bearer 令牌的 Streamable HTTP / SSE 协议），将远端大模型安全连接至开发者的本地工作站。
+**Nexus** 是一套专为 ChatGPT、DeepSeek 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 OAuth 2.0 与 Bearer 令牌的 Streamable HTTP / SSE 协议），将远端大模型安全连接至开发者的本地工作站。
 
-WebAgent 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测试与编排完整研发工作流的能力，从根本上杜绝整盘泄露风险，且绝不将私有源码转传给任何不可信第三方云端中继。
+Nexus 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测试与编排完整研发工作流的能力，从根本上杜绝整盘泄露风险，且绝不将私有源码转传给任何不可信第三方云端中继。
 
 ```text
  ChatGPT / DeepSeek / Web AI Assistants 客户端
@@ -229,7 +229,7 @@ WebAgent 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、�
                │ 安全 MCP 隧道 (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   WebAgent 桌面控制中心 (Tauri 2 + React)                 │
+│                   Nexus 桌面控制中心 (Tauri 2 + React)                 │
 │                                                                        │
 │  Fastify MCP & REST 核心服务 (Port 18080)    SQLite 持久化引擎 (WAL)   │
 └──────────────────────────────────┬─────────────────────────────────────┘
@@ -288,12 +288,12 @@ WebAgent 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、�
 ### 3. 代码仓库结构
 
 ```text
-WebAgent/
+Nexus/
 ├── apps/
 │   ├── desktop/          # Tauri 2 + React + Vite 桌面控制中心
 │   ├── runner/           # 本地执行守护进程（332 工具集、Action Ledger、Computer Use）
 │   ├── server/           # Fastify MCP 服务端（SQLite WAL 持久化 & REST API）
-│   └── bridge/           # WebAgent MCP 独立网桥（兼容 OAuth 2.0 / ChatGPT / DeepSeek）
+│   └── bridge/           # Nexus MCP 独立网桥（兼容 OAuth 2.0 / ChatGPT / DeepSeek）
 ├── packages/
 │   ├── protocol/         # 纯协议类型层、332 工具规范定义、RPC JSON-Schema
 │   ├── security/         # 沙箱隔离防护、路径规范化验证、命令风控引擎
@@ -309,13 +309,13 @@ WebAgent/
 ### 4. 快速上手
 
 #### 方式 A：使用桌面端安装包（推荐）
-1. 从 [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/WebAgent/releases/tag/v1.3.1) 下载对应平台的最新安装包：
-   - **Windows (x64 安装包)**：[`WebAgent_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_x64-setup.exe)
-   - **macOS (Universal 通用 DMG)**：[`WebAgent_1.3.1_universal.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_universal.dmg)
-   - **macOS (Apple Silicon DMG)**：[`WebAgent_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_aarch64.dmg)
-   - **Linux (Debian/Ubuntu `.deb`)**：[`WebAgent_1.3.1_amd64.deb`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.deb)
-   - **Linux (通用 `.AppImage`)**：[`WebAgent_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/WebAgent_1.3.1_amd64.AppImage)
-   - **油猴脚本 (Tampermonkey)**：[`webagent-1.3.1.user.js`](https://github.com/ysunyang4/WebAgent/releases/download/v1.3.1/webagent-1.3.1.user.js)
+1. 从 [GitHub Releases (v1.3.1)](https://github.com/ysunyang4/Nexus/releases/tag/v1.3.1) 下载对应平台的最新安装包：
+   - **Windows (x64 安装包)**：[`Nexus_1.3.1_x64-setup.exe`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_x64-setup.exe)
+   - **macOS (Universal 通用 DMG)**：[`Nexus_1.3.1_universal.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_universal.dmg)
+   - **macOS (Apple Silicon DMG)**：[`Nexus_1.3.1_aarch64.dmg`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_aarch64.dmg)
+   - **Linux (Debian/Ubuntu `.deb`)**：[`Nexus_1.3.1_amd64.deb`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.deb)
+   - **Linux (通用 `.AppImage`)**：[`Nexus_1.3.1_amd64.AppImage`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/Nexus_1.3.1_amd64.AppImage)
+   - **油猴脚本 (Tampermonkey)**：[`nexus-1.3.1.user.js`](https://github.com/ysunyang4/Nexus/releases/download/v1.3.1/nexus-1.3.1.user.js)
 2. 双击安装。Nexus 随系统托盘启动，内置自包含 Node.js 运行时、语言服务器和后台执行守护进程，开箱即用。
 
 #### 方式 B：从源码编译与启动
@@ -323,8 +323,8 @@ WebAgent/
 
 ```powershell
 # 1. 克隆代码仓库
-git clone https://github.com/ysunyang4/WebAgent.git
-cd WebAgent
+git clone https://github.com/ysunyang4/Nexus.git
+cd Nexus
 
 # 2. 安装项目依赖
 pnpm install
@@ -362,7 +362,7 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
 ```json
 {
   "mcpServers": {
-    "webagent": {
+    "nexus": {
       "url": "http://127.0.0.1:18080/mcp",
       "headers": {
         "Authorization": "Bearer lb_your_token_here",
@@ -398,13 +398,13 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ---
 
-### 7. 开源许可证、防商业换皮条款与安全免责声明
+### 7. Open-Source License, Anti-Rebranding & Security Disclaimer
 
-- **开源协议（[GNU AGPL-3.0](LICENSE)）**：本项目基于 **GNU Affero General Public License v3.0 (AGPL-3.0-only)** 协议开源，并附带 **第 7 条附加条款（Section 7 Additional Terms）**：
-  - **强制开源传染**：任何基于本项目的修改版本、衍生作品、二次打包安装包或通过网络（包括 SaaS / 远程 MCP 托管服务）向用户提供服务的系统，**必须以相同的 AGPL-3.0 协议完整公开其全部源代码**。
-  - **防商业换皮与署名保留（AGPL-3.0 第 7 条）**：严禁移除、隐藏或篡改桌面端界面、托盘菜单、命令行工具及关于页面中的原始版权声明、作者署名与开源许可证标识；严禁将修改或重打包版本伪装为闭源原创商业产品进行售卖或分发（即“商业换皮”）。违反上述条款将立即自动终止协议授予的一切许可权利。
-  - 若需用于闭源商业分发或 OEM 集成，请联系项目维护者获取独立的商业授权许可。
-- **安全架构与无限制模式免责声明（[SECURITY.md](SECURITY.md)）**：
-  - Nexus 默认启用严格物理路径沙箱（只读 `read-only`）与 AST 命令风控拦截（仅安全命令 `safe-only`）。
-  - 当用户主动开启读写模式（`read-write`）、工程代码执行（`project-code`）、桌面 UI 自动化（Computer Use）或 **无限制完全控制模式（Unrestricted Mode）** 时，即视为用户本人显式授权 AI 智能体在对应权限边界内执行本地指令与修改文件。由此产生的任何系统变更、数据修改或命令执行后果由用户自行承担，重要工程请务必做好 Git 版本管理与数据备份。
-
+- **Open-Source License ([GNU AGPL-3.0](LICENSE))**: This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0-only)** with **Section 7 Additional Terms**:
+  - **Copyleft & Network Service Disclosure**: Anyone is free to use, modify, and distribute this software for personal or commercial purposes. However, any derivative work, repackaged binary, or network-hosted service (such as remote MCP proxies or cloud SaaS) interacting with users **must disclose its complete corresponding source code** under the same AGPL-3.0 license.
+  - **Preservation of Attribution & Anti-Rebranding (AGPL-3.0 Section 7)**: All copyright notices, author credits, and license disclosures in the UI, tray menu, CLI, and About dialogs must be preserved. Misrepresenting a repackaged version as an original proprietary creation is strictly prohibited.
+  - **Brand & Trademark Protection**: The AGPL license does not grant rights to use the `Nexus` product name or logos for commercial endorsements. See **[Brand Guidelines (BRAND_GUIDELINES.md)](BRAND_GUIDELINES.md)**.
+  - **Third-Party Open-Source Attributions**: Detailed notices and acknowledgments for all third-party components (including WebCodex architectural attribution and bundled runtimes) are maintained in **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**.
+- **Security Architecture & Unrestricted Mode Disclaimer ([SECURITY.md](SECURITY.md))**:
+  - Nexus defaults to a strict physical path sandbox (`read-only`) and AST command risk-control interception (`safe-only`).
+  - Enabling `read-write`, `project-code`, Computer Use, or **Unrestricted Mode** constitutes explicit user authorization for the connected AI to perform local actions within those boundaries. Users assume full responsibility for data management and system backups.

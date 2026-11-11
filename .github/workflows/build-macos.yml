@@ -78,7 +78,7 @@ jobs:
       - name: Upload macOS Artifacts (.dmg)
         uses: actions/upload-artifact@v4
         with:
-          name: WebAgent-macOS-${{ matrix.arch }}
+          name: Nexus-macOS-${{ matrix.arch }}
           path: |
             apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
             apps/desktop/src-tauri/target/release/bundle/macos/*.app

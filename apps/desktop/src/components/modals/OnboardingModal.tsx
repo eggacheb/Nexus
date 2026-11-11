@@ -57,7 +57,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           <div className="w-11 h-11 rounded-xl bg-theme-card-muted border border-theme-subtle flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
             <img
               src={nexusLogo}
-              alt="WebAgent"
+              alt="Nexus"
               className="w-full h-full object-cover"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src = "/nexus.png";

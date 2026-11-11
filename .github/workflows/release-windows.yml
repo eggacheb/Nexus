@@ -78,8 +78,8 @@ jobs:
         with:
           projectPath: apps/desktop
           tagName: ${{ github.ref_name }}
-          releaseName: "WebAgent ${{ github.ref_name }}"
-          releaseBody: "WebAgent ${{ github.ref_name }} Release"
+          releaseName: "Nexus ${{ github.ref_name }}"
+          releaseBody: "Nexus ${{ github.ref_name }} Release"
           releaseDraft: false
           prerelease: false
 
