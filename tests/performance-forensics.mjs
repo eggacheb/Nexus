@@ -116,7 +116,7 @@ async function main() {
   console.log(`  Mathematical Match:    ${categorySum === allTools.length ? "TRUE (100% Consistent)" : "FALSE"}`);
 
   // Golden SHA Check
-  const registryBuf = fs.readFileSync("e:/workspace/cod/packages/protocol/src/tools/canonical-registry.ts");
+  const registryBuf = fs.readFileSync("packages/protocol/src/tools/canonical-registry.ts");
   const actualSha = crypto.createHash("sha256").update(registryBuf).digest("hex").toUpperCase();
   const goldenSha = "28C1C7F4459BDAE61C41A2511FD225A0E4C987101FCDA14B6B50AF85ED859796";
   console.log(`  Canonical SHA-256:     ${actualSha} (${actualSha === goldenSha ? "PASS" : "FAIL"})\n`);

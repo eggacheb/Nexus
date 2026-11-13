@@ -23,7 +23,7 @@ describe("Nexus Approval UX Overhaul — 3 Approval Modes (chat / auto-trusted /
     return {
       get: vi.fn().mockReturnValue({
         id: projectId,
-        canonicalRoot: "E:/workspace/dummy_project",
+        canonicalRoot: "D:/examples/dummy_project",
         enabled: options.enabled ?? true,
         accessMode: options.accessMode ?? "read-write",
         executionMode: options.executionMode ?? "project-code",

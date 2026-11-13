@@ -4,18 +4,7 @@ Nexus (v1.3.1) incorporates, links, or distributes certain open-source software 
 
 ---
 
-## 1. Architectural reference (separate from bundled software)
-
-### WebCodex
-- **Reference project**: [yyjeqhc/webcodex](https://github.com/yyjeqhc/webcodex)
-- **Project license**: Apache License, Version 2.0, as stated by that upstream project
-- **Acknowledgement**: WebCodex is acknowledged as a reference discussed during Nexus architecture and feature research (including local execution and MCP workflows).
-- **Provenance scope**: This acknowledgement **does not assert that WebCodex source code is included in Nexus, or that Nexus is a fork or derivative of WebCodex**. Any actual source reuse must be verified at the file level and documented separately with the required copyright notices and license terms. Architectural ideas and interface concepts are not equivalent to copied implementation code.
-- **Upstream license**: [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) (applies to covered upstream code, if used; not automatically to Nexus's own implementation).
-
----
-
-## 2. Bundled Production Runtimes & Binaries
+## 1. Bundled Production Runtimes & Binaries
 
 The following pre-compiled executable binaries may be bundled within self-contained release distributions of Nexus:
 
@@ -41,7 +30,7 @@ The following pre-compiled executable binaries may be bundled within self-contai
 
 ---
 
-## 3. Core Workspace & Production Dependencies
+## 2. Core Workspace & Production Dependencies
 
 All runtime dependencies incorporated into the Nexus v1.3.1 monorepo packages (`@localbridge/server`, `@localbridge/runner`, `@localbridge/desktop`, `@localbridge/bridge`, `@localbridge/protocol`, `@localbridge/security`, `@localbridge/shared`) are distributed under standard permissive open-source licenses:
 
@@ -64,7 +53,7 @@ All runtime dependencies incorporated into the Nexus v1.3.1 monorepo packages (`
 
 ---
 
-## 4. Skills & Template Assets
+## 3. Skills & Template Assets
 
 ### Academic Thesis Word Engine (`nexus.thesis-word-format`)
 - **Source**: Self-developed automation engine using standard Windows Word COM Automation and ECMA-376 / ISO/IEC 29500 (OOXML) specifications.

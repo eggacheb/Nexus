@@ -75,8 +75,6 @@ export function getNexusIconBuffer(): Buffer | null {
     path.resolve(process.cwd(), "apps/desktop/src-tauri/icons/64x64.png"),
     path.resolve(process.cwd(), "../icons/64x64.png"),
     path.resolve(process.cwd(), "resources/icons/64x64.png"),
-    "E:\\workspace\\cod\\apps\\desktop\\src-tauri\\icons\\64x64.png",
-    "E:\\workspace\\cod\\apps\\desktop\\src\\assets\\nexus.png",
   ];
   for (const p of candidatePaths) {
     if (fs.existsSync(p)) {

@@ -11,7 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const GAMEDEV_MCP_ENDPOINT = "http://localhost:20705/p/6106087c";
-const OUTPUT_DIR = "E:\\workspace\\release\\Verification";
+const OUTPUT_DIR = path.resolve(process.env.NEXUS_VERIFICATION_DIR || "artifacts/verification");
 
 let passedAssertions = 0;
 let totalAssertions = 0;
@@ -317,7 +317,7 @@ async function runSuite() {
   // =============================================================================
   console.log("\n>>> [6/6] NEXUS CANONICAL TOOLSET FREEZE & ZERO MOCK VERIFICATION...\n");
 
-  const corePath = "E:\\workspace\\cod";
+  const corePath = path.resolve(process.env.NEXUS_SOURCE_ROOT || ".");
   const canonicalRegistryPath = path.join(corePath, "packages", "protocol", "src", "tools", "canonical-registry.ts");
   const registryContent = fs.readFileSync(canonicalRegistryPath, "utf8");
   const canonicalCount = (registryContent.match(/"id":\s*"[a-zA-Z0-9_\.]+"/g) || []).length;

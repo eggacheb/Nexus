@@ -19,7 +19,7 @@ describe("P1 Security: 'chat' Approval Mode Hardening", () => {
   } = {}) => ({
     get: vi.fn().mockReturnValue({
       id: projectId,
-      canonicalRoot: "E:/workspace/dummy_project",
+      canonicalRoot: "D:/examples/dummy_project",
       enabled: options.enabled ?? true,
       accessMode: options.accessMode ?? "read-write",
       executionMode: "project-code",

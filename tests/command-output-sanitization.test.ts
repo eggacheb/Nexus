@@ -28,7 +28,7 @@ describe("Phase 8 - Command Output Sanitization & Path Redaction", () => {
   });
 
   it("redacts physical paths with canonical project root and runner state placeholders", () => {
-    const projectRoot = process.platform === "win32" ? "E:\\workspace\\my-project" : "/var/workspace/my-project";
+    const projectRoot = process.platform === "win32" ? "D:\\examples\\my-project" : "/var/workspace/my-project";
     const runnerState = process.platform === "win32" ? "C:\\Users\\User\\.localbridge" : "/home/user/.localbridge";
 
     const output = `Error in ${projectRoot}\\src\\index.ts: backup created at ${runnerState}\\backups\\123.bak`;
@@ -44,8 +44,8 @@ describe("Phase 8 - Command Output Sanitization & Path Redaction", () => {
   });
 
   it("handles mixed forward and backward slashes in paths", () => {
-    const projectRoot = "E:/workspace/mixed-path";
-    const output = "File at E:\\workspace\\mixed-path\\app.js";
+    const projectRoot = "D:/examples/mixed-path";
+    const output = "File at D:\\examples\\mixed-path\\app.js";
 
     const sanitized = redactPhysicalPaths(output, [
       { rawPath: projectRoot, placeholder: "<project-root>" },

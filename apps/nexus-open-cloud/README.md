@@ -14,7 +14,7 @@ This is the open-source Cloudflare Worker / Durable Object MCP gateway plus a lo
 The admin API requires a distinct `NEXUS_ADMIN_TOKEN` Cloudflare Worker Secret. The root `NEXUS_GATEWAY_TOKEN` is used only on Cloudflare to create device-scoped, role-separated credential digests. Neither root nor admin credential is used by the running local Agent. `NEXUS_RELAY` Durable Objects are keyed by random device IDs.
 
 ## Initial owner migration (Windows; run once in this order)
-From `E:\workspace\cod_v1.3.1`:
+From the repository root:
 
 ```powershell
 pnpm --dir apps/nexus-open-cloud check

@@ -18,7 +18,7 @@ import { performance } from "node:perf_hooks";
 
 const BRIDGE_URL = "http://127.0.0.1:8787";
 const MCP_ENDPOINT = `${BRIDGE_URL}/mcp`;
-const CANONICAL_REGISTRY_PATH = "e:/workspace/cod/packages/protocol/src/tools/canonical-registry.ts";
+const CANONICAL_REGISTRY_PATH = "packages/protocol/src/tools/canonical-registry.ts";
 const EXPECTED_CANONICAL_SHA = "28C1C7F4459BDAE61C41A2511FD225A0E4C987101FCDA14B6B50AF85ED859796";
 
 function calculateStats(latencies) {

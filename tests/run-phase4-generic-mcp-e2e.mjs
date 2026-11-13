@@ -22,7 +22,7 @@ import {
 } from "../apps/bridge/dist/generic-mcp/index.js";
 import { CapabilityResolver, ProjectBuilderRuntime } from "../apps/bridge/dist/project-builder/index.js";
 
-const FIXTURE_DIR = "E:\\workspace\\NexusE2EFixture";
+const FIXTURE_DIR = path.join(process.env.TEMP || process.cwd(), "NexusE2EFixture");
 const UNITY_ENDPOINT = "http://127.0.0.1:20705/mcp";
 const BRIDGE_ENDPOINT = "http://127.0.0.1:8787";
 

@@ -24,59 +24,20 @@ interface TreeNode {
 }
 
 export const FilesPage: React.FC<FilesPageProps> = ({ projects }) => {
-  // Initialize tree with system drives and authorized project roots
-  const [tree, setTree] = useState<TreeNode[]>(() => {
-    const roots: TreeNode[] = [
-      {
-        id: "drive-c",
-        name: "C:\\",
-        path: "C:\\",
-        isDir: true,
-        expanded: false,
-        loaded: true,
-        children: [
-          { id: "c-users", name: "Users", path: "C:\\Users", isDir: true },
-          { id: "c-prog", name: "Program Files", path: "C:\\Program Files", isDir: true },
-        ],
-      },
-      {
-        id: "drive-e",
-        name: "E:\\",
-        path: "E:\\",
-        isDir: true,
-        expanded: true,
-        loaded: true,
-        children: [
-          {
-            id: "e-workspace",
-            name: "workspace",
-            path: "E:\\workspace",
-            isDir: true,
-            expanded: true,
-            loaded: true,
-            children: projects.map((p) => ({
-              id: `proj-${p.id}`,
-              name: p.name,
-              path: p.root,
-              isDir: true,
-              expanded: false,
-              loaded: true,
-              children: [
-                { id: `${p.id}-src`, name: "src", path: `${p.root}\\src`, isDir: true },
-                { id: `${p.id}-pkg`, name: "package.json", path: `${p.root}\\package.json`, isDir: false },
-                { id: `${p.id}-readme`, name: "README.md", path: `${p.root}\\README.md`, isDir: false },
-              ],
-            })),
-          },
-        ],
-      },
-    ];
-    return roots;
-  });
-
-  const [selectedPath, setSelectedPath] = useState<string | null>(
-    projects[0]?.root || "E:\\workspace"
+  // Display authorized project roots, not paths from a developer machine.
+  const [tree, setTree] = useState<TreeNode[]>(() =>
+    projects.map((p) => ({
+      id: "proj-" + p.id,
+      name: p.name,
+      path: p.root,
+      isDir: true,
+      expanded: false,
+      loaded: true,
+      children: [],
+    }))
   );
+
+  const [selectedPath, setSelectedPath] = useState<string | null>(projects[0]?.root || null);
 
   const toggleNode = (nodes: TreeNode[], targetId: string): TreeNode[] => {
     return nodes.map((node) => {

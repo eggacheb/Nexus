@@ -543,7 +543,7 @@ Nexus v1.3.1 依据 **[GNU Affero General Public License v3.0 (AGPL-3.0-only)](L
 - **不冒充官方**：软件许可证并不当然授予 Nexus 商标使用权，也不允许虚假宣称官方认证或作者背书。详见 [BRAND_GUIDELINES.md](BRAND_GUIDELINES.md)；品牌规则不能剥夺 AGPL 已授予的软件自由。
 
 ### 3. 第三方组件与架构参考
-- 第三方组件及其许可证遵循各自条款。WebCodex 若仅作为架构讨论的参考，应当与实际代码复用分开表述，不得混淆。
+- 第三方组件及其许可证遵循各自条款。
 - 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ### 4. 发布信息

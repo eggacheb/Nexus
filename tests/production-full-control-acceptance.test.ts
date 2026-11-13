@@ -242,7 +242,7 @@ describe("Production Acceptance: Nexus Full Control Mode & Universal FileSystem 
       expect(() => assertSurvivalBoundarySafe(sys32)).toThrowError(/strictly protected and forbidden/);
 
       // Normal workspace directory is allowed
-      const userWorkDir = path.resolve("E:\\workspace\\test-project");
+      const userWorkDir = path.resolve("D:\\examples\\test-project");
       expect(isSurvivalBoundaryViolation(userWorkDir)).toBe(false);
     } else {
       expect(isSurvivalBoundaryViolation("/etc/passwd")).toBe(true);

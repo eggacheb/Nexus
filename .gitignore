@@ -84,7 +84,7 @@ nexus-nova-config.json
 
 # Production artifacts, ledgers & metric snapshots
 baseline_token_metrics.json
-artifacts/
+/artifacts/
 *.wal
 *.wal.*
 *.telemetry.jsonl
@@ -109,3 +109,12 @@ checkpoint_*.docx
 \[已排版\]_*
 \[排版报告\]_*
 run_log.jsonl
+
+# Local secrets, bytecode and generated Tauri schemas
+**/__pycache__/
+*.py[cod]
+apps/desktop/src-tauri/gen/schemas/
+*.credentials.json
+*.auth.json
+.env.*
+!.env.example

@@ -195,7 +195,6 @@ export class UnityGameDevMcpProvider implements GenericMcpProvider {
    */
   private loadInitialInventory(): void {
     const candidatePaths = [
-      "E:\\workspace\\release\\Verification\\GAMEDEV_MCP_TOOLS_INVENTORY.json",
       path.resolve(process.cwd(), "GAMEDEV_MCP_TOOLS_INVENTORY.json"),
       path.resolve(process.cwd(), "../release/Verification/GAMEDEV_MCP_TOOLS_INVENTORY.json"),
       path.resolve(process.cwd(), "../../release/Verification/GAMEDEV_MCP_TOOLS_INVENTORY.json"),

@@ -43,7 +43,7 @@ export function formatToolSuccess(data: unknown): McpToolResponse {
  */
 export function sanitizeMcpOutput(text: string): string {
   if (!text) return "";
-  // Strip absolute Windows paths (e.g. C:\Users\... or E:\workspace\...)
+  // Strip absolute Windows paths (e.g. C:\Users\... or D:\Projects\...)
   let sanitized = text.replace(/[a-zA-Z]:\\[^"'\n\r<>|?*]+/g, "<path>");
   // Strip Unix style absolute paths (/home/... or /Users/...)
   sanitized = sanitized.replace(/\/(Users|home|root|var|etc)\/[^"'\n\r<>|?*]+/g, "<path>");

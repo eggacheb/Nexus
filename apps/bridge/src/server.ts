@@ -726,7 +726,7 @@ export function logToolTelemetry(entry: {
       totalBytes,
     };
 
-    const defaultLogDir = fs.existsSync("E:/workspace/cod") ? "E:/workspace/cod" : process.cwd();
+    const defaultLogDir = process.env.NEXUS_LOG_DIR || process.cwd();
     const logPath =
       process.env.NEXUS_TOKEN_LOG_PATH || path.resolve(defaultLogDir, "nexus-token-telemetry.jsonl");
     fs.mkdirSync(path.dirname(logPath), { recursive: true });

@@ -2489,7 +2489,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         type="text"
                         value={importSourceDir}
                         onChange={(e) => handleValidateImportDir(e.target.value)}
-                        placeholder="E:\workspace\models\laya-multilingual"
+                        placeholder="C:\Models\Example"
                         className="flex-1 px-3 py-2 rounded-lg bg-theme-input border border-theme-input text-xs font-mono text-theme-primary placeholder:text-theme-muted focus:outline-none focus:border-purple-500"
                       />
                       <button

@@ -183,7 +183,7 @@ export const NexusAppsPage: React.FC = () => {
 
   // 5. Regex & Masker State
   const [regexText, setRegexText] = useState(
-    "用户订单联系方式：13812345678，备用邮箱: admin@nexus.local，API Key: sk-ant-api03-918237192837192837192837，身份证: 110101199003072384"
+    "测试数据：手机号 [PHONE]，邮箱 [EMAIL]，API Key [REDACTED]，身份证 [ID]"
   );
   const [maskedText, setMaskedText] = useState("");
 

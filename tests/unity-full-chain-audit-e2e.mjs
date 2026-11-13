@@ -432,7 +432,7 @@ async function main() {
   // --------------------------------------------------------------------------
   console.log("\n>>> [GOLDEN BASELINE] Verifying Invariants...");
   {
-    const file = fs.readFileSync("e:/workspace/cod/packages/protocol/src/tools/canonical-registry.ts");
+    const file = fs.readFileSync("packages/protocol/src/tools/canonical-registry.ts");
     const sha = crypto.createHash("sha256").update(file).digest("hex").toUpperCase();
     const shaPass = sha === GOLDEN_SHA;
     console.log(`Canonical 332 SHA-256: ${sha} (Match: ${shaPass})`);

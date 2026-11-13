@@ -554,7 +554,6 @@ export class ManagedProcessManager {
       path.join(process.env.LOCALAPPDATA || "", "uv"),
       path.join(process.env.USERPROFILE || "", ".cargo", "bin"),
       path.join(process.env.USERPROFILE || "", ".local", "bin"),
-      "E:\\workspace\\release\\verify_install\\resources\\runtime",
     ];
     let resolvedPath = process.env.PATH || process.env.Path || "";
     for (const d of [nodeDir, ...uvCandidateDirs]) {
