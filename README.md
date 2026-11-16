@@ -278,6 +278,11 @@ Header: `Authorization: Bearer lb_your_token_here`
 - URL: `http://127.0.0.1:18080/mcp`
 - Headers: `{"Authorization": "Bearer lb_your_token_here"}`
 
+**Gemini Web (gemini.google.com → Connected apps → Custom MCP server)**:
+- Gemini requires an `https://` URL and OAuth. The Nexus MCP Bridge ships a built-in OAuth 2.1 server (Dynamic Client Registration + PKCE S256).
+- Expose the Bridge with `cloudflared tunnel --url http://127.0.0.1:8787`, enter `https://<tunnel-host>/mcp` in Gemini, leave Client ID/Secret empty, then approve on the Nexus consent page by entering your local Bridge token.
+- Full guide (Chinese): [docs/GEMINI_WEB_SETUP.md](docs/GEMINI_WEB_SETUP.md)
+
 ---
 
 ## 9. Official Communities & Developer Contact
