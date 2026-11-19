@@ -186,8 +186,8 @@ describe("Production Acceptance: Nexus Full Control Mode & Universal FileSystem 
     expect(fullControlService.getActiveSession("client_kimi_web")).toBeNull();
 
     // Claude and Gemini are also unprivileged
-    expect(fullControlService.isFullControlActive("client_claude", "proj_isolated")).toBe(false);
-    expect(fullControlService.isFullControlActive("client_gemini", "proj_isolated")).toBe(false);
+    expect(fullControlService.isFullControlActive("client_untrusted_1", "proj_isolated")).toBe(false);
+    expect(fullControlService.isFullControlActive("client_untrusted_2", "proj_isolated")).toBe(false);
   });
 
   // =========================================================================

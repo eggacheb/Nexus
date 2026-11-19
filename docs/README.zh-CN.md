@@ -1,7 +1,7 @@
 # Nexus
 
 <p align="center">
-  <img src="assets/nexus-mascot.png" width="160" alt="Nexus Mascot" style="border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);" />
+  <img src="docs/assets/nexus-mascot.png" width="160" alt="Nexus Mascot" style="border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);" />
 </p>
 
 <p align="center">
@@ -10,13 +10,13 @@
 </p>
 
 <p align="center">
-  <a href="../README.md"><b>English</b></a> | <b>简体中文</b>
+  <a href="README.md"><b>English</b></a> | <b>简体中文</b>
 </p>
 
 <p align="center">
   <a href="https://github.com/ysunyang4/Nexus/releases/tag/v1.3.2"><img src="https://img.shields.io/badge/version-1.3.2-blue.svg" alt="Version 1.3.2"></a>
   <img src="https://img.shields.io/badge/MCP_Tools-332_规范工具-success.svg" alt="332 MCP Tools">
-  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-red.svg" alt="License AGPL-3.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-red.svg" alt="License AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-brightgreen.svg" alt="Platforms">
   <img src="https://img.shields.io/badge/tests-190%2B_测试套件_%7C_1200%2B_用例-purple.svg" alt="Tests">
 </p>
@@ -25,14 +25,14 @@
 
 ## 1. 项目概述
 
-**Nexus** 是一套专为 ChatGPT、DeepSeek 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 OAuth 2.0 与 Bearer 令牌的 Streamable HTTP / SSE 协议），将远端大模型安全连接至开发者的本地工作站。
+**Nexus** 是一套专为 ChatGPT、DeepSeek 及新一代 AI 编程智能体量身打造的企业级**本地 AI 控制中枢（Local AI Control Plane）**。它通过高性能**安全 MCP 隧道**（基于 Bearer 令牌的 Streamable HTTP 协议），将远端大模型安全连接至开发者的本地工作站。
 
 Nexus 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测试与编排完整研发工作流的能力，从根本上杜绝整盘越权泄露风险，且绝不将私有源码转传给任何不可信第三方云端中继。
 
 ```text
  ChatGPT / DeepSeek / Web AI Assistants 客户端
                │
-               │ 安全 MCP 隧道 (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
+               │ 安全 MCP 隧道 (Streamable HTTP, Bearer lb_xxx)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   Nexus 桌面控制中心 (Tauri 2 + React)                 │
@@ -62,7 +62,7 @@ Nexus 赋予 AI 智能体在严格沙箱边界内检索、编辑、构建、测�
 Nexus 桌面控制中心为开发者提供全方位的实时可观测性、细粒度安全授权与智能体工具链治理：
 
 <div align="center">
-  <img src="assets/showcase/desktop-overview.png" alt="Nexus 桌面总览" width="850" />
+  <img src="docs/assets/showcase/desktop-overview.png" alt="Nexus 桌面总览" width="850" />
   <p><i>Nexus 桌面控制中心：实时系统状态、活跃工作区、注册工具集与系统资源开销监控。</i></p>
 </div>
 
@@ -72,21 +72,21 @@ Nexus 桌面控制中心为开发者提供全方位的实时可观测性、细�
   <table>
     <tr>
       <td width="50%">
-        <img src="assets/showcase/security-authorizations.png" alt="项目安全授权与沙箱隔离" />
+        <img src="docs/assets/showcase/security-authorizations.png" alt="项目安全授权与沙箱隔离" />
         <p align="center"><b>多层安全沙箱与项目授权</b><br>细粒度读写权限隔离、路径安全边界检测与 AST 语法级危险命令拦截。</p>
       </td>
       <td width="50%">
-        <img src="assets/showcase/skills-hub.png" alt="技能中心与零臃肿热重载引擎" />
+        <img src="docs/assets/showcase/skills-hub.png" alt="技能中心与零臃肿热重载引擎" />
         <p align="center"><b>技能中心（Skills Hub）</b><br>零臃肿模块化工具编排，支持运行时动态技能提议与秒级热重载。</p>
       </td>
     </tr>
     <tr>
       <td width="50%">
-        <img src="assets/showcase/mcp-tunnel.png" alt="双通道安全 MCP 隧道" />
-        <p align="center"><b>安全 MCP 隧道与 OAuth 2.0</b><br>Streamable HTTP/SSE 双工隧道，内置 Windows DPAPI 加密凭据保险库。</p>
+        <img src="docs/assets/showcase/mcp-tunnel.png" alt="双通道安全 MCP 隧道" />
+        <p align="center"><b>安全 MCP 隧道</b><br>Streamable HTTP 隧道，内置 Windows DPAPI 加密凭据保险库。</p>
       </td>
       <td width="50%">
-        <img src="assets/showcase/mcp-ecosystem.png" alt="托管式 MCP 进程与 API 生态" />
+        <img src="docs/assets/showcase/mcp-ecosystem.png" alt="托管式 MCP 进程与 API 生态" />
         <p align="center"><b>托管式 MCP 进程生态</b><br>原生支持 Figma、GitHub、SQLite、本地文件系统等全套工具进程生命周期。</p>
       </td>
     </tr>
@@ -100,7 +100,7 @@ Nexus 桌面控制中心为开发者提供全方位的实时可观测性、细�
 Nexus 无缝打通生成式大模型与 **Blender 4.x / 5.x** 的双向通道，实现从自然语言提示词到程序化三维建模、几何节点编排、PBR 真实感着色器合成与多通道渲染的完整自动化流水线。
 
 <div align="center">
-  <img src="assets/showcase/blender-cottage-render.png" alt="风格化卡通木屋 - 程序化渲染" width="850" />
+  <img src="docs/assets/showcase/blender-cottage-render.png" alt="风格化卡通木屋 - 程序化渲染" width="850" />
   <p><i>全自主三维场景生成：风格化卡通木屋（包含程序化石砌基底、木质梁柱、屋顶瓦片及体积光照系统）。</i></p>
 </div>
 
@@ -110,11 +110,11 @@ Nexus 无缝打通生成式大模型与 **Blender 4.x / 5.x** 的双向通道，
   <table>
     <tr>
       <td width="50%">
-        <img src="assets/showcase/blender-cottage-wireframe.png" alt="Blender 拓扑结构与四边面布线" />
+        <img src="docs/assets/showcase/blender-cottage-wireframe.png" alt="Blender 拓扑结构与四边面布线" />
         <p align="center"><b>生产级纯四边形（Quad）布线</b><br>极致严谨的边流走向、非破坏性修改器堆栈与次时代游戏标准网格密度。</p>
       </td>
       <td width="50%">
-        <img src="assets/showcase/blender-bottle-generator.png" alt="Blender 蒸汽朋克药剂瓶生成器" />
+        <img src="docs/assets/showcase/blender-bottle-generator.png" alt="Blender 蒸汽朋克药剂瓶生成器" />
         <p align="center"><b>程序化硬表面与 PBR 材质生成</b><br>复杂黄铜机械构件、物理拟真玻璃双层折射与动态流体材质着色。</p>
       </td>
     </tr>
@@ -128,7 +128,7 @@ Nexus 无缝打通生成式大模型与 **Blender 4.x / 5.x** 的双向通道，
 通过 **Nexus Unity Copilot** 深度赋能现代游戏开发流程。AI 智能体直接驻留在 Unity 编辑器内部（通过双向 JSON-RPC MCP 桥接），实时完成场景节点搭建、自定义 HLSL / Shader Graph 着色器编写、物理碰撞配置以及游戏机制校验。
 
 <div align="center">
-  <img src="assets/showcase/unity-blackhole-scene.png" alt="Unity 深空黑洞与光子环场景" width="850" />
+  <img src="docs/assets/showcase/unity-blackhole-scene.png" alt="Unity 深空黑洞与光子环场景" width="850" />
   <p><i>Nexus 编辑器内智能副驾驶：实时构建引力透镜吸积盘、高能光子环与深空星云场景。</i></p>
 </div>
 
@@ -138,11 +138,11 @@ Nexus 无缝打通生成式大模型与 **Blender 4.x / 5.x** 的双向通道，
   <table>
     <tr>
       <td width="50%">
-        <img src="assets/showcase/unity-blackhole-shader.png" alt="自定义着色器参数与 AI Game Developer 专区" />
+        <img src="docs/assets/showcase/unity-blackhole-shader.png" alt="自定义着色器参数与 AI Game Developer 专区" />
         <p align="center"><b>AI Game Developer 专区与材质调优</b><br>交互式着色器参数微调、Inspector 面板实时同步与调试诊断。</p>
       </td>
       <td width="50%">
-        <img src="assets/showcase/unity-gameplay-preview.png" alt="Unity 视口与实时游戏运行模拟" />
+        <img src="docs/assets/showcase/unity-gameplay-preview.png" alt="Unity 视口与实时游戏运行模拟" />
         <p align="center"><b>场景层级树与游戏运行测试</b><br>自动化 GameObject 层级构造、天空盒环境光烘焙与主摄像机视锥定位。</p>
       </td>
     </tr>
@@ -193,7 +193,7 @@ Nexus/
 │   ├── desktop/          # Tauri 2 + React + Vite 桌面控制中心
 │   ├── runner/           # 本地执行守护进程（332 工具集、Action Ledger、Computer Use）
 │   ├── server/           # Fastify MCP 服务端（SQLite WAL 持久化 & REST API）
-│   └── bridge/           # Nexus MCP 独立网桥（兼容 OAuth 2.0 / ChatGPT / DeepSeek）
+│   └── bridge/           # Nexus MCP 独立网桥（兼容 ChatGPT / DeepSeek）
 ├── packages/
 │   ├── protocol/         # 纯协议类型层、332 工具规范定义、RPC JSON-Schema
 │   ├── security/         # 沙箱隔离防护、路径规范化验证、命令风控引擎
@@ -274,7 +274,7 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
 ```
 
 **Cursor / Windsurf / 通用 MCP 客户端**：
-- 传输类型：`Streamable HTTP` 或 `SSE`
+- 传输类型：`Streamable HTTP`
 - 请求地址：`http://127.0.0.1:18080/mcp`
 - 标头参数：`{"Authorization": "Bearer lb_your_token_here"}`
 
@@ -289,13 +289,13 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
   <table>
     <tr>
       <td align="center" width="280">
-        <img src="assets/community/qq-group.jpg" width="220" alt="QQ 官方交流群" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/community/qq-group.jpg" width="220" alt="QQ 官方交流群" style="border-radius: 12px;" /><br>
         <br>
         <b>QQ 官方交流群</b><br>
         <code>1131916140</code>
       </td>
       <td align="center" width="280">
-        <img src="assets/community/tg-group.png" width="220" alt="Telegram 交流群" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/community/tg-group.png" width="220" alt="Telegram 交流群" style="border-radius: 12px;" /><br>
         <br>
         <b>Telegram 交流群</b><br>
         <a href="https://t.me/YSUN_WEBAI"><code>@YSUN_WEBAI</code></a>
@@ -311,25 +311,25 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
   <table>
     <tr>
       <td align="center" width="220">
-        <img src="assets/contact/wechat.jpg" width="180" alt="微信" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/contact/wechat.jpg" width="180" alt="微信" style="border-radius: 12px;" /><br>
         <br>
         <b>微信 (WeChat)</b><br>
         <code>sunny</code>
       </td>
       <td align="center" width="220">
-        <img src="assets/contact/telegram.jpg" width="180" alt="Telegram" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/contact/telegram.jpg" width="180" alt="Telegram" style="border-radius: 12px;" /><br>
         <br>
         <b>Telegram</b><br>
         <a href="https://t.me/SUNNY744"><code>@SUNNY744</code></a>
       </td>
       <td align="center" width="220">
-        <img src="assets/contact/whatsapp.png" width="180" alt="WhatsApp" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/contact/whatsapp.png" width="180" alt="WhatsApp" style="border-radius: 12px;" /><br>
         <br>
         <b>WhatsApp</b><br>
         <code>sunny</code>
       </td>
       <td align="center" width="220">
-        <img src="assets/contact/line.jpg" width="180" alt="LINE" style="border-radius: 12px;" /><br>
+        <img src="docs/assets/contact/line.jpg" width="180" alt="LINE" style="border-radius: 12px;" /><br>
         <br>
         <b>LINE</b>
       </td>
@@ -359,9 +359,9 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ## 11. 开源许可证、署名与安全说明
 
-- **软件许可证**：Nexus v1.3.2 依据 [GNU AGPL-3.0](../LICENSE) 发布，允许个人与商业使用、学习、修改和再分发，但须遵守许可证原文。
+- **软件许可证**：Nexus v1.3.2 依据 [GNU AGPL-3.0](LICENSE) 发布，允许个人与商业使用、学习、修改和再分发，但须遵守许可证原文。
   - **源码提供义务的适用范围**：分发受 AGPL 约束的程序或修改版，以及让用户通过网络与修改版交互等适用情形，可能触发相应源码和许可声明义务。仅在本地私下修改、不进行相应分发或网络交互服务，并不当然要求公开源码。具体以 AGPL 第 4–6、13 条等规定为准。
   - **署名与来源**：依许可证保留必须保留的版权、许可证和法律声明，标明适用的修改；不得冒充 Nexus 官方版本。许可终止及恢复遵循 AGPL 第 8 条，而非 README 单方面规定立即终止。
-  - **品牌保护**：[BRAND_GUIDELINES.md](../BRAND_GUIDELINES.md) 仅用于说明独立的商标、品牌标识及防混淆问题，不剥夺 AGPL 授予的软件权利。
-  - **第三方归属**：[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) 列明第三方组件，并将概念性架构参考与实际代码依赖分开说明。
-- **安全提醒**：请阅读 [SECURITY.md](../SECURITY.md)。启用读写、命令执行、桌面接管或全盘访问会扩大远程 AI 可执行操作的范围，应采取备份、审批和最小权限措施。
+  - **品牌保护**：[BRAND_GUIDELINES.md](BRAND_GUIDELINES.md) 仅用于说明独立的商标、品牌标识及防混淆问题，不剥夺 AGPL 授予的软件权利。
+  - **第三方归属**：[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 列明第三方组件，并将概念性架构参考与实际代码依赖分开说明。
+- **安全提醒**：请阅读 [SECURITY.md](SECURITY.md)。启用读写、命令执行、桌面接管或全盘访问会扩大远程 AI 可执行操作的范围，应采取备份、审批和最小权限措施。

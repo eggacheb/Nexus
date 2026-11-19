@@ -354,7 +354,7 @@ describe("Nexus Durable Execution Deep Enhancement E2E Suite (12 Scenarios)", ()
         name: "localbridge_agent_task_disconnect",
         arguments: {
           agentTaskId: taskId,
-          agentId: "claude-code-session-99",
+          agentId: "agent-code-session-99",
           reason: "Network socket drop / client reboot",
         },
       })

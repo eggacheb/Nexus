@@ -1,6 +1,6 @@
 # Third-Party Notices & Open-Source Attributions
 
-Nexus (v1.3.1) incorporates, links, or distributes certain open-source software and components under their respective licenses. This document acknowledges and honors the legal copyrights and licenses of all third-party contributors.
+Nexus (v1.3.2) incorporates, links, or distributes certain open-source software and components under their respective licenses. This document acknowledges and honors the legal copyrights and licenses of all third-party contributors.
 
 ---
 
@@ -32,7 +32,7 @@ The following pre-compiled executable binaries may be bundled within self-contai
 
 ## 2. Core Workspace & Production Dependencies
 
-All runtime dependencies incorporated into the Nexus v1.3.1 monorepo packages (`@localbridge/server`, `@localbridge/runner`, `@localbridge/desktop`, `@localbridge/bridge`, `@localbridge/protocol`, `@localbridge/security`, `@localbridge/shared`) are distributed under standard permissive open-source licenses:
+All runtime dependencies incorporated into the Nexus v1.3.2 monorepo packages (`@localbridge/server`, `@localbridge/runner`, `@localbridge/desktop`, `@localbridge/bridge`, `@localbridge/protocol`, `@localbridge/security`, `@localbridge/shared`) are distributed under standard permissive open-source licenses:
 
 | Component | Repository / Source | License |
 |---|---|---|

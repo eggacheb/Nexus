@@ -446,7 +446,7 @@ const server = http.createServer(async (req, res) => {
         {
           ok: true,
           service: "nexus-mcp-bridge",
-          version: "1.3.1",
+          version: "1.3.2",
           baseUrl,
           nexus: {
             connected: nexusHealth.ok,
@@ -1782,16 +1782,16 @@ const server = http.createServer(async (req, res) => {
             },
             serverInfo: {
               name: "nexus-mcp-bridge",
-              version: "1.3.1",
+              version: "1.3.2",
             },
             instructions:
               "# Nexus Universal MCP Execution Gateway\n- Native desktop and execution tools are provided directly by Canonical Nexus Tools.\n- External environments (including Unity GameDev tools on 127.0.0.1:20705) are aggregated seamlessly.\n- All actions are safely verified and logged.",
             server: "nexus-mcp-bridge",
-            version: "1.3.1",
+            version: "1.3.2",
             _meta: {
               "io.modelcontextprotocol/serverInfo": {
                 name: "nexus-mcp-bridge",
-                version: "1.3.1",
+                version: "1.3.2",
               },
             },
           },

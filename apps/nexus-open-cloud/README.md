@@ -40,7 +40,7 @@ node apps/nexus-open-cloud/local/manage-devices.mjs status
 
 The Agent loads its own device identity automatically from DPAPI. No `NEXUS_GATEWAY_TOKEN` or `NEXUS_ADMIN_TOKEN` is used by the Agent. It reconnects on network failure. By default `NEXUS_REMOTE_ALLOWED_TOOLS` is **empty**, so no local tool is remotely exposed. Explicitly allowlist a narrow subset only after auditing local Nexus authorization. `NEXUS_LOCAL_MCP_TOKEN` is needed if any local tool is allowlisted.
 
-The Cloudflare Workers URL is `https://nexus-open-cloud-tools.example-domain5628.workers.dev`. A cloud MCP client must use its own device URL `/d/<device-id>/mcp` and the device-scoped **client** bearer token (NOT the Agent token). The current remote MCP endpoint uses bearer auth, not a complete interactive OAuth provider. Some ChatGPT/Claude clients may need an OAuth integration layer.
+The Cloudflare Workers URL is `https://nexus-open-cloud-tools.example-domain5628.workers.dev`. A cloud MCP client must use its own device URL `/d/<device-id>/mcp` and the device-scoped **client** bearer token (NOT the Agent token). The current remote MCP endpoint uses bearer auth, not a complete interactive OAuth provider. Some ChatGPT/DeepSeek clients may need an OAuth integration layer.
 
 ## Managing credentials
 ```powershell

@@ -86,7 +86,7 @@ describe("Phase 11: End-to-End Desktop Management & AI Access Lifecycle", () => 
       method: "POST",
       url: "/api/tokens",
       payload: {
-        name: "Claude Desktop E2E",
+        name: "External Client E2E",
         type: "mcp",
         scopes: ["read", "write", "execute"],
       },

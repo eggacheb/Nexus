@@ -51,9 +51,9 @@ describe("Nexus Full Control Session Management Suite", () => {
 
     // Kimi, Claude, Gemini do NOT have full control
     expect(service.isFullControlActive("client_kimi", "proj_myweb")).toBe(false);
-    expect(service.isFullControlActive("client_claude", "proj_myweb")).toBe(false);
+    expect(service.isFullControlActive("client_untrusted", "proj_myweb")).toBe(false);
     expect(service.getActiveSession("client_kimi")).toBeNull();
-    expect(service.getActiveSession("client_claude")).toBeNull();
+    expect(service.getActiveSession("client_untrusted")).toBeNull();
   });
 
   it("requires explicit secondary confirmation for device-wide full control", () => {
@@ -137,7 +137,7 @@ describe("Nexus Full Control Session Management Suite", () => {
     });
 
     service.startSession({
-      clientId: "client_claude",
+      clientId: "client_untrusted",
       scope: "device",
       confirmedDeviceFullControl: true,
       durationMinutes: 30,
@@ -149,6 +149,6 @@ describe("Nexus Full Control Session Management Suite", () => {
 
     expect(service.listActiveSessions().length).toBe(0);
     expect(service.isFullControlActive("client_chatgpt", "proj_myweb")).toBe(false);
-    expect(service.isFullControlActive("client_claude")).toBe(false);
+    expect(service.isFullControlActive("client_untrusted")).toBe(false);
   });
 });

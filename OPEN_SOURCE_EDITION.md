@@ -1,6 +1,6 @@
-# Nexus v1.3.1 — Open-source Cloud + Local edition
+# Nexus v1.3.2 — Open-source Cloud + Local edition
 
-**Scope**: This document describes the publicly released Nexus v1.3.1 codebase. It does not describe or authorize changes to any other version.
+**Scope**: This document describes the publicly released Nexus v1.3.2 codebase. It does not describe or authorize changes to any other version.
 
 ## Policy
 
@@ -27,14 +27,14 @@ Example endpoint patterns (illustrative placeholders, not a publicly verified ru
 - Administrator-only provisioning uses a separate Cloudflare Secret and a Windows CurrentUser DPAPI admin profile. Administrator credentials must never be included in public installers.
 - Local optional file vault: scrypt (N=32768, r=8, p=1) + AES-256-GCM.
 - SQLite: **encrypted, integrity-checked snapshot and restore only**; live SQLite is NOT SQLCipher-encrypted. Existing running database remains unchanged. Snapshot has a 128MiB in-memory limit.
-- OAuth tokens: set `NEXUS_OPEN_SECURE_OAUTH=1`; then they are saved with AES-256-GCM, with their master key sealed by Windows CurrentUser DPAPI. Default secure storage is isolated under `%LOCALAPPDATA%\NexusOpenSource\v1.3.1\data`, not the v1.3.7 legacy directory.
-- Server connection API-key encryption: set `NEXUS_OPEN_SECURE_SECRETS=1`; a separate master key sealed with Windows DPAPI is created under `%LOCALAPPDATA%\NexusOpenSource\v1.3.1\db-secrets`. The insecure static fallback key was removed.
+- OAuth tokens: set `NEXUS_OPEN_SECURE_OAUTH=1`; then they are saved with AES-256-GCM, with their master key sealed by Windows CurrentUser DPAPI. Default secure storage is isolated under `%LOCALAPPDATA%\NexusOpenSource\v1.3.2\data`, not the v1.3.7 legacy directory.
+- Server connection API-key encryption: set `NEXUS_OPEN_SECURE_SECRETS=1`; a separate master key sealed with Windows DPAPI is created under `%LOCALAPPDATA%\NexusOpenSource\v1.3.2\db-secrets`. The insecure static fallback key was removed.
 - These secure modes use new key material. Existing credentials encrypted with a legacy key are NOT silently migrated. Reconnect/re-enroll into the open-source instance if necessary.
 - Neither cloud nor local security uses a commercial entitlement check.
 
 ## Running locally (development)
 
-Build prerequisites: Node.js >=24, pnpm, working Nexus v1.3.1 dependencies. `pnpm install` has been run in this workspace.
+Build prerequisites: Node.js >=24, pnpm, working Nexus v1.3.2 dependencies. `pnpm install` has been run in this workspace.
 
 Open independent terminals, from this directory:
 
@@ -46,7 +46,7 @@ Open independent terminals, from this directory:
 
 Optionally start desktop using `.\OPEN-SOURCE-START.ps1 -Mode desktop`. Avoid starting this edition with v1.3.7 listening on the same ports (8787, 18080); the launcher checks for conflicts.
 
-The launcher can create a local Bridge bearer token for local services. Agent **never reads the Cloudflare root** and instead loads its own DPAPI-protected device credential at `%LOCALAPPDATA%\NexusOpenSource\v1.3.1\cloud\device.json.dpapi`. Provision it once using the documented owner-only `apps/nexus-open-cloud/local/manage-devices.mjs` flow. A client needs its separate per-device client credential for the `/d/<device-id>/mcp` endpoint.
+The launcher can create a local Bridge bearer token for local services. Agent **never reads the Cloudflare root** and instead loads its own DPAPI-protected device credential at `%LOCALAPPDATA%\NexusOpenSource\v1.3.2\cloud\device.json.dpapi`. Provision it once using the documented owner-only `apps/nexus-open-cloud/local/manage-devices.mjs` flow. A client needs its separate per-device client credential for the `/d/<device-id>/mcp` endpoint.
 
 To expose a particular local tool remotely, set `NEXUS_REMOTE_ALLOWED_TOOLS` in the Agent terminal before launching. Default is empty:
 
@@ -85,7 +85,7 @@ Use a new output path. Snapshots do not overwrite source databases. Do not place
 
 ## Publication and verification status
 
-The Nexus v1.3.1 source repository is **already public**. This document is a technical reference, not a prepublication approval checklist. Publishing source code does **not** prove that every installer, bundled binary, third-party asset, or deployment endpoint has been independently audited.
+The Nexus v1.3.2 source repository is **already public**. This document is a technical reference, not a prepublication approval checklist. Publishing source code does **not** prove that every installer, bundled binary, third-party asset, or deployment endpoint has been independently audited.
 
 - The repository uses AGPL-3.0-only; preserve its licensing obligations and third-party notices.
 - Root `config.json` is treated as machine-local configuration. New clones can use schema defaults or create it from `config.example.json`. Never commit real credentials or runtime telemetry.

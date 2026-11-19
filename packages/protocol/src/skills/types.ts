@@ -296,7 +296,7 @@ export interface ExternalSkillSourceConfig {
   name: string;
   path: string;
   enabled: boolean;
-  agentType?: "claude" | "cursor" | "gemini" | "codex" | "custom";
+  agentType?: "chatgpt" | "cursor" | "deepseek" | "codex" | "custom";
   isCustom?: boolean;
   available?: boolean;
   skillsCount?: number;

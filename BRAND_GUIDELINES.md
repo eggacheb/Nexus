@@ -1,13 +1,13 @@
 # Nexus 品牌使用与商标说明规则 (Brand & Trademark Guidelines)
 
-**适用版本**：Nexus v1.3.1 (GNU AGPL-3.0)  
+**适用版本**：Nexus v1.3.2 (GNU AGPL-3.0)  
 **制定目的**：明确 Nexus 项目名称与标识的使用边界，保护开源用户免受混淆与假冒误导，同时完整保障开源许可所赋予的合法权利。
 
 ---
 
 ## 1. 开源许可证与商标权的基本关系
 
-Nexus v1.3.1 项目源代码遵循 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可证发布。
+Nexus v1.3.2 项目源代码遵循 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可证发布。
 
 根据开源界通用惯例及 AGPL-3.0 第 7 条第 (e) 款之规定：
 1. **源码许可不代表商标授权**：获得本项目源码的 AGPL-3.0 许可，**并不包含**使用项目名称（`Nexus`、`Nexus Control Center`）、项目原创 Logo 图标或项目作者署名进行商业品牌推广、商业代言或衍生产品官方背书的权利。

@@ -25,14 +25,14 @@
 
 ## 1. Overview
 
-**Nexus** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, DeepSeek, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP / SSE with OAuth 2.0 & Bearer tokens).
+**Nexus** is an enterprise-grade Local AI Control Plane designed specifically for ChatGPT, DeepSeek, and modern AI coding assistants. It securely bridges remote LLMs to your local workstation through a high-performance **Secure MCP Tunnel** (Streamable HTTP with Bearer tokens).
 
 Nexus allows AI agents to inspect, edit, build, debug, and orchestrate complex local engineering workflows within strictly enforced sandbox boundaries—without exposing your full filesystem or transmitting proprietary code to untrusted cloud intermediaries.
 
 ```text
  ChatGPT / DeepSeek / Web AI Assistants
                │
-               │ Secure MCP Tunnel (Streamable HTTP / SSE, Bearer lb_xxx, OAuth 2.0)
+               │ Secure MCP Tunnel (Streamable HTTP, Bearer lb_xxx)
                ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   Nexus Desktop Control Center (Tauri 2)               │
@@ -83,7 +83,7 @@ The Nexus Desktop Control Center provides developers with real-time observabilit
     <tr>
       <td width="50%">
         <img src="docs/assets/showcase/mcp-tunnel.png" alt="Secure MCP Tunnel Service" />
-        <p align="center"><b>Secure MCP Tunnel & OAuth 2.0</b><br>Streamable HTTP/SSE tunnel with DPAPI encrypted credential vault.</p>
+        <p align="center"><b>Secure MCP Tunnel</b><br>Streamable HTTP tunnel with DPAPI encrypted credential vault.</p>
       </td>
       <td width="50%">
         <img src="docs/assets/showcase/mcp-ecosystem.png" alt="Managed MCP Processes & API Ecosystem" />
@@ -193,7 +193,7 @@ Nexus/
 │   ├── desktop/          # Tauri 2 + React + Vite Desktop Control Center
 │   ├── runner/           # Local execution daemon (332 tools, Action Ledger, Computer Use)
 │   ├── server/           # Fastify MCP Server with SQLite WAL persistence & REST API
-│   └── bridge/           # Standalone Nexus MCP Bridge (OAuth 2.0 / ChatGPT / DeepSeek)
+│   └── bridge/           # Standalone Nexus MCP Bridge (ChatGPT / DeepSeek)
 ├── packages/
 │   ├── protocol/         # Pure protocol types, 332 Canonical tool definitions, RPC schemas
 │   ├── security/         # Sandboxing, path verification, and command risk engine
@@ -274,7 +274,7 @@ Header: `Authorization: Bearer lb_your_token_here`
 ```
 
 **Cursor / Windsurf / Any MCP Client**:
-- Transport: `Streamable HTTP` or `SSE`
+- Transport: `Streamable HTTP`
 - URL: `http://127.0.0.1:18080/mcp`
 - Headers: `{"Authorization": "Bearer lb_your_token_here"}`
 

@@ -230,7 +230,7 @@ describe("Nexus Windows MCP Execution Bridge E2E Suite (8 Scenarios)", () => {
         },
         {
           type: "paragraph",
-          text: "Nexus 坚守 Execution Bridge 架构。思考、规划、决策由外部大模型（ChatGPT/Claude）完成，Nexus 专注于真实Windows执行、多层视觉观测与确定性状态回报。",
+          text: "Nexus 坚守 Execution Bridge 架构。思考、规划、决策由外部大模型（ChatGPT/DeepSeek）完成，Nexus 专注于真实Windows执行、多层视觉观测与确定性状态回报。",
         },
         {
           type: "heading",

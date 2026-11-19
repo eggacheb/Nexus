@@ -539,7 +539,7 @@ export function registerSkillTools(server: McpServer, context: McpContext): void
     "nexus_skills",
     {
       description:
-        "Unified skills meta-tool for managing, searching, loading, reading, and inspecting cross-agent skills (Claude, Cursor, Antigravity, Codex, etc.). Action: list | search | load | read_file | refresh | status.",
+        "Unified skills meta-tool for managing, searching, loading, reading, and inspecting cross-agent skills (ChatGPT, Cursor, Antigravity, Codex, etc.). Action: list | search | load | read_file | refresh | status.",
       inputSchema: toMcpSchema(NexusSkillsSchema),
       annotations: { readOnlyHint: true },
     },

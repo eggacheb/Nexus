@@ -89,6 +89,6 @@ export const NexusSkillsSchema = z.object({
   query: z.string().optional().describe("Search keyword for search action"),
   name: z.string().optional().describe("Target skill name or ID (supports 'source/name' for disambiguation)"),
   path: z.string().optional().describe("Relative file path within skill directory for read_file action"),
-  source: z.string().optional().describe("Filter by skill source (e.g. claude, cursor, gemini-user, gemini-builtin, codex)"),
+  source: z.string().optional().describe("Filter by skill source (e.g. chatgpt, cursor, antigravity, codex, custom)"),
   mode: z.enum(["compact", "full"]).optional().describe("Mode for load action: compact (text only) or full (includes directory inventory)"),
 });

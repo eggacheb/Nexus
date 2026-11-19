@@ -97,7 +97,7 @@ describe("ChatGPT Dedicated Connection Suite", () => {
 
     // Non-ChatGPT adapters must not exist
     expect(adapterRegistry.getAdapter("conn_kimi")).toBeNull();
-    expect(adapterRegistry.getAdapter("conn_claude")).toBeNull();
+    expect(adapterRegistry.getAdapter("conn_external")).toBeNull();
     expect(adapterRegistry.getAdapter("conn_deepseek")).toBeNull();
 
     // Check adapter health & tool count

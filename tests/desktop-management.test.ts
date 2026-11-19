@@ -136,7 +136,7 @@ describe("Phase 11: Desktop Management Channel & Tokens", () => {
       method: "POST",
       url: "/api/tokens",
       payload: {
-        name: "Claude Desktop Test",
+        name: "External Client Test",
         type: "mcp",
         scopes: ["read", "write"],
       },
@@ -144,7 +144,7 @@ describe("Phase 11: Desktop Management Channel & Tokens", () => {
     expect(createRes.statusCode).toBe(201);
     const created = JSON.parse(createRes.body);
     expect(created.id).toMatch(/^tok_/);
-    expect(created.name).toBe("Claude Desktop Test");
+    expect(created.name).toBe("External Client Test");
     expect(created.type).toBe("mcp");
     expect(created.token).toMatch(/^lb_[0-9a-f]{64}$/);
 
@@ -156,7 +156,7 @@ describe("Phase 11: Desktop Management Channel & Tokens", () => {
     const listBody2 = JSON.parse(listRes2.body);
     const found = listBody2.tokens.find((t: any) => t.id === created.id);
     expect(found).toBeDefined();
-    expect(found.name).toBe("Claude Desktop Test");
+    expect(found.name).toBe("External Client Test");
     expect(found.type).toBe("mcp");
     expect(found.token).toBeUndefined();
     expect(found.token_hash).toBeUndefined();
