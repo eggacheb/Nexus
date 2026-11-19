@@ -171,6 +171,15 @@ function getToolScopeBadge(toolName: string): "READ" | "WRITE" | "EXECUTE" {
   return "READ";
 }
 
+const safeFormatItem = (item: any): string => {
+  if (!item) return "";
+  if (typeof item === "string") return item;
+  if (typeof item === "object") {
+    return Object.entries(item).map(([k, v]) => `${k}: ${v}`).join(", ");
+  }
+  return String(item);
+};
+
 export const SkillDetailDrawer: React.FC<SkillDetailDrawerProps> = ({
   skillId,
   projectId,
@@ -381,9 +390,15 @@ export const SkillDetailDrawer: React.FC<SkillDetailDrawerProps> = ({
     : "";
 
   return (
-    <div className="fixed inset-0 z-[60] flex justify-end bg-slate-900/40 dark:bg-black/65 backdrop-blur-sm transition-opacity animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 z-[60] flex justify-end bg-slate-900/40 dark:bg-black/65 backdrop-blur-sm transition-opacity animate-in fade-in duration-150 cursor-pointer"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
-        className="w-full sm:w-[46vw] sm:min-w-[720px] sm:max-w-[920px] bg-white dark:bg-[#0d1320] border-l border-slate-200 dark:border-slate-800 h-full flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-right duration-200"
+        className="w-full sm:w-[46vw] sm:min-w-[720px] sm:max-w-[920px] bg-white dark:bg-[#0d1320] border-l border-slate-200 dark:border-slate-800 h-full flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-right duration-200 cursor-default"
+        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
@@ -800,7 +815,7 @@ export const SkillDetailDrawer: React.FC<SkillDetailDrawerProps> = ({
                             key={idx}
                             className="px-3 py-1 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-2xs"
                           >
-                            {trigger}
+                            {safeFormatItem(trigger)}
                           </span>
                         ))}
 
@@ -862,7 +877,8 @@ export const SkillDetailDrawer: React.FC<SkillDetailDrawerProps> = ({
 
                   {/* Vertical Timeline container */}
                   <div className="relative pl-8 space-y-4 before:absolute before:left-3.5 before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
-                    {skill.workflow.map((stepId, idx) => {
+                    {skill.workflow.map((rawStepId, idx) => {
+                      const stepId = safeFormatItem(rawStepId);
                       const titleMapping = WORKFLOW_STEP_TITLE_MAP[stepId];
                       const title = titleMapping
                         ? language === "zh-CN"
@@ -934,7 +950,8 @@ export const SkillDetailDrawer: React.FC<SkillDetailDrawerProps> = ({
                   </div>
 
                   <div className="divide-y divide-slate-200 dark:divide-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 overflow-hidden shadow-2xs">
-                    {skill.tools.map((toolName) => {
+                    {skill.tools.map((rawTool) => {
+                      const toolName = safeFormatItem(rawTool);
                       const scope = getToolScopeBadge(toolName);
                       const badgeClass =
                         scope === "READ"

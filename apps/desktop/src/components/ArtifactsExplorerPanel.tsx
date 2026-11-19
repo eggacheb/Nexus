@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "../i18n/useTranslation.js";
 import {
   FileText,
   FileSpreadsheet,
@@ -77,6 +78,8 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
     },
   ],
 }) => {
+  const { language } = useTranslation();
+  const isZh = language.startsWith("zh");
   const [filter, setFilter] = useState<string>("all");
 
   const filtered = artifacts.filter((a) => {
@@ -110,7 +113,7 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
         <div className="flex items-center gap-2">
           <FolderOpen className="w-4 h-4 text-sky-500" />
           <h2 className="text-xs font-mono uppercase tracking-wider text-theme-primary font-semibold">
-            通用制品与文档注册表
+            {isZh ? "通用制品与文档注册表" : "Universal Artifacts & Documents Registry"}
           </h2>
         </div>
 
@@ -122,7 +125,7 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
               filter === "all" ? "bg-theme-card text-theme-primary shadow-sm" : "text-theme-muted"
             }`}
           >
-            全部 ({artifacts.length})
+            {isZh ? "全部" : "All"} ({artifacts.length})
           </button>
           <button
             onClick={() => setFilter("docs")}
@@ -130,7 +133,7 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
               filter === "docs" ? "bg-theme-card text-theme-primary shadow-sm" : "text-theme-muted"
             }`}
           >
-            Office 与 PDF
+            {isZh ? "Office 与 PDF" : "Office & PDF"}
           </button>
           <button
             onClick={() => setFilter("vision")}
@@ -138,7 +141,7 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
               filter === "vision" ? "bg-theme-card text-theme-primary shadow-sm" : "text-theme-muted"
             }`}
           >
-            视觉快照
+            {isZh ? "视觉快照" : "Visual Snapshots"}
           </button>
         </div>
       </div>
@@ -173,7 +176,7 @@ export const ArtifactsExplorerPanel: React.FC<ArtifactsExplorerPanelProps> = ({
               )}
               <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                已通过完整性校验
+                {isZh ? "已通过完整性校验" : "Integrity Verified"}
               </span>
             </div>
           </div>

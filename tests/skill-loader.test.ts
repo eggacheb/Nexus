@@ -84,4 +84,22 @@ enabled: true
       fs.rmSync(tmpRoot, { recursive: true, force: true });
     }
   });
+
+  it("loads multiple markdown files from raw docs and repo directories as individual skills", () => {
+    const awesomeDir = "D:\\Geek_AI\\skills\\awesome-agent-skills-main";
+    if (fs.existsSync(awesomeDir)) {
+      const loader = new SkillLoader(validator);
+      const skillsFromRepo = loader.loadFromDirectory(awesomeDir, "external", undefined, "custom-1", "awesome-agent-skills-main");
+      console.log("skillsFromRepo length:", skillsFromRepo.length);
+      expect(skillsFromRepo.length).toBeGreaterThanOrEqual(7);
+
+      const docsDir = path.join(awesomeDir, "docs");
+      const skillsFromDocs = loader.loadFromDirectory(docsDir, "external", undefined, "custom-2", "docs");
+      console.log("skillsFromDocs length:", skillsFromDocs.length);
+      expect(skillsFromDocs.length).toBeGreaterThanOrEqual(7);
+      
+      const patternSkill = skillsFromDocs.find(s => s.name["zh-CN"]?.includes("五种设计模式") || s.id.includes("五种设计模式") || s.sourcePath.includes("五种设计模式"));
+      expect(patternSkill).toBeDefined();
+    }
+  });
 });

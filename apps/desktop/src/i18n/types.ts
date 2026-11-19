@@ -1,4 +1,4 @@
-export type SupportedLanguage = "zh-CN" | "en-US";
+export type SupportedLanguage = "zh-CN" | "en-US" | "ja-JP" | "de-DE";
 
 export interface I18nDictionary {
   common: {

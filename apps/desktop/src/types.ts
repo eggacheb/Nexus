@@ -638,7 +638,7 @@ export interface FullControlStatusDto {
 }
 
 // Nexus Skills types
-export type SkillSource = "builtin" | "user" | "project";
+export type SkillSource = "builtin" | "user" | "project" | "external";
 export type SkillRisk = "low" | "medium" | "high";
 export type SkillCategory =
   | "inspection"
@@ -693,6 +693,11 @@ export interface SkillMetadata {
   documents?: string[];
   importedAt?: string;
   filesCount?: number;
+  originAgent?: string;
+  externalPath?: string;
+  isReadOnly?: boolean;
+  isAvailable?: boolean;
+  readError?: string;
 }
 
 export interface SkillCollection {
@@ -858,3 +863,15 @@ export interface SkillRawContentResult {
 }
 
 
+
+export interface ExternalSkillSourceConfig {
+  id: string;
+  name: string;
+  path: string;
+  enabled: boolean;
+  agentType?: "claude" | "cursor" | "gemini" | "codex" | "custom";
+  isCustom?: boolean;
+  available?: boolean;
+  skillsCount?: number;
+  error?: string;
+}

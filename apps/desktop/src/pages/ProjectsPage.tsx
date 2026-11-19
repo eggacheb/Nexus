@@ -8,15 +8,11 @@ import {
   AlertTriangle,
   Search,
   ChevronRight,
-  Box,
-  Sparkles,
 } from "lucide-react";
 import type { Project, UserExperienceMode } from "../types.js";
 import { bridge } from "../api/bridge.js";
 import { useTranslation } from "../i18n/useTranslation.js";
 import { ProjectDetailPage } from "./ProjectDetailPage.js";
-import { ProjectBuilderWorkspace } from "./projects/ProjectBuilderWorkspace.js";
-import { projectBuilderApi, type ProjectSummary } from "../api/project-builder-api.js";
 
 interface ProjectsPageProps {
   projects: Project[];
@@ -44,21 +40,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeView, setActiveView] = useState<"builder" | "directories">("builder");
-  const [builderProjects, setBuilderProjects] = useState<ProjectSummary[]>([]);
-  const [selectedBuilderId, setSelectedBuilderId] = useState<string | null>(null);
-
-  const loadBuilderProjects = async () => {
-    try {
-      const data = await projectBuilderApi.listProjects();
-      setBuilderProjects(data);
-    } catch {}
-  };
-
-  useEffect(() => {
-    loadBuilderProjects();
-  }, []);
-
   useEffect(() => {
     setLocalProjects(projects);
   }, [projects]);
@@ -72,18 +53,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       setInternalSelectedId(id);
     }
   };
-
-  if (selectedBuilderId) {
-    return (
-      <ProjectBuilderWorkspace
-        projectId={selectedBuilderId}
-        onBack={() => {
-          setSelectedBuilderId(null);
-          loadBuilderProjects();
-        }}
-      />
-    );
-  }
 
   // If a project is selected, render the rich detail view
   if (activeSelectedId) {
@@ -249,194 +218,28 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     return true;
   });
 
-  const handleLoadSampleBlueprint = async () => {
-    try {
-      const sample = {
-        projectId: `proj_unity_demo_${Date.now().toString().slice(-4)}`,
-        name: "Unity Third Person Demo (Auto-Generated)",
-        goal: "Create a verified third-person player controller and environment in active scene",
-        requirements: ["Player character entity", "Main camera tracking", "Safe verified scene commit"],
-        constraints: ["Keep in Tasgole active scene", "Zero compiler errors"],
-        providers: ["unity-gamedev"],
-        capabilities: ["create_gameobject", "find_gameobject", "inspect_object", "modify_gameobject"],
-        stages: [
-          {
-            id: "stage_scene_setup",
-            name: "Environment Setup",
-            goal: "Setup base terrain and ground",
-            provider: "unity-gamedev",
-            dependsOn: [],
-            actions: [
-              {
-                id: "act_create_ground",
-                name: "Create Ground Plane",
-                capability: "create_gameobject",
-                parameters: { name: "Demo_Ground_Plane", primitiveType: "Plane" },
-                verification: { type: "object_exists", target: "Demo_Ground_Plane" },
-              },
-            ],
-          },
-          {
-            id: "stage_player_setup",
-            name: "Player Setup",
-            goal: "Instantiate player root and tag",
-            provider: "unity-gamedev",
-            dependsOn: ["stage_scene_setup"],
-            actions: [
-              {
-                id: "act_create_player",
-                name: "Create Player Capsule",
-                capability: "create_gameobject",
-                parameters: { name: "Demo_ThirdPerson_Player", primitiveType: "Capsule" },
-                verification: { type: "object_exists", target: "Demo_ThirdPerson_Player" },
-              },
-              {
-                id: "act_tag_player",
-                name: "Tag Player as Player",
-                capability: "modify_gameobject",
-                parameters: { name: "Demo_ThirdPerson_Player", tag: "Player" },
-                verification: { type: "object_exists", target: "Demo_ThirdPerson_Player" },
-              },
-            ],
-          },
-          {
-            id: "stage_verification_delivery",
-            name: "Final Verification & Delivery",
-            goal: "Verify active scene integrity and commit artifacts",
-            provider: "unity-gamedev",
-            dependsOn: ["stage_player_setup"],
-            actions: [
-              {
-                id: "act_verify_scene",
-                name: "Verify Scene State",
-                capability: "get_scene_data",
-                parameters: {},
-              },
-            ],
-          },
-        ],
-        verification: { strategy: "DEEP", requiredChecks: ["all_stages_verified"] },
-        delivery: { type: "unity_scene_commit", summary: "Third person demo setup delivered" },
-      };
-      const created = await projectBuilderApi.createProject(sample);
-      if (created.success && created.project) {
-        setSelectedBuilderId(created.project.projectId);
-      }
-    } catch (err: any) {
-      alert("Failed to load sample blueprint: " + err.message);
-    }
-  };
-
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto select-none">
-      {/* Top View Switcher */}
+      {/* Top Header & Authorize Button */}
       <div className="flex items-center justify-between border-b border-theme-subtle pb-4 flex-wrap gap-4">
-        <div className="flex items-center gap-2 font-mono text-xs">
-          <button
-            type="button"
-            onClick={() => setActiveView("builder")}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition ${
-              activeView === "builder"
-                ? "bg-sky-600 text-white font-semibold"
-                : "text-theme-muted hover:text-theme-primary bg-theme-card/30 border border-theme-subtle"
-            }`}
-          >
-            <Box className="w-4 h-4" />
-            <span>自动化工程 (Project Builder)</span>
-            <span className="px-1.5 py-0.2 rounded text-[10px] bg-white/20">{builderProjects.length}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveView("directories")}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition ${
-              activeView === "directories"
-                ? "bg-sky-600 text-white font-semibold"
-                : "text-theme-muted hover:text-theme-primary bg-theme-card/30 border border-theme-subtle"
-            }`}
-          >
-            <FolderLock className="w-4 h-4" />
-            <span>受控本地目录 (Workspace Folders)</span>
-            <span className="px-1.5 py-0.2 rounded text-[10px] bg-white/20">{projects.length}</span>
-          </button>
+        <div className="flex items-center gap-2">
+          <FolderLock className="w-5 h-5 text-sky-500" />
+          <h2 className="text-base font-bold text-theme-primary">
+            {t.projects?.title || "受控本地目录 (Workspace Folders)"}
+          </h2>
+          <span className="px-2 py-0.5 rounded-full text-xs bg-sky-500/10 text-sky-400 font-mono font-semibold">
+            {localProjects.length}
+          </span>
         </div>
 
-        {activeView === "builder" ? (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleLoadSampleBlueprint}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-theme-card hover:bg-theme-card-muted border border-theme-subtle text-sky-400 font-medium rounded-lg text-xs shadow-sm transition"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>+ 加载示例 Unity Blueprint</span>
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={onOpenAuthorizeModal}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-lg text-xs shadow-sm transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>{t.projects.authorizeBtn || "Authorize Directory"}</span>
-          </button>
-        )}
+        <button
+          onClick={onOpenAuthorizeModal}
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-lg text-xs shadow-sm transition cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>{t.projects?.authorizeBtn || "Authorize Directory"}</span>
+        </button>
       </div>
-
-      {activeView === "builder" && (
-        <div className="space-y-4 font-mono">
-          <div className="flex items-center justify-between text-xs text-theme-muted">
-            <span>工程蓝图清单 (Blueprints):</span>
-            <button
-              onClick={loadBuilderProjects}
-              className="text-theme-muted hover:text-theme-primary text-xs flex items-center gap-1"
-            >
-              刷新
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {builderProjects.map((bp) => (
-              <div
-                key={bp.projectId}
-                onClick={() => setSelectedBuilderId(bp.projectId)}
-                className="p-5 rounded-xl border border-theme-subtle bg-theme-card/40 hover:bg-theme-card/70 hover:border-sky-500/40 cursor-pointer space-y-3 transition"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-theme-primary">{bp.name}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/20 font-semibold">
-                    {bp.status}
-                  </span>
-                </div>
-
-                <p className="text-xs text-theme-muted line-clamp-2">{bp.goal}</p>
-
-                <div className="space-y-1.5 pt-2 border-t border-theme-subtle/40 text-[11px] text-theme-secondary">
-                  <div className="flex justify-between">
-                    <span>已提交阶段:</span>
-                    <strong>{bp.committedStagesCount} / {bp.stagesCount}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Providers:</span>
-                    <span className="text-sky-400">{bp.providers.join(", ")}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {builderProjects.length === 0 && (
-              <div className="p-8 text-center text-xs text-theme-muted bg-theme-card/20 border border-theme-subtle rounded-xl col-span-2 space-y-3">
-                <Box className="w-8 h-8 mx-auto opacity-30 text-sky-400" />
-                <p>暂无正在执行的自动化工程蓝图</p>
-                <p className="text-[11px] text-theme-secondary">
-                  您可以从 Web AI (ChatGPT/DeepSeek) 经由 Public MCP 提交工程蓝图，或点击上方“加载示例 Unity Blueprint”。
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeView === "directories" && (
-        <div className="space-y-6">
 
       {error && (
         <div className="p-3 bg-red-500/10 border border-red-500/25 rounded-lg text-xs text-red-400 flex items-start gap-2">
@@ -679,8 +482,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
             );
           })}
         </div>
-      )}
-      </div>
       )}
     </div>
   );

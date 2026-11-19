@@ -67,6 +67,9 @@ jobs:
       - name: Build Core Packages
         run: pnpm -r --filter=./packages/* run build
 
+      - name: Install cloudflared on macOS Runner
+        run: brew install cloudflared || true
+
       - name: Package Desktop & macOS Installer (.dmg)
         run: |
           if [ "${{ matrix.target }}" = "universal-apple-darwin" ]; then

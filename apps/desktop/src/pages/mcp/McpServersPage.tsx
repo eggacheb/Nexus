@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Server, Plus, RefreshCw, RotateCw, Play, Shield, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Server, RefreshCw, RotateCw, Play, Shield, ShieldCheck, AlertTriangle, Trash2 } from "lucide-react";
 import type { McpStatus, TunnelStatusDto } from "../../types.js";
 import { useTranslation } from "../../i18n/useTranslation.js";
 import {
@@ -33,13 +33,6 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdatingPolicy, setIsUpdatingPolicy] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newId, setNewId] = useState("");
-  const [newName, setNewName] = useState("");
-  const [newEndpoint, setNewEndpoint] = useState("http://127.0.0.1:9099/mcp");
-  const [newToken, setNewToken] = useState("");
-  const [addError, setAddError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -83,6 +76,22 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
     }
   };
 
+  const handleDeleteProvider = async (id: string, name: string) => {
+    if (!window.confirm(isZh ? `确定要删除此外部 MCP Provider "${name}" 吗？此操作将立即卸载该 Provider。` : `Are you sure you want to delete Provider "${name}"?`)) {
+      return;
+    }
+    setActionBusy((prev) => ({ ...prev, [id]: true }));
+    try {
+      await fetch(`${bridge.getBaseUrl()}/api/mcp/providers/${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+      await projectBuilderApi.unregisterProvider(id).catch(() => {});
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || (isZh ? "删除失败" : "Failed to delete provider"));
+    } finally {
+      setActionBusy((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   const handleToggleTrust = async (endpointOrId: string) => {
     setIsUpdatingPolicy(true);
     try {
@@ -108,35 +117,6 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
       setSecurityPolicy(updated);
     } finally {
       setIsUpdatingPolicy(false);
-    }
-  };
-
-  const handleAddProvider = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newId.trim() || !newEndpoint.trim()) return;
-    setIsSubmitting(true);
-    setAddError(null);
-    try {
-      const res = await projectBuilderApi.registerProvider({
-        id: newId.trim().toLowerCase(),
-        name: newName.trim() || newId.trim(),
-        endpoint: newEndpoint.trim(),
-        token: newToken.trim() || undefined,
-      });
-      if (res.success) {
-        setShowAddModal(false);
-        setNewId("");
-        setNewName("");
-        setNewEndpoint("http://127.0.0.1:9099/mcp");
-        setNewToken("");
-        await loadData();
-      } else {
-        setAddError(res.error || "连接外部 MCP 失败");
-      }
-    } catch (err: any) {
-      setAddError(err.message || String(err));
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -182,17 +162,9 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
             onClick={loadData}
             disabled={isLoading}
             className="p-1.5 rounded text-theme-muted hover:text-theme-primary bg-theme-card border border-theme-subtle"
-            title="刷新"
+            title={isZh ? "刷新" : "Refresh"}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-xs font-semibold shadow-sm transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>{isZh ? "+ 添加外部 MCP" : "+ Add MCP Provider"}</span>
           </button>
         </div>
       </div>
@@ -299,7 +271,7 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
       {/* 2. Built-in Servers */}
       <div className="space-y-3">
         <h2 className="text-xs uppercase text-theme-muted font-bold tracking-wider">
-          内置核心服务 (Built-in Providers)
+          {isZh ? "内置核心服务 (Built-in Providers)" : "Built-in Providers"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {builtinServers.map((srv) => (
@@ -326,7 +298,7 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
       {/* 3. External Dynamic Providers */}
       <div className="space-y-3">
         <h2 className="text-xs uppercase text-theme-muted font-bold tracking-wider">
-          外部接入 Providers (External MCP Providers)
+          {isZh ? "外部接入 Providers (External MCP Providers)" : "External MCP Providers"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {providers
@@ -375,19 +347,28 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
                           type="button"
                           onClick={() => handleStartManagedService(prov.id)}
                           disabled={actionBusy[prov.id]}
-                          className="flex items-center gap-1 px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-semibold shadow-xs transition"
+                          className="flex items-center gap-1 px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-semibold shadow-xs transition cursor-pointer"
                           title={isZh ? "启动服务进程" : "Start Process"}
                         >
                           <Play className="w-2.5 h-2.5" />
                           <span>{isZh ? "启动" : "Start"}</span>
                         </button>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteProvider(prov.id, prov.name)}
+                        disabled={actionBusy[prov.id]}
+                        className="p-1 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition cursor-pointer"
+                        title={isZh ? "删除/解绑此外部接入 Provider" : "Delete / Remove Provider"}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
 
                   {!prov.connected && (
                     <div className="p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center justify-between">
-                      <span>{isZh ? "服务处于未连接状态。若为本地工具，请点击右上角【启动】；若为云端服务，请在【云端与远程服务】中连接。" : "Service disconnected. Click Start above to launch."}</span>
+                      <span>{isZh ? "服务处于未连接状态。若为本地工具，请点击右上角【启动】。" : "Service disconnected. Click Start above to launch."}</span>
                     </div>
                   )}
 
@@ -397,7 +378,7 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
                       <span className="text-theme-secondary truncate max-w-[220px]">{prov.endpoint}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>动态能力数:</span>
+                      <span>{isZh ? "动态能力数:" : "Capabilities / Tools:"}</span>
                       <strong className="text-sky-400">
                         {prov.toolCount} Tools {prov.metrics?.cachedToolCount ? `(${prov.metrics.cachedToolCount} cached)` : ""}
                       </strong>
@@ -411,13 +392,13 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
                     {prov.metrics && (
                       <div className="pt-2 mt-2 border-t border-theme-subtle/40 space-y-1 text-[11px]">
                         <div className="flex justify-between text-theme-secondary">
-                          <span>握手 / 发现:</span>
+                          <span>{isZh ? "握手 / 发现:" : "Handshake / Discovery:"}</span>
                           <span>
                             {prov.metrics.initLatencyMs}ms / {prov.metrics.listToolsLatencyMs}ms
                           </span>
                         </div>
                         <div className="flex justify-between text-theme-secondary">
-                          <span>最近调用 / 平均:</span>
+                          <span>{isZh ? "最近调用 / 平均:" : "Latest / Avg Latency:"}</span>
                           <span className="text-emerald-400">
                             {prov.metrics.lastCallLatencyMs}ms / {prov.metrics.avgCallLatencyMs}ms ({prov.metrics.totalCalls} calls)
                           </span>
@@ -425,7 +406,7 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
                       </div>
                     )}
                     <div className="flex justify-between pt-1">
-                      <span>支持 Capabilities:</span>
+                      <span>{isZh ? "支持 Capabilities:" : "Supported Capabilities:"}</span>
                       <span className="text-theme-secondary truncate max-w-[220px]">
                         {prov.capabilities.join(", ") || "tools"}
                       </span>
@@ -441,7 +422,7 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
                         ) : (
                           <Shield className="w-3.5 h-3.5 text-amber-400" />
                         )}
-                        <span>{isZh ? "Trusted External MCP" : "Trusted External MCP"}</span>
+                        <span>Trusted External MCP</span>
                       </div>
                       <div className="text-[10px] text-theme-muted mt-0.5">
                         {isTrusted
@@ -472,96 +453,11 @@ export const McpServersPage: React.FC<McpServersPageProps> = ({
             })}
           {providers.filter((p) => p.type !== "builtin-core").length === 0 && (
             <div className="p-8 text-center text-xs text-theme-muted bg-theme-card/20 border border-theme-subtle rounded-xl col-span-2">
-              暂无已连接的外部 MCP Provider，点击上方“添加外部 MCP”即可接入 Blender、Browser 或自定义 MCP。
+              {isZh ? "暂无已连接的外部 MCP Provider。" : "No external MCP providers connected."}
             </div>
           )}
         </div>
       </div>
-
-      {/* Add MCP Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-mono">
-          <div className="w-full max-w-md bg-theme-base border border-theme-subtle rounded-xl p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-theme-subtle pb-3">
-              <h3 className="text-sm font-bold text-theme-primary">添加外部 MCP Provider</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-theme-muted hover:text-theme-primary text-xs">
-                ✕
-              </button>
-            </div>
-
-            {addError && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded text-rose-400 text-xs">
-                {addError}
-              </div>
-            )}
-
-            <form onSubmit={handleAddProvider} className="space-y-3 text-xs">
-              <div className="space-y-1">
-                <label className="text-theme-muted block">Provider ID (唯一标识)</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="例如: blender-mcp 或 browser-mcp"
-                  value={newId}
-                  onChange={(e) => setNewId(e.target.value)}
-                  className="w-full p-2 bg-theme-card border border-theme-subtle rounded text-theme-primary focus:outline-none focus:border-sky-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-theme-muted block">Provider 显示名称</label>
-                <input
-                  type="text"
-                  placeholder="例如: Blender 3D Automation MCP"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="w-full p-2 bg-theme-card border border-theme-subtle rounded text-theme-primary focus:outline-none focus:border-sky-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-theme-muted block">MCP Endpoint (Streamable HTTP / SSE)</label>
-                <input
-                  type="url"
-                  required
-                  placeholder="http://127.0.0.1:9099/mcp"
-                  value={newEndpoint}
-                  onChange={(e) => setNewEndpoint(e.target.value)}
-                  className="w-full p-2 bg-theme-card border border-theme-subtle rounded text-theme-primary focus:outline-none focus:border-sky-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-theme-muted block">可选 Bearer Token (如有)</label>
-                <input
-                  type="password"
-                  placeholder="留空即免认证"
-                  value={newToken}
-                  onChange={(e) => setNewToken(e.target.value)}
-                  className="w-full p-2 bg-theme-card border border-theme-subtle rounded text-theme-primary focus:outline-none focus:border-sky-500"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-theme-subtle">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-3 py-1.5 rounded text-theme-muted hover:text-theme-primary bg-theme-card border border-theme-subtle"
-                >
-                  取消
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-4 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-sm transition disabled:opacity-50"
-                >
-                  {isSubmitting ? "正在握手与发现工具..." : "测试连接并登记"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

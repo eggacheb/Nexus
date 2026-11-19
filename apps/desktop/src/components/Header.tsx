@@ -43,8 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   fullControlStatus,
   onStopFullControl,
 }) => {
-  const { language } = useTranslation();
-  const isZh = language.startsWith("zh");
+  const { tText } = useTranslation();
   const isPaused = mcpStatus?.paused ?? false;
 
   return (
@@ -75,13 +74,20 @@ export const Header: React.FC<HeaderProps> = ({
         {fullControlStatus?.enabled && fullControlStatus.activeSession && (
           <div className="flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-mono bg-amber-500/10 border border-amber-500/30 text-amber-500">
             <ShieldAlert className="w-3.5 h-3.5" />
-            <span>{isZh ? "完全控制生效中" : "Full Control Active"}</span>
+            <span>
+              {tText(
+                "完全控制生效中",
+                "Full Control Active",
+                "フルコントロール有効",
+                "Vollzugriff aktiv"
+              )}
+            </span>
             {onStopFullControl && (
               <button
                 onClick={onStopFullControl}
                 className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30 transition"
               >
-                {isZh ? "停止" : "Stop"}
+                {tText("停止", "Stop", "停止", "Stopp")}
               </button>
             )}
           </div>
@@ -100,16 +106,15 @@ export const Header: React.FC<HeaderProps> = ({
           />
           <span className="text-theme-secondary">
             {!serverAvailable
-              ? isZh
-                ? "服务离线"
-                : "Offline"
+              ? tText("服务离线", "Offline", "オフライン", "Offline")
               : isPaused
-              ? isZh
-                ? "AI 已暂停"
-                : "AI Paused"
-              : isZh
-              ? "服务已连接"
-              : "Engine Connected"}
+              ? tText("AI 已暂停", "AI Paused", "AI一時停止中", "KI pausiert")
+              : tText(
+                  "服务已连接",
+                  "Engine Connected",
+                  "接続完了",
+                  "Dienst verbunden"
+                )}
           </span>
         </div>
 
@@ -117,8 +122,13 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onRefreshAll}
           disabled={isRefreshing}
-          title={isZh ? "刷新系统状态" : "Refresh Status"}
-          className="p-1.5 rounded-md text-theme-muted hover:text-theme-primary hover:bg-theme-card border border-theme-subtle transition disabled:opacity-40"
+          title={tText(
+            "刷新系统状态",
+            "Refresh Status",
+            "システム状態を更新",
+            "Status aktualisieren"
+          )}
+          className="p-1.5 rounded-md text-theme-muted hover:text-theme-primary hover:bg-theme-card border border-theme-subtle transition disabled:opacity-40 cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
         </button>
@@ -126,11 +136,18 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Emergency Stop Button */}
         <button
           onClick={onTriggerEmergencyStop}
-          title={isZh ? "紧急熔断中止执行" : "Emergency Stop Execution"}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition"
+          title={tText(
+            "紧急熔断中止执行",
+            "Emergency Stop Execution",
+            "緊急停止",
+            "Not-Halt Ausführung abbrechen"
+          )}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition cursor-pointer"
         >
           <OctagonAlert className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">{isZh ? "紧急熔断" : "Emergency Halt"}</span>
+          <span className="hidden sm:inline">
+            {tText("紧急熔断", "Emergency Halt", "緊急停止", "Not-Halt")}
+          </span>
         </button>
       </div>
     </header>

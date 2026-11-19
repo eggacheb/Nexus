@@ -150,7 +150,9 @@ export class ManagedProcessManager {
   private childProcesses: Map<string, child_process.ChildProcess> = new Map();
   private gateways: Map<string, NativeStdioGateway> = new Map();
   private configFilePath: string;
+  private deletedServicesFilePath: string;
   private nexusDataDir: string;
+  private deletedServiceIds: Set<string> = new Set();
 
   private constructor() {
     const localAppData =
@@ -162,6 +164,17 @@ export class ManagedProcessManager {
     }
     this.nexusDataDir = nexusDataDir;
     this.configFilePath = path.join(nexusDataDir, "managed-mcp-services.json");
+    this.deletedServicesFilePath = path.join(nexusDataDir, "deleted-managed-services.json");
+
+    if (fs.existsSync(this.deletedServicesFilePath)) {
+      try {
+        const raw = fs.readFileSync(this.deletedServicesFilePath, "utf8");
+        const list = JSON.parse(raw);
+        if (Array.isArray(list)) {
+          this.deletedServiceIds = new Set(list);
+        }
+      } catch {}
+    }
 
     this.deployServerScripts();
     this.initDefaultPresets();
@@ -423,6 +436,9 @@ export class ManagedProcessManager {
     ];
 
     for (const id of rawIds) {
+      if (this.deletedServiceIds.has(id)) {
+        continue;
+      }
       const initialConfig: ManagedMcpConfig = {
         id,
         name: id,
@@ -927,11 +943,16 @@ export class ManagedProcessManager {
   }
 
   public deleteCustomService(id: string): { success: boolean; error?: string } {
-    if (id === "blender-mcp") {
-      return { success: false, error: "Cannot delete built-in preset service" };
-    }
     this.stopService(id);
     this.services.delete(id);
+    this.deletedServiceIds.add(id);
+    try {
+      fs.writeFileSync(
+        this.deletedServicesFilePath,
+        JSON.stringify(Array.from(this.deletedServiceIds), null, 2),
+        "utf8"
+      );
+    } catch {}
     this.persistConfigs();
     return { success: true };
   }

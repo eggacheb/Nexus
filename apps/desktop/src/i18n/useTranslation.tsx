@@ -16,6 +16,11 @@ interface I18nContextValue {
   t: I18nDictionary;
   translateError: (code: string | undefined | null, fallback?: string) => string;
   formatStatus: (status: string | undefined | null) => string;
+  isZh: boolean;
+  isJa: boolean;
+  isDe: boolean;
+  isEn: boolean;
+  tText: (zh: string, en: string, ja?: string, de?: string) => string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -35,6 +40,18 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value = useMemo<I18nContextValue>(() => {
     const t = DICTIONARIES[language] || DICTIONARIES["en-US"];
+    const isZh = language.startsWith("zh");
+    const isJa = language.startsWith("ja");
+    const isDe = language.startsWith("de");
+    const isEn = language.startsWith("en");
+
+    const tText = (zh: string, en: string, ja?: string, de?: string): string => {
+      if (isZh) return zh;
+      if (isJa) return ja || en;
+      if (isDe) return de || en;
+      return en;
+    };
+
     return {
       language,
       setLanguage,
@@ -52,6 +69,11 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         return status;
       },
+      isZh,
+      isJa,
+      isDe,
+      isEn,
+      tText,
     };
   }, [language]);
 

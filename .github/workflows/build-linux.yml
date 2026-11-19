@@ -65,6 +65,11 @@ jobs:
       - name: Build Core Packages
         run: pnpm -r --filter=./packages/* run build
 
+      - name: Install cloudflared on Linux Runner
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 || true
+          sudo chmod +x /usr/local/bin/cloudflared || true
+
       - name: Package Linux Installer (.deb)
         run: |
           pnpm --filter=@localbridge/desktop exec tauri build --bundles deb

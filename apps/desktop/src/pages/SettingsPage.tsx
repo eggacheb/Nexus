@@ -26,7 +26,6 @@ import {
   FolderOpen,
   Unlock,
   HardDrive,
-  Heart,
 } from "lucide-react";
 import { bridge, type TunnelStatusDto } from "../api/bridge.js";
 import { useTranslation } from "../i18n/useTranslation.js";
@@ -52,7 +51,6 @@ import { McpServersPage } from "./mcp/McpServersPage.js";
 import { McpToolsPage } from "./mcp/McpToolsPage.js";
 import { ToolRegistryPage } from "./mcp/ToolRegistryPage.js";
 import { ManagedMcpPage } from "./mcp/ManagedMcpPage.js";
-import { RemoteMcpPage } from "./mcp/RemoteMcpPage.js";
 import {
   Monitor,
   FolderTree,
@@ -127,7 +125,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   onOpenOnboarding,
   onOpenSponsorModal,
 }) => {
-  const { t, language, setLanguage } = useTranslation();
+  const { t, language, setLanguage, tText } = useTranslation();
   const isZh = language === "zh-CN";
   const { themeMode, setThemeMode } = useTheme();
   const [route, setRoute] = useState<SettingsRoute>({ page: "general" });
@@ -135,7 +133,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   const [computerSubPage, setComputerSubPage] = useState<"desktop" | "files" | "applications" | "browser">("desktop");
   const [executionSubPage, setExecutionSubPage] = useState<"pipeline" | "ledger" | "runtime">("pipeline");
-  const [mcpSubPage, setMcpSubPage] = useState<"servers" | "tools" | "registry" | "managed" | "remote">("servers");
+  const [mcpSubPage, setMcpSubPage] = useState<"servers" | "tools" | "registry" | "managed">("servers");
 
   // Server URL State
   const [serverUrl, setServerUrl] = useState(bridge.getBaseUrl());
@@ -186,7 +184,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     commandPolicy: "ask",
     protectedFilesPolicy: "always-ask",
   });
-  const [operatorDisplayName, setOperatorDisplayName] = useState<string>("本机用户");
+  const [operatorDisplayName, setOperatorDisplayName] = useState<string>(isZh ? "本机用户" : "Local User");
   const [operatorSaved, setOperatorSaved] = useState(false);
   const [showFullTrustModal, setShowFullTrustModal] = useState(false);
   const [policyBusy, setPolicyBusy] = useState(false);
@@ -743,15 +741,15 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         {/* Left Category Column */}
         <div className="w-56 border-r border-theme-subtle bg-theme-base/60 p-3 overflow-y-auto space-y-1 shrink-0">
           {[
-            { id: "general", label: isZh ? "常规与外观" : "General & Appearance", icon: Sliders },
-            { id: "connections", label: isZh ? "AI 客户端与连接" : "AI Connections", icon: Radio },
-            { id: "mcp", label: isZh ? "MCP 协议生态" : "MCP Ecosystem", icon: Wrench },
-            { id: "security", label: isZh ? "安全与信任策略" : "Security", icon: Shield },
-            { id: "intelligence", label: isZh ? "智能决策模型" : "Intelligence", icon: Brain },
-            { id: "computer", label: isZh ? "桌面与电脑控制" : "Computer Control", icon: Monitor },
-            { id: "execution", label: isZh ? "任务执行与账本" : "Execution & Ledger", icon: Terminal },
-            { id: "advanced", label: isZh ? "高级选项与 Runner" : "Advanced & Runner", icon: Server },
-            { id: "about", label: isZh ? "关于 Nexus" : "About", icon: Info },
+            { id: "general", label: tText("常规与外观", "General & Appearance", "一般と外観", "Allgemein & Erscheinungsbild"), icon: Sliders },
+            { id: "connections", label: tText("AI 客户端与连接", "AI Connections", "AI接続", "KI-Verbindungen"), icon: Radio },
+            { id: "mcp", label: tText("MCP 协议生态", "MCP Ecosystem", "MCPエコシステム", "MCP-Ökosystem"), icon: Wrench },
+            { id: "security", label: tText("安全与信任策略", "Security", "セキュリティポリシー", "Sicherheit & Vertrauen"), icon: Shield },
+            { id: "intelligence", label: tText("智能决策模型", "Intelligence", "インテリジェンスモデル", "KI-Modell"), icon: Brain },
+            { id: "computer", label: tText("桌面与电脑控制", "Computer Control", "コンピューター制御", "Computer-Steuerung"), icon: Monitor },
+            { id: "execution", label: tText("任务执行与账本", "Execution & Ledger", "実行と台帳", "Ausführung & Hauptbuch"), icon: Terminal },
+            { id: "advanced", label: tText("高级选项与 Runner", "Advanced & Runner", "高度な設定とRunner", "Erweitert & Runner"), icon: Server },
+            { id: "about", label: tText("关于 Nexus", "About", "Nexus について", "Über Nexus"), icon: Info },
           ].map((cat) => {
             const Icon = cat.icon;
             const isSelected =
@@ -790,10 +788,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <div className="flex flex-col h-full space-y-4">
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-theme-card border border-theme-subtle w-fit shadow-xs">
               {[
-                { id: "desktop", label: isZh ? "桌面预览" : "Desktop Preview", icon: Monitor },
-                { id: "files", label: isZh ? "文件浏览器" : "Files Explorer", icon: FolderTree },
-                { id: "applications", label: isZh ? "托管应用与窗口" : "Applications", icon: AppWindow },
-                { id: "browser", label: isZh ? "浏览器自动化" : "Browser Automation", icon: Globe },
+                { id: "desktop", label: tText("桌面预览", "Desktop Preview", "デスクトッププレビュー", "Desktop-Vorschau"), icon: Monitor },
+                { id: "files", label: tText("文件浏览器", "Files Explorer", "ファイルエクスプローラー", "Datei-Explorer"), icon: FolderTree },
+                { id: "applications", label: tText("托管应用与窗口", "Applications", "アプリケーション", "Anwendungen"), icon: AppWindow },
+                { id: "browser", label: tText("浏览器自动化", "Browser Automation", "ブラウザ自動化", "Browser-Automatisierung"), icon: Globe },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const active = computerSubPage === tab.id;
@@ -827,9 +825,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <div className="flex flex-col h-full space-y-4">
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-theme-card border border-theme-subtle w-fit shadow-xs">
               {[
-                { id: "pipeline", label: isZh ? "执行管道" : "Pipeline", icon: Terminal },
-                { id: "ledger", label: isZh ? "操作审计账本" : "Action Ledger", icon: FileText },
-                { id: "runtime", label: isZh ? "运行时环境" : "Runtime Status", icon: Cpu },
+                { id: "pipeline", label: tText("执行管道", "Pipeline", "パイプライン", "Pipeline"), icon: Terminal },
+                { id: "ledger", label: tText("操作审计账本", "Action Ledger", "アクション台帳", "Aktions-Hauptbuch"), icon: FileText },
+                { id: "runtime", label: tText("运行时环境", "Runtime Status", "ランタイム状態", "Runtime-Status"), icon: Cpu },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const active = executionSubPage === tab.id;
@@ -862,12 +860,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <div className="flex flex-col h-full space-y-4">
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-theme-card border border-theme-subtle w-fit shadow-xs">
               {[
-                { id: "servers", label: isZh ? "服务节点" : "Servers", icon: Server },
-                { id: "tools", label: isZh ? "工具库 (332)" : "Tools (332)", icon: Wrench },
-                { id: "registry", label: isZh ? "注册表契约" : "Registry", icon: Layers },
-                { id: "managed", label: isZh ? "进程托管与 API 配置" : "Managed & API", icon: Terminal },
-                { id: "remote", label: isZh ? "云端与远程服务" : "Remote MCP", icon: Globe },
-              ].map((tab) => {
+                { id: "servers", label: tText("服务节点", "Servers", "サーバー", "Server"), icon: Server },
+                { id: "tools", label: tText("工具库 (332)", "Tools (332)", "ツール (332)", "Werkzeuge (332)"), icon: Wrench },
+                { id: "registry", label: tText("注册表契约", "Registry", "レジストリ", "Registry"), icon: Layers },
+                { id: "managed", label: tText("进程托管与 API 配置", "Managed & API", "プロセス管理とAPI設定", "Verwaltete Prozesse & API"), icon: Terminal },
+                              ].map((tab) => {
                 const Icon = tab.icon;
                 const active = mcpSubPage === tab.id;
                 return (
@@ -893,8 +890,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               {mcpSubPage === "tools" && <McpToolsPage />}
               {mcpSubPage === "registry" && <ToolRegistryPage />}
               {mcpSubPage === "managed" && <ManagedMcpPage />}
-              {mcpSubPage === "remote" && <RemoteMcpPage />}
-            </div>
+                          </div>
           </div>
         )}
 
@@ -2685,7 +2681,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               <label className="block text-xs font-medium text-theme-secondary mb-2">
                 {t.settings.languageLabel || (isZh ? "显示语言" : "Language")}
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <button
                   type="button"
                   onClick={() => setLanguage("zh-CN")}
@@ -2695,7 +2691,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       : "bg-theme-input-bg border-theme-input-border text-theme-secondary hover:border-sky-500"
                   }`}
                 >
-                  <div className="font-semibold">{t.settings.languageZh}</div>
+                  <div className="font-semibold">{t.settings.languageZh || "简体中文"}</div>
                   <div className="text-[11px] opacity-80 mt-0.5">zh-CN</div>
                 </button>
 
@@ -2708,8 +2704,34 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       : "bg-theme-input-bg border-theme-input-border text-theme-secondary hover:border-sky-500"
                   }`}
                 >
-                  <div className="font-semibold">{t.settings.languageEn}</div>
+                  <div className="font-semibold">{t.settings.languageEn || "English"}</div>
                   <div className="text-[11px] opacity-80 mt-0.5">en-US</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setLanguage("ja-JP")}
+                  className={`p-3 rounded-lg border text-xs font-medium transition text-left ${
+                    language === "ja-JP"
+                      ? "bg-sky-600 text-white border-sky-600 shadow-sm"
+                      : "bg-theme-input-bg border-theme-input-border text-theme-secondary hover:border-sky-500"
+                  }`}
+                >
+                  <div className="font-semibold">日本語 (Japanese)</div>
+                  <div className="text-[11px] opacity-80 mt-0.5">ja-JP</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setLanguage("de-DE")}
+                  className={`p-3 rounded-lg border text-xs font-medium transition text-left ${
+                    language === "de-DE"
+                      ? "bg-sky-600 text-white border-sky-600 shadow-sm"
+                      : "bg-theme-input-bg border-theme-input-border text-theme-secondary hover:border-sky-500"
+                  }`}
+                >
+                  <div className="font-semibold">Deutsch (German)</div>
+                  <div className="text-[11px] opacity-80 mt-0.5">de-DE</div>
                 </button>
               </div>
             </div>
@@ -2719,10 +2741,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <div className="p-6 bg-theme-card border border-theme-subtle rounded-xl space-y-4 shadow-sm">
             <div className="flex items-center gap-2 font-semibold text-theme-primary text-sm">
               <Sliders className="w-4 h-4 text-sky-500" />
-              <span>{t.settings.experienceGroup || "使用体验 (Experience)"}</span>
+              <span>{t.settings.experienceGroup || (isZh ? "使用体验 (Experience)" : "Experience")}</span>
             </div>
             <p className="text-xs text-theme-muted">
-              {t.settings.experienceDesc || "选择适合您的界面复杂度模式。"}
+              {t.settings.experienceDesc || (isZh ? "选择适合您的界面复杂度模式。" : "Choose between a simplified workflow or full technical control.")}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
@@ -2744,13 +2766,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 />
                 <div className="space-y-1">
                   <div className="text-sm font-semibold text-theme-primary flex items-center gap-2">
-                    <span>{t.settings.standardMode || "普通模式"}</span>
+                    <span>{t.settings.standardMode || (isZh ? "普通模式" : "Standard")}</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30">
                       Default
                     </span>
                   </div>
                   <div className="text-xs text-theme-muted leading-relaxed">
-                    {t.settings.standardModeDesc || "简洁界面，隐藏大部分开发者级控制项"}
+                    {t.settings.standardModeDesc || (isZh ? "简洁界面，隐藏大部分开发者级控制项" : "Simplified interface for everyday use, hiding low-level developer controls.")}
                   </div>
                 </div>
               </label>
@@ -2773,7 +2795,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 />
                 <div className="space-y-1">
                   <div className="text-sm font-semibold text-theme-primary flex items-center gap-2">
-                    <span>{t.settings.advancedMode || "高级模式"}</span>
+                    <span>{t.settings.advancedMode || (isZh ? "高级模式" : "Advanced")}</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
                       Cockpit
                     </span>
@@ -2860,7 +2882,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   type="text"
                   value={operatorDisplayName}
                   onChange={(e) => setOperatorDisplayName(e.target.value)}
-                  placeholder="本机用户"
+                  placeholder={isZh ? "本机用户" : "Local User"}
                   className="flex-1 bg-theme-input-bg border border-theme-input-border rounded-lg px-3 py-2 text-xs font-medium text-theme-primary focus:outline-none focus:border-sky-500"
                 />
                 <button
@@ -2918,28 +2940,28 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             </div>
           </div>
 
-          {/* Sponsor Section */}
-          <div className="p-6 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-transparent border border-rose-500/30 rounded-xl space-y-4 text-xs shadow-sm">
+          {/* Contact & Community Section */}
+          <div className="p-6 bg-gradient-to-r from-emerald-500/10 via-sky-500/5 to-transparent border border-emerald-500/30 rounded-xl space-y-4 text-xs shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-semibold text-theme-primary text-sm">
-                <Heart className="w-4 h-4 text-rose-500 fill-rose-500/20" />
-                <span>{isZh ? "☕ 赞助与支持 (Sponsor & Support)" : "☕ Sponsor & Support"}</span>
+                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <span>{tText("💬 联系与交流 (Contact & Community)", "💬 Contact & Community", "💬 連絡とコミュニティ", "💬 Kontakt & Community")}</span>
               </div>
               {onOpenSponsorModal && (
                 <button
                   type="button"
                   onClick={onOpenSponsorModal}
-                  className="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
-                  <Heart className="w-3.5 h-3.5 fill-white/20" />
-                  <span>{isZh ? "打开赞助打赏码" : "Open Donation QR"}</span>
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>{tText("打开联系方式", "Open Contact QR Codes", "連絡先QRコードを開く", "Kontakt-QR-Codes öffnen")}</span>
                 </button>
               )}
             </div>
             <p className="text-theme-secondary leading-relaxed">
               {isZh
-                ? "如果 Nexus 对你的工作、学习或日常开发有所帮助，欢迎赞助作者喝杯咖啡！你的每一份支持都是维持开源项目长期维护、持续迭代新功能与修复缺陷的重要动力。"
-                : "If Nexus has helped your daily workflow or projects, consider supporting the author with a coffee! Every bit of support fuels active open-source maintenance and updates."}
+                ? "欢迎随时联系与交流探讨 AI Agent 落地、MCP 工具链拓展与桌面集成体验，分享技术想法、反馈使用建议或探讨深度合作！"
+                : "Welcome to get in touch, exchange ideas, share feedback, or explore collaboration on local AI agent tooling and desktop integration!"}
             </p>
           </div>
 

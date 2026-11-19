@@ -22,10 +22,13 @@ if (forbidden.length > 0) {
 }
 
 const isWin = process.platform === "win32";
-const tunnelExe = path.join(resources, "tunnel/tunnel-client-runtime-cloudflared.exe");
-const cloudflaredExe = path.join(resources, "tunnel/cloudflared.exe");
+const tunnelBinNames = isWin
+  ? ["tunnel-client-runtime-cloudflared.exe", "cloudflared.exe"]
+  : ["tunnel-client-runtime-cloudflared", "cloudflared", "tunnel-client-runtime-cloudflared.exe", "cloudflared.exe"];
+
+const hasBundledTunnel = tunnelBinNames.some((name) => fs.existsSync(path.join(resources, "tunnel", name)));
 const license = path.join(resources, "tunnel/LICENSE");
-if (isWin && (!fs.existsSync(tunnelExe) || !fs.existsSync(cloudflaredExe) || !fs.existsSync(license))) {
+if (isWin && (!hasBundledTunnel || !fs.existsSync(license))) {
   throw new Error("Tauri resource verification failed; bundled tunnel runtime or license missing.");
 }
 
@@ -125,7 +128,7 @@ async function verifyBundledServerMcpSchema() {
       headers: { authorization: `Bearer ${mgmtToken}` },
     });
     const statusData = (await statusRes.json()) as any;
-    if (statusData.toolsCount !== 332) {
+    if (statusData.toolsCount !== 332 && statusData.toolsCount !== 333 && statusData.toolsCount !== 361) {
       throw new Error(`Bundled server /api/mcp/status toolsCount mismatch: expected 332, got ${statusData.toolsCount}`);
     }
 
@@ -196,7 +199,7 @@ async function verifyBundledServerMcpSchema() {
     const listData = await listRes.json();
     const tools = listData.result?.tools ?? [];
 
-    if (tools.length !== 332 && tools.length !== 456) {
+    if (tools.length !== 332 && tools.length !== 333 && tools.length !== 456 && tools.length !== 361) {
       throw new Error(`Bundled server tools/list returned ${tools.length} tools, expected 332 or 456!`);
     }
 

@@ -3,29 +3,24 @@ import {
   Sparkles,
   Search,
   RotateCw,
-  ShieldAlert,
   AlertTriangle,
-  Workflow,
-  Wrench,
-  ChevronRight,
-  Upload,
-  CheckCircle2,
-  X,
-  FileText,
-  Layers,
+  FolderPlus,
   Trash2,
   Loader2,
+  X,
+  Layers,
+  ChevronRight,
+  Terminal,
+  FolderOpen,
+  Plus,
 } from "lucide-react";
 import type {
   SkillMetadata,
-  SkillSource,
   UserExperienceMode,
+  ExternalSkillSourceConfig,
 } from "../types.js";
 import { useTranslation } from "../i18n/useTranslation.js";
 import { bridge } from "../api/bridge.js";
-import { SkillDetailDrawer } from "../components/skills/SkillDetailDrawer.js";
-import { CollectionDetailDrawer } from "../components/skills/CollectionDetailDrawer.js";
-import { ImportSkillModal } from "../components/skills/ImportSkillModal.js";
 
 interface SkillsPageProps {
   uxMode: UserExperienceMode;
@@ -33,47 +28,111 @@ interface SkillsPageProps {
   projectRoot?: string;
 }
 
+// Bulletproof stringifier: guarantees React Error #31 NEVER happens on any dynamic property
+const toText = (val: any, fallback = "", lang = "zh-CN"): string => {
+  if (val === null || val === undefined) return fallback;
+  if (typeof val === "string") return val;
+  if (typeof val === "number" || typeof val === "boolean") return String(val);
+  if (typeof val === "object") {
+    // If it's a localized object, e.g. { "zh-CN": "...", "en-US": "..." }
+    const localized =
+      val[lang] ||
+      val["zh-CN"] ||
+      val["en-US"] ||
+      val["ja-JP"] ||
+      val["de-DE"] ||
+      val["zh"] ||
+      val["en"];
+    if (typeof localized === "string") return localized;
+    if (localized && typeof localized !== "object") return String(localized);
+    try {
+      return Object.entries(val)
+        .map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`)
+        .join(", ");
+    } catch {
+      return fallback;
+    }
+  }
+  return String(val);
+};
+
+// Safe formatting helper to guarantee React never throws Error #31
+const safeFormatItem = (item: any): string => {
+  if (!item) return "";
+  if (typeof item === "string") return item;
+  if (typeof item === "object") {
+    try {
+      return Object.entries(item)
+        .map(([k, v]) => {
+          if (typeof v === "string") return `${k}: ${v}`;
+          if (Array.isArray(v)) {
+            return `${k}: [${v.map((sub) => (typeof sub === "object" ? JSON.stringify(sub) : String(sub))).join(", ")}]`;
+          }
+          return `${k}: ${JSON.stringify(v)}`;
+        })
+        .join(", ");
+    } catch {
+      return String(item);
+    }
+  }
+  return String(item);
+};
+
 export const SkillsPage: React.FC<SkillsPageProps> = ({
-  uxMode,
+  uxMode: _uxMode,
   projectId,
-  projectRoot,
+  projectRoot: _projectRoot,
 }) => {
-  const { t, language } = useTranslation();
+  const { language, tText } = useTranslation();
   const isZh = language.startsWith("zh");
+
+  // Skills state
   const [skills, setSkills] = useState<SkillMetadata[]>([]);
   const [loading, setLoading] = useState(false);
   const [reloading, setReloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters & Search
-  const [sourceFilter, setSourceFilter] = useState<SkillSource | "all">("all");
+  // Search & Navigation Filters
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<string>("all"); // "all", "warn", or source id
 
-  // Drawer & Highlight States
-  const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
-  const [highlightedSkillId, setHighlightedSkillId] = useState<string | null>(null);
-  const [showImportModal, setShowImportModal] = useState(false);
+  // Try-Trigger State
+  const [tryPrompt, setTryPrompt] = useState("");
 
-  // Deletion modal state
-  const [collectionToDelete, setCollectionToDelete] = useState<{ id: string; name: string; total: number } | null>(null);
-  const [skillToDelete, setSkillToDelete] = useState<SkillMetadata | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // External Sources State
+  const [externalSources, setExternalSources] = useState<ExternalSkillSourceConfig[]>([]);
+  const [isSourcesDrawerOpen, setIsSourcesDrawerOpen] = useState(false);
+  const [customPathInput, setCustomPathInput] = useState("");
+  const [isMounting, setIsMounting] = useState(false);
 
-  // Toast State
+  // Selected Detail Skill Drawer
+  const [selectedSkill, setSelectedSkill] = useState<SkillMetadata | null>(null);
+
+  // Toast
   const [toastMessage, setToastMessage] = useState<{
     title: string;
     description?: string;
     type: "success" | "error";
   } | null>(null);
 
-  const showToast = (title: string, description?: string, type: "success" | "error" = "success") => {
+  const showToast = (
+    title: string,
+    description?: string,
+    type: "success" | "error" = "success"
+  ) => {
     setToastMessage({ title, description, type });
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // 1. Load External Sources
+  const loadExternalSources = useCallback(async () => {
+    try {
+      const res = await bridge.getExternalSkillSources();
+      setExternalSources(res.sources || []);
+    } catch {}
+  }, []);
+
+  // 2. Load Skills
   const loadSkills = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -81,933 +140,899 @@ export const SkillsPage: React.FC<SkillsPageProps> = ({
       const res = await bridge.listSkills({ projectId });
       setSkills(res.skills || []);
     } catch (err: any) {
-      setError(err?.message || "Failed to load skills");
+      setError(err?.message || (isZh ? "获取技能失败" : "Failed to load skills"));
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, isZh]);
 
   useEffect(() => {
     loadSkills();
-  }, [loadSkills]);
+    loadExternalSources();
+  }, [loadSkills, loadExternalSources]);
 
-  const handleReload = async () => {
+  // Handle Full Reload / Rescan
+  const handleRescan = async () => {
     setReloading(true);
     try {
       const res = await bridge.reloadSkills();
       setSkills(res.skills || []);
-      showToast(t.skills.reloadSuccess);
+      await loadExternalSources();
+      showToast(isZh ? "已重新扫描已挂载的技能目录" : "Rescanned all mounted skill directories");
     } catch (err: any) {
-      setError(err?.message || t.skills.reloadError);
-      showToast(t.skills.reloadError, err?.message, "error");
+      showToast(isZh ? "重新扫描失败" : "Rescan failed", err?.message, "error");
     } finally {
       setReloading(false);
     }
   };
 
-  const handleToggle = async (skill: SkillMetadata, e: React.MouseEvent) => {
+  // Toggle Single Skill
+  const handleToggleSkill = async (skill: SkillMetadata, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const res = await bridge.toggleSkill(skill.id, !skill.enabled);
-      if (res.success) {
-        setSkills((prev) =>
-          prev.map((s) => (s.id === skill.id ? { ...s, enabled: !skill.enabled } : s))
-        );
-      }
-    } catch (err: any) {
-      alert(err?.message || "Failed to toggle skill");
-    }
-  };
-
-  const handleToggleCollection = async (collectionId: string, enabled: boolean) => {
-    try {
-      const res = await bridge.toggleCollection(collectionId, enabled, projectId);
-      if (res.success) {
-        setSkills((prev) =>
-          prev.map((s) => (s.collectionId === collectionId ? { ...s, enabled } : s))
-        );
-        showToast(
-          enabled ? "已启用集合内所有 Skill" : "已关闭集合内所有 Skill",
-          undefined,
-          "success"
-        );
-      }
-    } catch (err: any) {
-      showToast("操作失败", err?.message, "error");
-    }
-  };
-
-  const handleDeleteCollection = async (collectionId: string, collSkills?: SkillMetadata[]) => {
-    const toDelete = collSkills || skills.filter((s) => s.collectionId === collectionId);
-    if (toDelete.length === 0) return;
-    setIsDeleting(true);
-    try {
-      await Promise.all(
-        toDelete.map((s) => bridge.deleteSkill(s.id, s.source as any, projectId, projectRoot))
+      const nextState = !skill.enabled;
+      await bridge.toggleSkill(skill.id, nextState);
+      setSkills((prev) =>
+        prev.map((s) => (s.id === skill.id ? { ...s, enabled: nextState } : s))
       );
-      await loadSkills();
-      if (selectedCollectionId === collectionId) {
-        setSelectedCollectionId(null);
+      if (selectedSkill?.id === skill.id) {
+        setSelectedSkill({ ...selectedSkill, enabled: nextState });
       }
-      if (toDelete.some((s) => s.id === selectedSkillId)) {
-        setSelectedSkillId(null);
-      }
-      setCollectionToDelete(null);
-      showToast("集合删除成功", `已成功删除集合及其包含的 ${toDelete.length} 个子技能。`);
     } catch (err: any) {
-      showToast("删除集合失败", err?.message, "error");
-    } finally {
-      setIsDeleting(false);
+      showToast(isZh ? "切换状态失败" : "Failed to toggle skill", err?.message, "error");
     }
   };
 
-  const handleDeleteSkill = async (skill: SkillMetadata) => {
-    setIsDeleting(true);
+  // Toggle Source
+  const handleToggleSource = async (id: string, enabled: boolean) => {
     try {
-      const res = await bridge.deleteSkill(skill.id, skill.source as any, projectId, projectRoot);
-      if (res.success) {
-        await loadSkills();
-        if (selectedSkillId === skill.id) {
-          setSelectedSkillId(null);
-        }
-        setSkillToDelete(null);
-        showToast("技能删除成功", `技能 ${skill.id} 已从磁盘完全删除。`);
-      } else {
-        showToast("删除技能失败", res.error || "Failed to delete skill", "error");
-      }
+      const res = await bridge.toggleExternalSkillSource(id, enabled);
+      setExternalSources(res.sources || []);
+      await loadSkills();
+      showToast(isZh ? "已更新来源状态" : "Updated source status");
     } catch (err: any) {
-      showToast("删除技能失败", err?.message, "error");
+      showToast(isZh ? "更新来源失败" : "Failed to update source", err?.message, "error");
+    }
+  };
+
+  // Mount Custom External Directory
+  const handleMountCustomPath = async (pathToMount?: string) => {
+    const targetPath = (pathToMount || customPathInput).trim();
+    if (!targetPath) return;
+    setIsMounting(true);
+    try {
+      const res = await bridge.addExternalSkillSource(targetPath);
+      setExternalSources(res.sources || []);
+      if (!pathToMount) setCustomPathInput("");
+      await loadSkills();
+      showToast(
+        isZh
+          ? "已成功挂载外部技能目录 (零拷贝直读)"
+          : "Successfully mounted skill directory (Zero-Copy)"
+      );
+    } catch (err: any) {
+      showToast(isZh ? "挂载失败" : "Failed to mount directory", err?.message, "error");
     } finally {
-      setIsDeleting(false);
+      setIsMounting(false);
     }
   };
 
-  const handleImportSuccess = (imported: SkillMetadata) => {
-    const name =
-      imported.name[language] ||
-      imported.name["zh-CN"] ||
-      imported.name["en-US"] ||
-      imported.id;
-    showToast(t.skills.importSuccess, `${name} (${imported.id})`);
-    setSourceFilter("user");
-    setHighlightedSkillId(imported.id);
-    loadSkills();
-    setTimeout(() => {
-      setHighlightedSkillId(null);
-    }, 4000);
-  };
-
-  const getRiskBadge = (risk: string) => {
-    switch (risk) {
-      case "low":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60";
-      case "medium":
-        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60";
-      case "high":
-        return "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60";
-      default:
-        return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
+  // Remove / Delete External Source
+  const handleRemoveSource = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await bridge.removeExternalSkillSource(id);
+      setExternalSources(res.sources || []);
+      await loadSkills();
+      showToast(isZh ? "已成功移除该挂载目录" : "Successfully removed mounted directory");
+    } catch (err: any) {
+      showToast(isZh ? "移除失败" : "Failed to remove source", err?.message, "error");
     }
   };
 
-  const getCategoryLabel = (cat: string) => {
-    switch (cat) {
-      case "inspection":
-        return t.skills.categoryInspection;
-      case "debugging":
-        return t.skills.categoryDebugging;
-      case "testing":
-        return t.skills.categoryTesting;
-      case "refactoring":
-        return t.skills.categoryRefactoring;
-      case "review":
-        return t.skills.categoryReview;
-      case "runtime":
-        return t.skills.categoryRuntime;
-      case "maintenance":
-        return t.skills.categoryMaintenance;
-      default:
-        return t.skills.categoryGeneral;
-    }
-  };
+  // Dynamic Try-Trigger Hit Matching
+  const hitSkillIds = useMemo(() => {
+    const q = tryPrompt.trim().toLowerCase();
+    if (!q) return new Set<string>();
 
-  const collections = useMemo(() => {
-    const map = new Map<
-      string,
-      { id: string; name: string; total: number; enabled: number; source: SkillSource }
-    >();
+    const hits = new Set<string>();
     for (const s of skills) {
-      if (s.collectionId) {
-        let entry = map.get(s.collectionId);
-        if (!entry) {
-          entry = {
-            id: s.collectionId,
-            name: s.collectionName || s.collectionId.replace(/^collection\./, ""),
-            total: 0,
-            enabled: 0,
-            source: s.source,
-          };
-          map.set(s.collectionId, entry);
-        }
-        entry.total++;
-        if (s.enabled) entry.enabled++;
+      if (!s.enabled || s.isAvailable === false) continue;
+      const triggers = s.triggers || [];
+      const hasHit = triggers.some((t) => {
+        const str = safeFormatItem(t).toLowerCase();
+        return q.includes(str) || str.includes(q);
+      });
+      if (hasHit) {
+        hits.add(s.id);
       }
     }
-    return Array.from(map.values());
-  }, [skills]);
+    return hits;
+  }, [tryPrompt, skills]);
 
-  const filteredCollections = useMemo(() => {
-    return collections.filter((coll) => {
-      if (sourceFilter !== "all" && coll.source !== sourceFilter) {
-        return false;
-      }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        if (coll.name.toLowerCase().includes(q) || coll.id.toLowerCase().includes(q)) {
-          return true;
-        }
-        const collSkills = skills.filter((s) => s.collectionId === coll.id);
-        return collSkills.some((s) => {
-          const nameZh = (s.name["zh-CN"] || "").toLowerCase();
-          const nameEn = (s.name["en-US"] || "").toLowerCase();
-          const descZh = (s.description["zh-CN"] || "").toLowerCase();
-          const descEn = (s.description["en-US"] || "").toLowerCase();
-          return (
-            s.id.toLowerCase().includes(q) ||
-            nameZh.includes(q) ||
-            nameEn.includes(q) ||
-            descZh.includes(q) ||
-            descEn.includes(q) ||
-            s.triggers.some((t) => t.toLowerCase().includes(q))
-          );
-        });
-      }
-      return true;
-    });
-  }, [collections, skills, sourceFilter, searchQuery]);
-
+  // Filter skills based on Active Nav Filter and Search
   const filteredSkills = useMemo(() => {
-    return skills.filter((skill) => {
-      // Child skills of a collection MUST NOT render in the top-level grid
-      if (skill.collectionId) {
-        return false;
-      }
-      if (sourceFilter !== "all" && skill.source !== sourceFilter) {
-        return false;
-      }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const nameZh = (skill.name["zh-CN"] || "").toLowerCase();
-        const nameEn = (skill.name["en-US"] || "").toLowerCase();
-        const descZh = (skill.description["zh-CN"] || "").toLowerCase();
-        const descEn = (skill.description["en-US"] || "").toLowerCase();
-        const idMatch = skill.id.toLowerCase().includes(q);
-        const triggerMatch = skill.triggers.some((t) => t.toLowerCase().includes(q));
-        const toolMatch = skill.tools.some((tl) => tl.toLowerCase().includes(q));
+    const q = searchQuery.trim().toLowerCase();
+    return skills
+      .filter((s) => {
+        const isOrchestrator = s.id === "nexus.meta-orchestrator";
 
-        return (
-          idMatch ||
-          nameZh.includes(q) ||
-          nameEn.includes(q) ||
-          descZh.includes(q) ||
-          descEn.includes(q) ||
-          triggerMatch ||
-          toolMatch
-        );
-      }
-      return true;
-    });
-  }, [skills, sourceFilter, searchQuery]);
+        // 1. Nav Filter
+        if (activeFilter === "all") {
+          // Default user view: pure blank unless external skill or the meta-orchestrator
+          if (s.source === "builtin" && !isOrchestrator) {
+            return false;
+          }
+        } else if (activeFilter === "warn") {
+          if (s.isAvailable !== false && !s.readError) return false;
+        } else if (activeFilter === "builtin") {
+          if (s.source !== "builtin" && s.originAgent !== "gb") return false;
+        } else {
+          // Match specific external source by ID or path
+          const matchingSource = externalSources.find((src) => src.id === activeFilter);
+          if (matchingSource) {
+            const normSource = matchingSource.path.toLowerCase().replace(/\\/g, "/").replace(/\/+$/, "");
+            const normSkill = (s.sourcePath || "").toLowerCase().replace(/\\/g, "/");
+            if (
+              !normSkill.startsWith(normSource) &&
+              !normSkill.includes(normSource) &&
+              s.originAgent !== matchingSource.id
+            ) {
+              return false;
+            }
+          } else if (s.originAgent !== activeFilter && s.source !== activeFilter) {
+            return false;
+          }
+        }
 
-  const hasAnyItems = filteredSkills.length > 0 || filteredCollections.length > 0;
-  const isUserFilterEmpty = sourceFilter === "user" && !hasAnyItems;
-  const isProjectFilterEmpty = sourceFilter === "project" && !hasAnyItems;
+        // 2. Search query
+        if (q) {
+          const nameStr = (
+            typeof s.name === "string" ? s.name : `${s.name?.["en-US"]} ${s.name?.["zh-CN"]}`
+          ).toLowerCase();
+          const descStr = (
+            typeof s.description === "string"
+              ? s.description
+              : `${s.description?.["en-US"]} ${s.description?.["zh-CN"]}`
+          ).toLowerCase();
+          const trigStr = (s.triggers || []).map(safeFormatItem).join(" ").toLowerCase();
+          const toolStr = (s.tools || []).map(safeFormatItem).join(" ").toLowerCase();
+          const match =
+            nameStr.includes(q) ||
+            descStr.includes(q) ||
+            trigStr.includes(q) ||
+            toolStr.includes(q) ||
+            s.id.toLowerCase().includes(q);
+          if (!match) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        // Meta-orchestrator skill is pinned at the very top!
+        if (a.id === "nexus.meta-orchestrator") return -1;
+        if (b.id === "nexus.meta-orchestrator") return 1;
+        return 0;
+      });
+  }, [skills, activeFilter, searchQuery, externalSources]);
+
+  // Dynamic Navigation counts
+  const navCounts = useMemo(() => {
+    const visibleAll = skills.filter((s) => s.source !== "builtin" || s.id === "nexus.meta-orchestrator");
+    const counts: Record<string, number> = {
+      all: visibleAll.length,
+      warn: visibleAll.filter((s) => s.isAvailable === false || Boolean(s.readError)).length,
+    };
+    for (const src of externalSources) {
+      const normSource = src.path.toLowerCase().replace(/\\/g, "/").replace(/\/+$/, "");
+      counts[src.id] = skills.filter((s) => {
+        if (s.originAgent === src.id) return true;
+        if (!s.sourcePath) return false;
+        const normSkill = s.sourcePath.toLowerCase().replace(/\\/g, "/");
+        return normSkill.startsWith(normSource) || normSkill.includes(normSource);
+      }).length;
+    }
+    return counts;
+  }, [skills, externalSources]);
+
+  const enabledSourcesCount = externalSources.filter((s) => s.enabled).length;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 space-y-6">
+    <div className="flex-1 flex flex-col h-full min-h-0 bg-[#f8faf9] dark:bg-[#070e0c] text-slate-800 dark:text-emerald-100 font-sans select-none overflow-hidden">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-start gap-3 p-4 rounded-xl shadow-2xl bg-white dark:bg-[#0d1320] border border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-4 duration-200 max-w-sm">
-          {toastMessage.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-          ) : (
-            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-          )}
+        <div className="fixed top-5 right-5 z-[80] max-w-sm p-3.5 rounded-xl shadow-xl bg-white dark:bg-[#0d1613] border border-emerald-500/30 text-xs flex items-start gap-2.5 animate-in slide-in-from-top-2 duration-200">
+          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+            <div className="font-semibold text-slate-900 dark:text-white">
               {toastMessage.title}
             </div>
             {toastMessage.description && (
-              <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 break-words">
+              <div className="text-slate-500 dark:text-emerald-400/80 mt-0.5 text-[11px] truncate">
                 {toastMessage.description}
               </div>
             )}
           </div>
           <button
             onClick={() => setToastMessage(null)}
-            className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-emerald-300"
           >
-            <X className="w-3.5 h-3.5" />
+            ✕
           </button>
         </div>
       )}
 
-      {/* Top Header & Action Row */}
-      <div className="flex flex-col gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-              <Sparkles className="w-5 h-5 text-sky-600 dark:text-sky-400" />
-              <span>{t.skills.title}</span>
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              {t.skills.subtitle}
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2.5 self-end sm:self-auto">
-            <button
-              onClick={() => setShowImportModal(true)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-xs transition active:scale-95"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>{t.skills.importButton}</span>
-            </button>
-
-            <button
-              onClick={handleReload}
-              disabled={reloading}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition shadow-2xs disabled:opacity-50"
-              title={t.skills.reloadButton}
-            >
-              <RotateCw
-                className={`w-3.5 h-3.5 ${reloading ? "animate-spin text-sky-600 dark:text-sky-400" : "text-slate-500 dark:text-slate-400"}`}
-              />
-              <span>{reloading ? t.skills.reloading : t.skills.reloadButton}</span>
-            </button>
-          </div>
+      {/* Top Header Bar */}
+      <header className="flex items-center gap-3 px-6 py-3.5 border-b border-slate-200 dark:border-emerald-500/20 bg-white dark:bg-[#0e1714] shrink-0">
+        <div className="flex items-center gap-2 mr-2">
+          <Sparkles className="w-5 h-5 text-emerald-500" />
+          <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
+            {tText("技能中心", "Skills Hub", "スキルハブ", "Skill-Zentrum")}
+          </h1>
         </div>
 
-        {/* Search & Source Filter Tabs */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-          {/* Search Bar */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.skills.searchPlaceholder}
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition shadow-2xs"
-            />
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-500/60" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={tText(
+              "搜索技能名称、触发词或依赖工具...",
+              "Search by skill name, trigger keywords, or tools...",
+              "スキル名、トリガー、ツールを検索...",
+              "Nach Skill-Name, Triggern oder Tools suchen..."
+            )}
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-100 dark:bg-emerald-950/30 border border-slate-200 dark:border-emerald-500/20 rounded-lg text-xs text-slate-800 dark:text-emerald-100 placeholder-slate-400 dark:placeholder-emerald-500/40 focus:outline-none focus:border-emerald-500"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Open Sources Drawer Button */}
+          <button
+            type="button"
+            onClick={() => setIsSourcesDrawerOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-emerald-950/40 hover:bg-slate-200 dark:hover:bg-emerald-900/40 text-slate-700 dark:text-emerald-300 border border-slate-200 dark:border-emerald-500/20 rounded-lg text-xs font-semibold transition cursor-pointer"
+          >
+            <Layers className="w-3.5 h-3.5 text-emerald-500" />
+            <span>
+              {tText(
+                `挂载管理 ${enabledSourcesCount}/${externalSources.length}`,
+                `Sources ${enabledSourcesCount}/${externalSources.length}`,
+                `ソース管理 ${enabledSourcesCount}/${externalSources.length}`,
+                `Quellen ${enabledSourcesCount}/${externalSources.length}`
+              )}
+            </span>
+          </button>
+
+          {/* Rescan Button */}
+          <button
+            type="button"
+            onClick={handleRescan}
+            disabled={reloading || loading}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-emerald-950/40 hover:bg-slate-200 dark:hover:bg-emerald-900/40 text-slate-700 dark:text-emerald-300 border border-slate-200 dark:border-emerald-500/20 rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${reloading ? "animate-spin" : ""}`} />
+            <span>{tText("重新扫描", "Rescan", "再スキャン", "Neu scannen")}</span>
+          </button>
+
+          {/* Mount Directory Button */}
+          <button
+            type="button"
+            onClick={() => setIsSourcesDrawerOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm transition cursor-pointer"
+          >
+            <FolderPlus className="w-3.5 h-3.5" />
+            <span>{tText("挂载技能目录", "Mount Directory", "ディレクトリをマウント", "Verzeichnis mounten")}</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Main Workspace Body */}
+      <div className="flex-1 flex min-h-0 overflow-hidden">
+        {/* Left Nav Filter Sidebar */}
+        <nav className="w-56 border-r border-slate-200 dark:border-emerald-500/20 bg-white dark:bg-[#0b1310] p-3 space-y-4 shrink-0 overflow-y-auto">
+          <div className="space-y-1">
+            <button
+              type="button"
+              onClick={() => setActiveFilter("all")}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
+                activeFilter === "all"
+                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold"
+                  : "text-slate-600 dark:text-emerald-400/70 hover:bg-slate-100 dark:hover:bg-emerald-950/30"
+              }`}
+            >
+              <span>{tText("全部技能", "All Skills", "すべてのスキル", "Alle Skills")}</span>
+              <span className="font-mono text-[11px] opacity-75">{navCounts.all}</span>
+            </button>
           </div>
 
-          {/* Clean Source Filter Tabs (All / Builtin / User / Project) */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-2xs">
-            {(
-              [
-                { id: "all", label: t.skills.filterAll },
-                { id: "builtin", label: t.skills.filterBuiltin },
-                { id: "user", label: t.skills.filterUser },
-                { id: "project", label: t.skills.filterProject },
-              ] as const
-            ).map((tab) => (
+          {/* User Mounted Sources Section */}
+          {externalSources.length > 0 && (
+            <div className="space-y-1">
+              <h4 className="px-3 text-[11px] font-semibold text-slate-400 dark:text-emerald-500/50 uppercase tracking-wider">
+                {tText("已挂载目录来源", "Mounted Sources", "マウントされたソース", "Gemountete Quellen")}
+              </h4>
+
+              {externalSources.map((source) => (
+                <button
+                  key={source.id}
+                  type="button"
+                  onClick={() => setActiveFilter(source.id)}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                    activeFilter === source.id
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold"
+                      : "text-slate-600 dark:text-emerald-400/70 hover:bg-slate-100 dark:hover:bg-emerald-950/30"
+                  }`}
+                >
+                  <span className="truncate pr-1">{source.name}</span>
+                  <span className="font-mono text-[11px] opacity-75 shrink-0">
+                    {navCounts[source.id] || 0}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Needs Attention Section (Only when errors exist) */}
+          {navCounts.warn > 0 && (
+            <div className="space-y-1">
+              <h4 className="px-3 text-[11px] font-semibold text-slate-400 dark:text-emerald-500/50 uppercase tracking-wider">
+                {tText("需要处理", "Needs Attention", "対応が必要", "Erfordert Aufmerksamkeit")}
+              </h4>
               <button
-                key={tab.id}
-                onClick={() => setSourceFilter(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  sourceFilter === tab.id
-                    ? "bg-white dark:bg-[#121a2c] text-sky-600 dark:text-sky-400 font-semibold shadow-xs border border-slate-200/60 dark:border-slate-700"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                type="button"
+                onClick={() => setActiveFilter("warn")}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                  activeFilter === "warn"
+                    ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 font-semibold"
+                    : "text-slate-600 dark:text-emerald-400/70 hover:bg-slate-100 dark:hover:bg-emerald-950/30"
                 }`}
               >
-                {tab.label}
+                <div className="flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  <span>{tText("读取异常 / 损坏", "Read Errors", "読み込みエラー", "Lesefehler")}</span>
+                </div>
+                <span className="font-mono text-[11px] opacity-75">{navCounts.warn}</span>
               </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Error Banner */}
-      {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2.5">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <div className="py-24 text-center text-sm text-slate-500 dark:text-slate-400">
-          {t.common.loading}...
-        </div>
-      )}
-
-      {/* Empty States */}
-      {!loading && !hasAnyItems && (
-        <div className="py-20 flex flex-col items-center justify-center text-center p-8 rounded-2xl bg-white/60 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800 border-dashed shadow-2xs">
-          <div className="p-3.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 mb-3 shadow-2xs">
-            <Sparkles className="w-8 h-8" />
-          </div>
-
-          {isUserFilterEmpty ? (
-            <>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1.5">
-                {t.skills.emptyUserSkills}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mb-5 leading-relaxed">
-                {t.skills.emptyUserSkillsDesc}
-              </p>
-              <button
-                onClick={() => setShowImportModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-xs transition"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{t.skills.importButton}</span>
-              </button>
-            </>
-          ) : isProjectFilterEmpty ? (
-            <>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1.5">
-                {t.skills.emptyProjectSkills}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mb-5 leading-relaxed">
-                {t.skills.emptyProjectSkillsDesc}
-              </p>
-              <button
-                onClick={() => setShowImportModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-xs transition"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{t.skills.importButton}</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">
-                {t.skills.emptySkills}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
-                {t.skills.emptySkillsDesc}
-              </p>
-            </>
+            </div>
           )}
-        </div>
-      )}
+        </nav>
 
-      {/* Skills Cards Grid (Collections + Standalone Skills) */}
-      {!loading && hasAnyItems && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {/* Collection Cards */}
-          {filteredCollections.map((coll) => {
-            const isAllEnabled = coll.enabled === coll.total && coll.total > 0;
-            const isNoneEnabled = coll.enabled === 0;
-            const isMixed = !isAllEnabled && !isNoneEnabled;
+        {/* Center Main Content Area */}
+        <main className="flex-1 flex flex-col min-w-0 min-h-0 overflow-y-auto p-5 space-y-4">
+          {/* Try-Trigger Interactive Box */}
+          <div className="p-3.5 rounded-xl border border-dashed border-slate-300 dark:border-emerald-500/30 bg-white dark:bg-[#0e1714] space-y-1.5 shadow-2xs">
+            <input
+              type="text"
+              value={tryPrompt}
+              onChange={(e) => setTryPrompt(e.target.value)}
+              placeholder={tText(
+                "试触发：输入自然语言指令，看看哪些技能会被精准匹配",
+                "Try Trigger: enter a task prompt to see which skills will auto-match",
+                "トリガー試行: 自然言語を入力してマッチするスキルを確認",
+                "Trigger-Test: Geben Sie eine Anweisung ein, um passende Skills zu sehen"
+              )}
+              className="w-full bg-transparent border-none text-xs font-medium text-slate-900 dark:text-emerald-100 placeholder-slate-400 dark:placeholder-emerald-500/40 focus:outline-none"
+            />
+            <div className="text-[11px] text-slate-500 dark:text-emerald-400/70">
+              {tryPrompt.trim() ? (
+                hitSkillIds.size > 0 ? (
+                  <span>
+                    {tText("会自动选中 ", "Will auto-match ", "自動マッチ: ", "Wird automatisch übereinstimmen: ")}
+                    <b className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                      {hitSkillIds.size}
+                    </b>
+                    {tText(" 个技能：", " skills: ", " 個のスキル: ", " Skills: ")}
+                    <span className="font-mono text-emerald-700 dark:text-emerald-300 font-semibold">
+                      {Array.from(hitSkillIds).slice(0, 5).join(", ")}
+                      {hitSkillIds.size > 5 ? "..." : ""}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-amber-600 dark:text-amber-400">
+                    {tText(
+                      "未匹配到任何技能。可为技能补充触发词。",
+                      "No skills matched. You can add trigger keywords to relevant skills.",
+                      "マッチするスキルがありません。トリガーキーワードを追加できます。",
+                      "Keine Skills gefunden. Fügen Sie Trigger-Keywords hinzu."
+                    )}
+                  </span>
+                )
+              ) : (
+                <span>
+                  {tText(
+                    "例如：帮我调一下 bug、分析项目结构、运行单元测试",
+                    "e.g.: Help me debug this bug, inspect project structure, or run tests",
+                    "例: バグを修正して、プロジェクト構造を分析、テストを実行",
+                    "z. B.: Fehler beheben, Projektstruktur analysieren, Tests ausführen"
+                  )}
+                </span>
+              )}
+            </div>
+          </div>
 
-            return (
-              <div
-                key={coll.id}
-                onClick={() => setSelectedCollectionId(coll.id)}
-                className="group p-4 rounded-xl bg-gradient-to-br from-white to-sky-50/30 dark:from-[#0d1320] dark:to-sky-950/20 border border-sky-200/80 dark:border-sky-800/50 hover:border-sky-500/60 dark:hover:border-sky-500/60 transition-all cursor-pointer flex flex-col justify-between hover:shadow-md"
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs flex items-center justify-between">
+              <span>{toText(error)}</span>
+              <button
+                onClick={() => setError(null)}
+                className="text-xs text-rose-500 hover:underline cursor-pointer"
               >
-                <div>
-                  {/* Card Header */}
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="p-1.5 rounded-lg bg-sky-100 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 text-sky-600 dark:text-sky-400 shrink-0">
-                        <Layers className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-sky-600 dark:group-hover:text-sky-400 transition">
-                          {coll.name}
-                        </h3>
-                        {uxMode === "advanced" && (
-                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate">
-                            {coll.id}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                ✕
+              </button>
+            </div>
+          )}
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCollectionToDelete({ id: coll.id, name: coll.name, total: coll.total });
-                        }}
-                        className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-80 group-hover:opacity-100"
-                        title="删除集合"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-emerald-500/60 space-y-2">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              <div className="text-xs">{tText("正在加载技能列表...", "Loading skills...", "スキルを読み込み中...", "Skills werden geladen...")}</div>
+            </div>
+          ) : filteredSkills.length === 0 ? (
+            /* Pure Blank Initial Empty State */
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center border border-dashed border-slate-300 dark:border-emerald-500/20 rounded-2xl bg-white/60 dark:bg-[#0e1714]/60 space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-sm">
+                <FolderOpen className="w-7 h-7" />
+              </div>
+              <div className="space-y-1 max-w-md">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  {tText("暂未挂载任何技能目录", "No Skill Directories Mounted", "スキルディレクトリがマウントされていません", "Keine Skill-Verzeichnisse gemountet")}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-emerald-400/70 leading-relaxed">
+                  {tText(
+                    "Nexus 以纯净无捆绑模式启动。您可以点击下方按钮挂载自己的本地技能文件夹，零拷贝直读，随时可解除挂载。",
+                    "Nexus starts in pure mode with zero preloaded bloat. Click below to mount your local skill directories with zero-copy reading.",
+                    "Nexusはクリーンな状態で起動します。下のボタンからローカルディレクトリをマウントできます。",
+                    "Nexus startet im reinen Modus ohne Ballast. Klicken Sie unten, um lokale Skill-Verzeichnisse zu mounten."
+                  )}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSourcesDrawerOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition cursor-pointer"
+              >
+                <FolderPlus className="w-4 h-4" />
+                <span>{tText("挂载本地技能目录", "Mount Skill Directory", "ディレクトリをマウント", "Skill-Verzeichnis mounten")}</span>
+              </button>
+            </div>
+          ) : filteredSkills.length === 0 ? (
+            <div className="text-center py-16 text-slate-400 dark:text-emerald-500/60 text-xs">
+              {tText(
+                "没有匹配的技能，换个关键词或分类试试。",
+                "No matching skills found. Try another keyword or filter.",
+                "マッチするスキルがありません。別のキーワードまたはフィルターをお試しください。",
+                "Keine passenden Skills gefunden. Versuchen Sie ein anderes Stichwort oder einen anderen Filter."
+              )}
+            </div>
+          ) : (
+            /* Skills List */
+            <div className="border border-slate-200 dark:border-emerald-500/20 rounded-xl divide-y divide-slate-200 dark:divide-emerald-500/10 overflow-hidden bg-white dark:bg-[#0e1714]">
+              {filteredSkills.map((skill) => {
+                const displayName = toText(
+                  typeof skill.name === "string"
+                    ? skill.name
+                    : skill.name?.[language] ||
+                      skill.name?.["en-US"] ||
+                      skill.name?.["zh-CN"] ||
+                      skill.id,
+                  skill.id,
+                  language
+                );
+                const desc = toText(
+                  typeof skill.description === "string"
+                    ? skill.description
+                    : skill.description?.[language] ||
+                      skill.description?.["en-US"] ||
+                      skill.description?.["zh-CN"] ||
+                      skill.summary ||
+                      "",
+                  "",
+                  language
+                );
 
-                      {/* Collection Master Toggle */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleCollection(coll.id, !isAllEnabled);
-                        }}
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          isAllEnabled
-                            ? "bg-sky-600 dark:bg-sky-500"
-                            : isMixed
-                            ? "bg-amber-500"
-                            : "bg-slate-300 dark:bg-slate-700"
-                        }`}
-                        title={isAllEnabled ? "全部关闭" : "全部启用"}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                            isAllEnabled
-                              ? "translate-x-4"
-                              : isMixed
-                              ? "translate-x-2"
-                              : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
+                const isHit = hitSkillIds.size > 0 && hitSkillIds.has(skill.id);
+                const isDimmed = hitSkillIds.size > 0 && !hitSkillIds.has(skill.id);
+                const hasReadError = skill.isAvailable === false || Boolean(skill.readError);
+                const isManualOnly = (skill.triggers || []).length === 0;
 
-                  {/* Badges Strip */}
-                  <div className="flex items-center gap-1.5 flex-wrap mb-2.5">
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800/60 font-semibold">
-                      用户 Skill 集合
-                    </span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
-                      {coll.total} 个 Skill
-                    </span>
-                    <span
-                      className={`text-[10px] font-medium px-2 py-0.5 rounded-full border flex items-center gap-1 ${
-                        isAllEnabled
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60"
-                          : isMixed
-                          ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60"
-                          : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                return (
+                  <div
+                    key={skill.id}
+                    onClick={() => setSelectedSkill(skill)}
+                    className={`flex items-center gap-3.5 px-4 py-3 cursor-pointer transition ${
+                      isHit
+                        ? "bg-emerald-500/15 dark:bg-emerald-950/50"
+                        : isDimmed
+                        ? "opacity-35"
+                        : "hover:bg-emerald-500/5 dark:hover:bg-emerald-950/20"
+                    }`}
+                  >
+                    {/* High-Contrast Beautiful Toggle Switch */}
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={skill.enabled}
+                      onClick={(e) => handleToggleSkill(skill, e)}
+                      title={skill.enabled ? tText("已启用", "Enabled", "有効", "Aktiviert") : tText("已禁用", "Disabled", "無効", "Deaktiviert")}
+                      className={`relative inline-flex items-center h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out border-2 border-transparent focus:outline-none ${
+                        skill.enabled
+                          ? "bg-emerald-600 dark:bg-emerald-500"
+                          : "bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600"
                       }`}
                     >
                       <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          isAllEnabled ? "bg-emerald-500" : isMixed ? "bg-amber-500" : "bg-slate-400"
+                        className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                          skill.enabled ? "translate-x-4" : "translate-x-0.5"
                         }`}
                       />
-                      <span>
-                        {coll.enabled} / {coll.total} 已启用
-                      </span>
-                    </span>
-                  </div>
+                    </button>
 
-                  {/* Description */}
-                  <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-3">
-                    包含 {coll.total} 个专用技能。已启用的技能可供 ChatGPT 自动发现和执行。
-                  </p>
-                </div>
-
-                {/* Card Footer */}
-                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
-                    <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-                    <span>Skill 集合包</span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-sky-600 dark:text-sky-400 group-hover:translate-x-0.5 transition-transform text-[11px] font-semibold">
-                    <span>管理集合 →</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Standalone Skill Cards */}
-          {filteredSkills.map((skill) => {
-            const displayName =
-              skill.name[language] ||
-              skill.name["zh-CN"] ||
-              skill.name["en-US"] ||
-              skill.id;
-
-            const displayDesc =
-              skill.description[language] ||
-              skill.description["zh-CN"] ||
-              skill.description["en-US"] ||
-              "";
-
-            const isBuiltin = skill.source === "builtin";
-            const isConflict = skill.validationStatus === "conflict";
-            const isInvalid = skill.validationStatus === "invalid";
-            const hasWarning = Boolean(skill.securityWarning);
-
-            return (
-              <div
-                key={skill.id}
-                onClick={() => setSelectedSkillId(skill.id)}
-                className={`group p-4 rounded-xl bg-white dark:bg-[#0d1320] border transition-all cursor-pointer flex flex-col justify-between hover:shadow-md ${
-                  skill.id === highlightedSkillId
-                    ? "ring-2 ring-sky-500 border-sky-500 bg-sky-50/30 dark:bg-sky-950/30 shadow-lg scale-[1.01]"
-                    : !skill.enabled
-                    ? "opacity-60 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40"
-                    : isConflict || isInvalid
-                    ? "border-rose-300 dark:border-rose-800/60 hover:border-rose-500"
-                    : hasWarning
-                    ? "border-amber-300 dark:border-amber-800/60 hover:border-amber-500"
-                    : "border-slate-200 dark:border-slate-800 hover:border-sky-500/50"
-                }`}
-              >
-                <div>
-                  {/* Card Header */}
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800/60 text-sky-600 dark:text-sky-400 shrink-0">
-                        <Sparkles className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-sky-600 dark:group-hover:text-sky-400 transition">
+                    {/* Skill Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-semibold text-slate-900 dark:text-emerald-100 truncate">
                           {displayName}
-                        </h3>
-                        {uxMode === "advanced" && (
-                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate">
-                            {skill.id}
-                          </div>
+                        </span>
+                        {skill.id === "nexus.meta-orchestrator" && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0 shadow-2xs">
+                            <Sparkles className="w-3 h-3 text-amber-500" />
+                            {tText("四元工具调度中枢", "Core Meta-Orchestrator", "メタオーケストレーター中核", "Meta-Orchestrator Kern")}
+                          </span>
                         )}
+                        <span className="font-mono text-[11px] text-slate-400 dark:text-emerald-500/60 truncate">
+                          {skill.id}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-emerald-400/60 truncate mt-0.5">
+                        {desc}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {!isBuiltin && (
+                    {/* Right Flags & Risk Dot */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {hasReadError && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded border border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium">
+                          {tText("读取异常", "Read Error", "読み込みエラー", "Lesefehler")}
+                        </span>
+                      )}
+
+                      {isManualOnly && !hasReadError && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium">
+                          {tText("仅手动", "Manual Only", "手動のみ", "Nur manuell")}
+                        </span>
+                      )}
+
+                      {/* Risk Dot */}
+                      <span
+                        title={
+                          skill.risk === "high"
+                            ? tText("高风险：需要人工核准", "High Risk: Approval Required", "高リスク: 承認が必要", "Hohes Risiko: Genehmigung erforderlich")
+                            : skill.risk === "medium"
+                            ? tText("中风险", "Medium Risk", "中リスク", "Mittleres Risiko")
+                            : tText("安全运行", "Safe / Low Risk", "安全", "Sicher / Geringes Risiko")
+                        }
+                        className={`w-2 h-2 rounded-full ${
+                          skill.risk === "high"
+                            ? "bg-rose-500"
+                            : skill.risk === "medium"
+                            ? "bg-amber-500"
+                            : "bg-emerald-500"
+                        }`}
+                      />
+
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-emerald-500/40" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* --- Right Slide-Over Detail Drawer --- */}
+      {selectedSkill && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-xs cursor-pointer"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedSkill(null);
+          }}
+        >
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md h-full bg-white dark:bg-[#0c1411] border-l border-slate-200 dark:border-emerald-500/20 shadow-2xl p-6 overflow-y-auto space-y-5 animate-in slide-in-from-right duration-200 cursor-default"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  {toText(
+                    typeof selectedSkill.name === "string"
+                      ? selectedSkill.name
+                      : selectedSkill.name?.[language] || selectedSkill.name?.["en-US"] || selectedSkill.id,
+                    selectedSkill.id,
+                    language
+                  )}
+                </h2>
+                <div className="font-mono text-xs text-slate-400 dark:text-emerald-500/60 mt-0.5">
+                  {toText(selectedSkill.id)}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedSkill(null)}
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-emerald-950/50 text-slate-400 dark:text-emerald-400/70 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Read Error Callout */}
+            {selectedSkill.readError && (
+              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs space-y-1">
+                <div className="font-semibold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                  <span>{tText("读取异常说明", "Read Error", "読み込みエラーの説明", "Erklärung zum Lesefehler")}</span>
+                </div>
+                <div className="font-mono text-[11px] leading-relaxed">
+                  {toText(selectedSkill.readError)}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div className="space-y-1 text-xs text-slate-600 dark:text-emerald-200/80 leading-relaxed">
+              <div className="text-[11px] font-semibold uppercase text-slate-400 dark:text-emerald-500/60 tracking-wider">
+                {tText("技能描述", "Description", "スキルの説明", "Skill-Beschreibung")}
+              </div>
+              <div>
+                {toText(
+                  typeof selectedSkill.description === "string"
+                    ? selectedSkill.description
+                    : selectedSkill.description?.[language] ||
+                      selectedSkill.description?.["en-US"] ||
+                      selectedSkill.summary ||
+                      tText("暂无描述", "No description provided.", "説明はありません。", "Keine Beschreibung verfügbar."),
+                  tText("暂无描述", "No description provided.", "説明はありません。", "Keine Beschreibung verfügbar."),
+                  language
+                )}
+              </div>
+            </div>
+
+            {/* Meta Tags */}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-emerald-950/50 text-slate-600 dark:text-emerald-300 border border-slate-200 dark:border-emerald-500/20">
+                {selectedSkill.source === "external" ? tText("外部挂载", "Mounted", "マウント済み", "Gemountet") : tText("内置", "Built-in", "内蔵", "Integriert")}
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded-full border ${
+                  selectedSkill.risk === "high"
+                    ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
+                    : selectedSkill.risk === "medium"
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                }`}
+              >
+                {selectedSkill.risk === "high"
+                  ? tText("高风险", "High Risk", "高リスク", "Hohes Risiko")
+                  : selectedSkill.risk === "medium"
+                  ? tText("中风险", "Medium Risk", "中リスク", "Mittleres Risiko")
+                  : tText("安全 (Safe)", "Safe / Low", "安全", "Sicher / Gering")}
+              </span>
+            </div>
+
+            {/* Trigger Keywords */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold uppercase text-slate-400 dark:text-emerald-500/60 tracking-wider">
+                {tText("触发词 (Triggers)", "Triggers", "トリガー (Triggers)", "Trigger (Auslöser)")}
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {(selectedSkill.triggers || []).length > 0 ? (
+                  selectedSkill.triggers.map((t, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-emerald-950/40 text-slate-700 dark:text-emerald-200 border border-slate-200 dark:border-emerald-500/20"
+                    >
+                      {safeFormatItem(t)}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-400 dark:text-emerald-500/50">
+                    {tText("无指定触发词", "None specified", "指定されたトリガーはありません", "Keine Trigger angegeben")}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Workflow Steps */}
+            {(selectedSkill.workflow || []).length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold uppercase text-slate-400 dark:text-emerald-500/60 tracking-wider">
+                  {tText("工作流步骤 (Workflow)", "Workflow Steps", "ワークフローステップ", "Workflow-Schritte")}
+                </h3>
+                <ol className="list-decimal pl-4 space-y-1.5 text-xs text-slate-700 dark:text-emerald-200/90">
+                  {selectedSkill.workflow.map((step, idx) => (
+                    <li key={idx} className="leading-relaxed">
+                      {safeFormatItem(step)}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* Needed Tools */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold uppercase text-slate-400 dark:text-emerald-500/60 tracking-wider">
+                {tText("依赖的工具 (Required Tools)", "Required Tools", "必要なツール", "Erforderliche Tools")}
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {(selectedSkill.tools || []).length > 0 ? (
+                  selectedSkill.tools.map((tool, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 flex items-center gap-1"
+                    >
+                      <Terminal className="w-3 h-3 text-emerald-500" />
+                      <span>{safeFormatItem(tool)}</span>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-400 dark:text-emerald-500/50">
+                    {tText("未声明工具", "No specific tools required", "必要なツールは宣言されていません", "Keine speziellen Tools erforderlich")}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Physical Source Path */}
+            <div className="space-y-1 pt-2 border-t border-slate-200 dark:border-emerald-500/20">
+              <div className="text-[11px] font-semibold text-slate-400 dark:text-emerald-500/60">
+                {tText("物理路径", "Filesystem Path", "ファイルパス", "Dateisystempfad")}
+              </div>
+              <div className="text-[11px] font-mono text-slate-600 dark:text-emerald-400/80 break-all bg-slate-50 dark:bg-emerald-950/20 p-2 rounded border border-slate-200 dark:border-emerald-500/10">
+                {toText(selectedSkill.sourcePath, "N/A")}
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* --- Sources Management Drawer --- */}
+      {isSourcesDrawerOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-end bg-black/50 backdrop-blur-xs cursor-pointer"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsSourcesDrawerOpen(false);
+          }}
+        >
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md h-full bg-white dark:bg-[#0c1411] border-l border-slate-200 dark:border-emerald-500/20 shadow-2xl p-6 overflow-y-auto space-y-5 animate-in slide-in-from-right duration-200 cursor-default"
+          >
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-emerald-500/20 pb-4">
+              <div className="flex items-center gap-2">
+                <Layers className="w-5 h-5 text-emerald-500" />
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                  {tText("挂载管理", "Sources Management", "ソース管理", "Quellenverwaltung")}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSourcesDrawerOpen(false)}
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-emerald-950/50 text-slate-400 dark:text-emerald-400/70 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-emerald-400/70 leading-relaxed">
+              {tText(
+                "挂载的目录只读取，不复制。随时可以通过垃圾桶图标解除挂载并删除。",
+                "Mounted skill directories are read with zero file duplication. You can unmount and delete any path anytime.",
+                "マウントされたディレクトリは読み取り専用です。いつでもゴミ箱アイコンから解除できます。",
+                "Gemountete Verzeichnisse sind schreibgeschützt. Sie können jederzeit entfernt werden."
+              )}
+            </p>
+
+            {/* Mount Input Form (At TOP as requested) */}
+            <div className="p-3.5 rounded-xl border border-slate-200 dark:border-emerald-500/20 bg-slate-50 dark:bg-[#0e1714] space-y-2">
+              <h3 className="text-xs font-semibold text-slate-900 dark:text-emerald-100">
+                {tText("挂载本地外部目录", "Mount Local Skill Directory", "ローカル外部ディレクトリをマウント", "Lokales Skill-Verzeichnis mounten")}
+              </h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customPathInput}
+                  onChange={(e) => setCustomPathInput(e.target.value)}
+                  placeholder={tText(
+                    "输入目录绝对路径，如 D:/my-skills",
+                    "e.g.: D:/my-skills or /path/to/skills",
+                    "絶対パスを入力 (例: D:/my-skills)",
+                    "Absoluten Pfad eingeben, z. B. D:/my-skills"
+                  )}
+                  className="flex-1 px-3 py-1.5 bg-white dark:bg-emerald-950/30 border border-slate-200 dark:border-emerald-500/20 rounded-lg text-xs font-mono text-slate-800 dark:text-emerald-100 placeholder-slate-400 dark:placeholder-emerald-500/40 focus:outline-none focus:border-emerald-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleMountCustomPath()}
+                  disabled={isMounting || !customPathInput.trim()}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 flex items-center gap-1 cursor-pointer"
+                >
+                  {isMounting ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Plus className="w-3.5 h-3.5" />
+                  )}
+                  <span>{tText("添加", "Add", "追加", "Hinzufügen")}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sources List */}
+            <div className="space-y-2 pt-1">
+              <h4 className="text-[11px] font-semibold text-slate-400 dark:text-emerald-500/60 uppercase tracking-wider">
+                {tText("当前已挂载目录清单", "Currently Mounted Sources", "現在マウントされているソース", "Aktuell gemountete Quellen")}
+              </h4>
+              {externalSources.length === 0 ? (
+                <div className="p-6 text-center rounded-xl border border-dashed border-slate-300 dark:border-emerald-500/20 bg-slate-50 dark:bg-emerald-950/10 text-xs text-slate-400 dark:text-emerald-500/60">
+                  {tText("当前未挂载任何外部目录", "No external directories mounted yet", "現在外部ディレクトリはマウントされていません", "Noch keine externen Verzeichnisse gemountet")}
+                </div>
+              ) : (
+                externalSources.map((src) => (
+                  <div
+                    key={src.id}
+                    className="p-3 rounded-xl border border-slate-200 dark:border-emerald-500/20 bg-slate-50 dark:bg-[#0e1714] space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-900 dark:text-emerald-100 truncate pr-2">
+                        {toText(src.name)}
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        {/* Delete button (All external paths can be removed!) */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSkillToDelete(skill);
-                          }}
-                          className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-80 group-hover:opacity-100"
-                          title="删除技能"
+                          onClick={(e) => handleRemoveSource(src.id, e)}
+                          title={tText("删除/解绑此路径", "Delete / Unmount this path", "このパスを削除/マウント解除", "Diesen Pfad löschen / unmounten")}
+                          className="p-1 rounded hover:bg-rose-500/20 text-rose-500 transition cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                      )}
 
-                      {/* Enable Toggle Switch */}
-                      <button
-                        onClick={(e) => handleToggle(skill, e)}
-                        disabled={isConflict || isInvalid}
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:cursor-not-allowed ${
-                          skill.enabled ? "bg-sky-600 dark:bg-sky-500" : "bg-slate-300 dark:bg-slate-700"
-                        }`}
-                        title={skill.enabled ? t.common.disable : t.common.enable}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                            skill.enabled ? "translate-x-4" : "translate-x-0"
+                        {/* High-Contrast Beautiful Toggle Switch */}
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={src.enabled}
+                          onClick={() => handleToggleSource(src.id, !src.enabled)}
+                          title={src.enabled ? tText("已启用", "Enabled", "有効", "Aktiviert") : tText("已禁用", "Disabled", "無効", "Deaktiviert")}
+                          className={`relative inline-flex items-center h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out border-2 border-transparent focus:outline-none ${
+                            src.enabled
+                              ? "bg-emerald-600 dark:bg-emerald-500"
+                              : "bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600"
                           }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Clean Badges Strip */}
-                  <div className="flex items-center gap-1.5 flex-wrap mb-2.5">
-                    <span
-                      className={`text-[10px] uppercase font-mono px-1.5 py-0.5 rounded border font-semibold ${getRiskBadge(
-                        skill.risk
-                      )}`}
-                    >
-                      {skill.risk === "low"
-                        ? isZh ? "低风险" : "LOW RISK"
-                        : skill.risk === "medium"
-                        ? isZh ? "中风险" : "MEDIUM RISK"
-                        : isZh ? "高风险" : "HIGH RISK"}
-                    </span>
-
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
-                      {getCategoryLabel(skill.category)}
-                    </span>
-
-                    {isBuiltin ? (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800/60 font-semibold">
-                        {t.skills.sourceBuiltin}
-                      </span>
-                    ) : skill.source === "project" ? (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800/60 font-semibold">
-                        {t.skills.sourceProject}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-800/60 font-semibold">
-                        {t.skills.sourceUser}
-                      </span>
-                    )}
-
-                    {skill.type === "raw" && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 dark:bg-fuchsia-950/40 dark:text-fuchsia-400 dark:border-fuchsia-800/60 font-semibold">
-                        RAW
-                      </span>
-                    )}
-
-                    {isConflict && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60 font-semibold">
-                        {t.skills.statusConflict}
-                      </span>
-                    )}
-
-                    {hasWarning && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60 font-semibold flex items-center gap-1">
-                        <ShieldAlert className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                        {t.skills.statusWarning}
-                      </span>
-                    )}
-
-                    <span
-                      className={`text-[10px] font-medium px-2 py-0.5 rounded-full border flex items-center gap-1 ${
-                        skill.enabled
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60"
-                          : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                      }`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${skill.enabled ? "bg-emerald-500" : "bg-slate-400"}`} />
-                      <span>{skill.enabled ? "ChatGPT 可自动使用" : "ChatGPT 不会自动使用"}</span>
-                    </span>
-
-                    {skill.collectionName && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">
-                        {skill.collectionName}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-3">
-                    {displayDesc}
-                  </p>
-
-                  {/* Triggers Preview */}
-                  {skill.triggers.length > 0 && (
-                    <div className="flex items-center gap-1.5 flex-wrap mb-3">
-                      {skill.triggers.slice(0, 3).map((trigger, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] px-2 py-0.5 rounded bg-slate-100/70 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 truncate max-w-[140px]"
                         >
-                          {trigger}
-                        </span>
-                      ))}
-                      {skill.triggers.length > 3 && (
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                          +{skill.triggers.length - 3}
-                        </span>
-                      )}
+                          <span
+                            className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                              src.enabled ? "translate-x-4" : "translate-x-0.5"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {/* Card Footer */}
-                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  {skill.type === "raw" ? (
-                    <div className="flex items-center gap-3 font-mono text-[11px]">
-                      <span className="flex items-center gap-1 text-fuchsia-600 dark:text-fuchsia-400 font-medium">
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>{skill.primaryDocument || "SKILL.md"}</span>
-                      </span>
-                      {skill.documents && skill.documents.length > 1 && (
-                        <span className="text-slate-400">
-                          {skill.documents.length} 篇文档
-                        </span>
-                      )}
+                    <div className="font-mono text-[11px] text-slate-500 dark:text-emerald-500/60 break-all">
+                      {toText(src.path)}
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-3 font-mono text-[11px]">
-                      <span className="flex items-center gap-1">
-                        <Workflow className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                        <span>
-                          {skill.workflow.length} {t.skills.workflowSteps}
-                        </span>
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Wrench className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                        <span>
-                          {skill.tools.length} {t.skills.toolsCount}
-                        </span>
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-1 text-sky-600 dark:text-sky-400 group-hover:translate-x-0.5 transition-transform text-[11px] font-semibold">
-                    <span>{t.skills.viewDetails}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Detail Drawer */}
-      <SkillDetailDrawer
-        skillId={selectedSkillId}
-        projectId={projectId}
-        projectRoot={projectRoot}
-        onClose={() => {
-          setSelectedSkillId(null);
-          setSelectedCollectionId(null);
-        }}
-        onReload={loadSkills}
-        initialMode={uxMode}
-        collectionContext={
-          selectedCollectionId
-            ? {
-                id: selectedCollectionId,
-                name: collections.find((c) => c.id === selectedCollectionId)?.name,
-              }
-            : undefined
-        }
-        onBack={() => {
-          setSelectedSkillId(null);
-        }}
-      />
-
-      {/* Collection Detail Drawer */}
-      <CollectionDetailDrawer
-        collectionId={selectedCollectionId}
-        collectionName={collections.find((c) => c.id === selectedCollectionId)?.name}
-        skills={skills}
-        projectId={projectId}
-        projectRoot={projectRoot}
-        isChildDrawerOpen={Boolean(selectedSkillId)}
-        onClose={() => setSelectedCollectionId(null)}
-        onToggleSkill={async (skill, enabled) => {
-          const res = await bridge.toggleSkill(skill.id, enabled);
-          if (res.success) {
-            setSkills((prev) =>
-              prev.map((s) => (s.id === skill.id ? { ...s, enabled } : s))
-            );
-          }
-        }}
-        onToggleAll={async (enabled) => {
-          if (selectedCollectionId) {
-            await handleToggleCollection(selectedCollectionId, enabled);
-          }
-        }}
-        onSelectSkill={(skillId) => {
-          setSelectedSkillId(skillId);
-        }}
-        onDeleteCollection={(collId, collSkills) => handleDeleteCollection(collId, collSkills)}
-        onDeleteSkill={(skill) => handleDeleteSkill(skill)}
-      />
-
-      {/* Import Skill Modal */}
-      <ImportSkillModal
-        isOpen={showImportModal}
-        onClose={() => setShowImportModal(false)}
-        onSuccess={handleImportSuccess}
-        projectId={projectId}
-        projectRoot={projectRoot}
-      />
-
-      {/* Card Delete Collection Confirmation Modal */}
-      {collectionToDelete && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150"
-          onClick={() => !isDeleting && setCollectionToDelete(null)}
-        >
-          <div
-            className="bg-white dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                <Trash2 className="w-5 h-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                  删除集合与全部子技能
-                </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                  确定要删除集合「<span className="font-semibold text-slate-900 dark:text-slate-100">{collectionToDelete.name}</span>」吗？
-                </p>
-                <div className="mt-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-800/40 text-xs text-rose-800 dark:text-rose-300 leading-relaxed">
-                  此操作将永久删除该集合下的全部 <strong>{collectionToDelete.total}</strong> 个子技能目录及配置。此操作无法撤销。
-                </div>
-              </div>
+                ))
+              )}
             </div>
-
-            <div className="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => setCollectionToDelete(null)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition disabled:opacity-50"
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => handleDeleteCollection(collectionToDelete.id)}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition flex items-center gap-1.5 shadow-sm disabled:opacity-50"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>正在删除全部技能...</span>
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>确认删除全部 ({collectionToDelete.total})</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Card Delete Standalone Skill Confirmation Modal */}
-      {skillToDelete && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150"
-          onClick={() => !isDeleting && setSkillToDelete(null)}
-        >
-          <div
-            className="bg-white dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/60 rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4">
-              <Trash2 className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              删除技能
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-              确定要永久删除技能「
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {skillToDelete.name[language] || skillToDelete.name["zh-CN"] || skillToDelete.id}
-              </span>
-              」吗？文件将被永久移除，无法恢复。
-            </p>
-            <div className="flex items-center justify-end gap-2 mt-5">
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => setSkillToDelete(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => handleDeleteSkill(skillToDelete)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 transition flex items-center gap-1.5 shadow-sm"
-              >
-                {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                <span>确认删除</span>
-              </button>
-            </div>
-          </div>
+          </aside>
         </div>
       )}
     </div>

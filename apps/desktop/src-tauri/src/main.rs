@@ -463,15 +463,34 @@ fn resolve_production_resources(app: &tauri::AppHandle) -> Result<ResourceDiagno
         String::new()
     };
 
-    let tunnel_cf = resource_root.join("tunnel").join("tunnel-client-runtime-cloudflared.exe");
-    let tunnel_fallback = resource_root.join("tunnel").join("cloudflared.exe");
-    let tunnel_str = if tunnel_cf.exists() {
-        tunnel_cf.to_string_lossy().to_string()
-    } else if tunnel_fallback.exists() {
-        tunnel_fallback.to_string_lossy().to_string()
+    let tunnel_bin_candidates: &[&str] = if cfg!(target_os = "windows") {
+        &[
+            "tunnel-client-runtime-cloudflared.exe",
+            "cloudflared.exe",
+            "tunnel-client-runtime-cloudflared",
+            "cloudflared",
+        ]
     } else {
-        String::new()
+        &[
+            "tunnel-client-runtime-cloudflared",
+            "cloudflared",
+            "tunnel-client-runtime-cloudflared.exe",
+            "cloudflared.exe",
+        ]
     };
+    let mut tunnel_str = String::new();
+    for name in tunnel_bin_candidates {
+        let p = resource_root.join("tunnel").join(name);
+        if p.exists() {
+            tunnel_str = p.to_string_lossy().to_string();
+            break;
+        }
+    }
+    if tunnel_str.is_empty() {
+        if let Some(p) = resolve_tunnel_runtime(app) {
+            tunnel_str = p.to_string_lossy().to_string();
+        }
+    }
 
     Ok(ResourceDiagnostics {
         executable_path: exe_str,
@@ -503,6 +522,16 @@ fn resolve_resource_file(app: &tauri::AppHandle, relative_path: &str) -> Option<
             if p2.exists() {
                 return Some(p2);
             }
+            // On macOS .app bundle: executable is in MyApp.app/Contents/MacOS/MyApp
+            // Bundled resources are in MyApp.app/Contents/Resources/resources/ or MyApp.app/Contents/Resources/
+            let p_macos1 = parent.join("../Resources/resources").join(relative_path);
+            if p_macos1.exists() {
+                return Some(p_macos1);
+            }
+            let p_macos2 = parent.join("../Resources").join(relative_path);
+            if p_macos2.exists() {
+                return Some(p_macos2);
+            }
         }
     }
 
@@ -524,6 +553,57 @@ fn resolve_resource_file(app: &tauri::AppHandle, relative_path: &str) -> Option<
         let dev_p = dev_root.join(relative_path);
         if dev_p.exists() {
             return Some(dev_p);
+        }
+    }
+
+    None
+}
+
+fn resolve_tunnel_runtime(app: &tauri::AppHandle) -> Option<PathBuf> {
+    let candidate_names: &[&str] = if cfg!(target_os = "windows") {
+        &[
+            "tunnel-client-runtime-cloudflared.exe",
+            "cloudflared.exe",
+            "tunnel-client-runtime-cloudflared",
+            "cloudflared",
+        ]
+    } else {
+        &[
+            "tunnel-client-runtime-cloudflared",
+            "cloudflared",
+            "tunnel-client-runtime-cloudflared.exe",
+            "cloudflared.exe",
+        ]
+    };
+
+    // 1. Check bundled resource file
+    for name in candidate_names {
+        let rel = format!("tunnel/{}", name);
+        if let Some(p) = resolve_resource_file(app, &rel) {
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if let Ok(metadata) = std::fs::metadata(&p) {
+                    let mut perms = metadata.permissions();
+                    if perms.mode() & 0o111 == 0 {
+                        perms.set_mode(0o755);
+                        let _ = std::fs::set_permissions(&p, perms);
+                    }
+                }
+            }
+            return Some(p);
+        }
+    }
+
+    // 2. Fall back to system PATH (e.g. brew / apt / scoop installed cloudflared)
+    for name in candidate_names {
+        if let Ok(path_var) = std::env::var("PATH") {
+            for p in std::env::split_paths(&path_var) {
+                let full = p.join(name);
+                if full.is_file() {
+                    return Some(full);
+                }
+            }
         }
     }
 
@@ -2013,14 +2093,14 @@ fn spawn_tunnel_internal(
     app: &tauri::AppHandle,
     state: Arc<Mutex<SupervisorState>>,
 ) -> Result<(), String> {
-    let tunnel_exe = match resolve_resource_file(app, "tunnel/tunnel-client-runtime-cloudflared.exe") {
+    let tunnel_exe = match resolve_tunnel_runtime(app) {
         Some(p) => p,
         None => {
             if let Ok(mut s) = state.lock() {
                 s.tunnel_supervisor.status = tunnel::TunnelStatus::RuntimeMissing;
-                s.tunnel_supervisor.error_message = Some("Bundled tunnel runtime not found in application resources".into());
+                s.tunnel_supervisor.error_message = Some("Tunnel runtime (tunnel-client or cloudflared) not found in application resources or system PATH".into());
             }
-            return Err("Bundled tunnel runtime not found in application resources".into());
+            return Err("Tunnel runtime not found in application resources or system PATH".into());
         }
     };
 
@@ -2138,9 +2218,17 @@ fn spawn_tunnel_internal(
 
     if let Some(parent) = tunnel_exe.parent() {
         cmd.current_dir(parent);
-        let cf_path = parent.join("cloudflared.exe");
-        if cf_path.exists() {
-            cmd.env("CLOUDFLARED_PATH", cf_path);
+        let cf_candidates: &[&str] = if cfg!(target_os = "windows") {
+            &["cloudflared.exe", "cloudflared"]
+        } else {
+            &["cloudflared", "cloudflared.exe"]
+        };
+        for name in cf_candidates {
+            let cf_path = parent.join(name);
+            if cf_path.exists() {
+                cmd.env("CLOUDFLARED_PATH", cf_path);
+                break;
+            }
         }
     }
     cmd.env("CONTROL_PLANE_API_KEY", &cfg.runtime_api_key);

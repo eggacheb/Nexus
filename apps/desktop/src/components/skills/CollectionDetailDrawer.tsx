@@ -402,7 +402,7 @@ export const CollectionDetailDrawer: React.FC<CollectionDetailDrawerProps> = ({
                     <div className="flex items-center gap-3">
                       {skill.triggers && skill.triggers.length > 0 && (
                         <span className="truncate max-w-[280px]">
-                          关键词: {skill.triggers.slice(0, 3).join(", ")}
+                          关键词: {skill.triggers.slice(0, 3).map((t: any) => typeof t === "string" ? t : typeof t === "object" ? Object.entries(t).map(([k, v]) => `${k}: ${v}`).join(", ") : String(t)).join(", ")}
                         </span>
                       )}
                     </div>

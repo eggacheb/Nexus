@@ -1,14 +1,20 @@
 import { enUS } from "./locales/en-US.js";
 import { zhCN } from "./locales/zh-CN.js";
+import { jaJP } from "./locales/ja-JP.js";
+import { deDE } from "./locales/de-DE.js";
 import type { I18nDictionary, SupportedLanguage } from "./types.js";
 
 export * from "./types.js";
 export { enUS } from "./locales/en-US.js";
 export { zhCN } from "./locales/zh-CN.js";
+export { jaJP } from "./locales/ja-JP.js";
+export { deDE } from "./locales/de-DE.js";
 
 export const DICTIONARIES: Record<SupportedLanguage, I18nDictionary> = {
   "zh-CN": zhCN,
   "en-US": enUS,
+  "ja-JP": jaJP,
+  "de-DE": deDE,
 };
 
 const STORAGE_KEY = "localbridge_language";
@@ -16,24 +22,15 @@ const STORAGE_KEY = "localbridge_language";
 export function detectInitialLanguage(): SupportedLanguage {
   try {
     if (typeof localStorage !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === "zh-CN" || saved === "en-US") {
+      const saved = localStorage.getItem(STORAGE_KEY) as SupportedLanguage | null;
+      if (saved && (saved === "zh-CN" || saved === "en-US" || saved === "ja-JP" || saved === "de-DE")) {
         return saved;
       }
     }
-
-    if (typeof navigator !== "undefined") {
-      const browserLangs = navigator.languages ? [...navigator.languages] : [navigator.language || ""];
-      for (const lang of browserLangs) {
-        if (lang && typeof lang === "string" && lang.toLowerCase().startsWith("zh")) {
-          return "zh-CN";
-        }
-      }
-    }
   } catch {
-    // Fallback if localStorage or navigator is inaccessible
+    // Fallback if localStorage is inaccessible
   }
-  return "zh-CN";
+  return "en-US";
 }
 
 export function persistLanguage(lang: SupportedLanguage): void {
@@ -73,4 +70,3 @@ export function formatBackendStatus(
   }
   return status;
 }
-

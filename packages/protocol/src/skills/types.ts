@@ -1,4 +1,4 @@
-export type SkillSource = "builtin" | "user" | "project";
+export type SkillSource = "builtin" | "user" | "project" | "external";
 
 export type SkillRisk = "low" | "medium" | "high";
 
@@ -288,4 +288,28 @@ export interface SkillRawContentResult {
   skillId: string;
   rawYaml: string;
   markdownContent: string;
+}
+
+
+export interface ExternalSkillSourceConfig {
+  id: string;
+  name: string;
+  path: string;
+  enabled: boolean;
+  agentType?: "claude" | "cursor" | "gemini" | "codex" | "custom";
+  isCustom?: boolean;
+  available?: boolean;
+  skillsCount?: number;
+  error?: string;
+}
+
+export type NexusSkillsAction = "list" | "search" | "load" | "read_file" | "refresh" | "status";
+
+export interface NexusSkillsParams {
+  action: NexusSkillsAction;
+  query?: string;
+  name?: string;
+  path?: string;
+  source?: string;
+  mode?: "compact" | "full";
 }

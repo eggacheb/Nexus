@@ -176,6 +176,13 @@ export const projectBuilderApi = {
     });
     return res || { success: false, error: "Failed to register provider" };
   },
+
+  async unregisterProvider(id: string): Promise<{ success: boolean; error?: string }> {
+    const res = await queryEndpoint<any>(`/api/project-builder/providers/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    return res || { success: true };
+  },
 };
 
 export interface McpSecurityPolicyDto {

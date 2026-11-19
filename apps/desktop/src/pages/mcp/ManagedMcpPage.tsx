@@ -450,7 +450,6 @@ export const ManagedMcpPage: React.FC = () => {
           const isRunning = svc.status === "RUNNING";
           const isStarting = svc.status === "STARTING";
           const isError = svc.status === "ERROR";
-          const isPreset = svc.config.id === "blender-mcp" || svc.config.id === "photoshop-mcp";
           const form = configForms[svc.config.id] || {};
           const isLogsOpen = expandedLogs[svc.config.id];
           const isConfigOpen = expandedConfig[svc.config.id];
@@ -597,17 +596,15 @@ export const ManagedMcpPage: React.FC = () => {
                     {isLogsOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                   </button>
 
-                  {!isPreset && (
-                    <button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => handleDelete(svc.config.id, svc.config.name)}
-                      className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition"
-                      title={isZh ? "删除服务" : "Delete Service"}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    disabled={isBusy}
+                    onClick={() => handleDelete(svc.config.id, svc.config.name)}
+                    className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition cursor-pointer"
+                    title={isZh ? "删除服务" : "Delete Service"}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
 

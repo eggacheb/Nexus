@@ -1018,6 +1018,16 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (pathname.startsWith("/api/project-builder/providers/")) {
+    const provId = decodeURIComponent(pathname.slice("/api/project-builder/providers/".length));
+    if (req.method === "DELETE") {
+      const ok = ProviderRuntime.getInstance().removeProvider(provId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ success: true, removed: ok }));
+      return;
+    }
+  }
+
   // 6.8.1 Generic External MCP Provider & Dynamic Catalog Endpoints
   if (pathname === "/api/mcp/providers") {
     const runtime = ProviderRuntime.getInstance();

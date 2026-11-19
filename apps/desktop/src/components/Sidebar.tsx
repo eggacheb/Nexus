@@ -8,11 +8,11 @@ import {
   Sparkles,
   Brain,
   BookOpen,
-  FileCode,
-  Settings,
+    Settings,
   AppWindow,
   LayoutGrid,
-  Heart,
+  MessageCircle,
+  Users,
 } from "lucide-react";
 import nexusLogo from "../assets/nexus.png";
 import type { ServerStatus, UserExperienceMode } from "../types.js";
@@ -36,7 +36,6 @@ export type NavPage =
   | "skills"
   | "memory"
   | "knowledge"
-  | "prompts"
   | "settings"
   // Legacy compatibility aliases
   | "jobs"
@@ -67,6 +66,8 @@ interface SidebarProps {
   runnersCount?: number;
   uxMode?: UserExperienceMode;
   onOpenSponsorModal?: () => void;
+  onOpenCommunityModal?: () => void;
+  onOpenContactModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -76,9 +77,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   runnersCount,
   uxMode: _uxMode = "standard",
   onOpenSponsorModal,
+  onOpenCommunityModal,
+  onOpenContactModal,
 }) => {
-  const { language } = useTranslation();
-  const isZh = language.startsWith("zh");
+  const { tText } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   const effectiveRunners =
@@ -88,39 +90,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isHealthy = serverStatus !== null && effectiveRunners > 0;
 
-  // Primary user-facing navigation groups
+  // Primary user-facing navigation groups with full 4-language support
   const primaryGroups: NavGroup[] = [
     {
       id: "workspace",
-      label: isZh ? "工作区" : "WORKSPACE",
+      label: tText("工作区", "WORKSPACE", "ワークスペース", "ARBEITSBEREICH"),
       items: [
-        { id: "overview", label: isZh ? "工作台概览" : "Overview", icon: LayoutDashboard },
-        { id: "projects", label: isZh ? "项目管理" : "Projects", icon: FolderLock },
+        {
+          id: "overview",
+          label: tText("工作台概览", "Workspace Overview", "概要", "Übersicht"),
+          icon: LayoutDashboard,
+        },
+        {
+          id: "projects",
+          label: tText("项目管理", "Projects", "プロジェクト管理", "Projekte"),
+          icon: FolderLock,
+        },
       ],
     },
     {
       id: "intelligence",
-      label: isZh ? "智能管理" : "INTELLIGENCE",
+      label: tText("智能管理", "INTELLIGENCE", "インテリジェンス", "INTELLIGENZ"),
       items: [
-        { id: "skills", label: isZh ? "技能中心" : "Skills", icon: Sparkles },
-        { id: "memory", label: isZh ? "记忆库" : "Memory", icon: Brain },
-        { id: "knowledge", label: isZh ? "知识库" : "Knowledge", icon: BookOpen },
-        { id: "prompts", label: isZh ? "提示词管理" : "Prompt", icon: FileCode },
+        {
+          id: "skills",
+          label: tText("技能中心", "Skills Hub", "スキルハブ", "Skill-Zentrum"),
+          icon: Sparkles,
+        },
+        {
+          id: "memory",
+          label: tText("记忆库", "Memory", "メモリ", "Gedächtnis"),
+          icon: Brain,
+        },
+        {
+          id: "knowledge",
+          label: tText("知识库", "Knowledge", "ナレッジベース", "Wissensdatenbank"),
+          icon: BookOpen,
+        },
       ],
     },
     {
       id: "apps",
-      label: isZh ? "应用" : "APPLICATIONS",
+      label: tText("应用", "APPLICATIONS", "アプリケーション", "ANWENDUNGEN"),
       items: [
         {
           id: "applications",
-          label: isZh ? "外部应用工作台" : "External Apps",
+          label: tText("外部应用工作台", "External Apps", "外部アプリ", "Externe Apps"),
           icon: AppWindow,
           badgeStatus: "CONNECTED",
         },
         {
           id: "nexus-apps",
-          label: isZh ? "Nexus 专属应用" : "Nexus Apps",
+          label: tText("Nexus 专属应用", "Nexus Apps", "Nexus アプリ", "Nexus Apps"),
           icon: LayoutGrid,
         },
       ],
@@ -186,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 NEXUS
               </span>
               <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-sky-500/10 text-sky-500 dark:text-sky-400 border border-sky-500/20">
-                1.3.1
+                1.3.2
               </span>
             </div>
           ) : (
@@ -206,12 +227,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="p-1 rounded text-theme-muted hover:text-theme-primary hover:bg-theme-card-hover transition"
             title={
               collapsed
-                ? isZh
-                  ? "展开侧边栏"
-                  : "Expand Sidebar"
-                : isZh
-                ? "收起侧边栏"
-                : "Collapse Sidebar"
+                ? tText("展开侧边栏", "Expand Sidebar", "サイドバーを展開", "Seitenleiste ausklappen")
+                : tText("收起侧边栏", "Collapse Sidebar", "サイドバーを折りたたむ", "Seitenleiste einklappen")
             }
           >
             {collapsed ? (
@@ -316,15 +333,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     : "text-zinc-500"
                                 }
                               >
-                                {isZh
-                                  ? item.badgeStatus === "CONNECTED"
-                                    ? "已连接"
-                                    : item.badgeStatus === "UNKNOWN"
-                                    ? "未知"
-                                    : item.badgeStatus === "FAILED"
-                                    ? "异常"
-                                    : "未连接"
-                                  : item.badgeStatus}
+                                {item.badgeStatus === "CONNECTED"
+                                  ? tText("已连接", "CONNECTED", "接続済み", "VERBUNDEN")
+                                  : item.badgeStatus === "UNKNOWN"
+                                  ? tText("未知", "UNKNOWN", "不明", "UNBEKANNT")
+                                  : item.badgeStatus === "FAILED"
+                                  ? tText("异常", "FAILED", "異常", "FEHLGESCHLAGEN")
+                                  : tText("未连接", "DISCONNECTED", "未接続", "GETRENNT")}
                               </span>
                             </span>
                           )}
@@ -339,26 +354,70 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Footer: Settings & Status Strip */}
+      {/* Footer: Settings, Community, Contacts & Status Strip */}
       <div className="p-2 border-t border-theme-subtle space-y-1 shrink-0 bg-theme-sidebar">
-        {onOpenSponsorModal && (
+        {/* 1. Official Community Groups Button */}
+        {(onOpenCommunityModal || onOpenSponsorModal) && (
           <button
             type="button"
-            onClick={onOpenSponsorModal}
-            title={isZh ? "赞助与支持" : "Sponsor & Support"}
-            className={`w-full flex items-center rounded-md text-xs transition ${
+            onClick={onOpenCommunityModal || onOpenSponsorModal}
+            title={tText(
+              "官方交流群 (QQ / Telegram)",
+              "Official Communities (QQ / Telegram)",
+              "公式コミュニティ (QQ / Telegram)",
+              "Offizielle Community-Gruppen (QQ / Telegram)"
+            )}
+            className={`w-full flex items-center rounded-md text-xs transition cursor-pointer ${
               collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-1.5"
-            } text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 border border-transparent`}
+            } text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:bg-blue-500/10 border border-transparent`}
           >
-            <Heart className="w-3.5 h-3.5 text-rose-500 shrink-0 fill-rose-500/20" />
-            {!collapsed && <span className="font-medium">{isZh ? "赞助与支持" : "Sponsor"}</span>}
+            <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+            {!collapsed && (
+              <span className="font-medium">
+                {tText(
+                  "官方交流群",
+                  "Community Groups",
+                  "公式コミュニティ",
+                  "Community-Gruppen"
+                )}
+              </span>
+            )}
+          </button>
+        )}
+
+        {/* 2. Personal Contact Developer Button */}
+        {(onOpenContactModal || onOpenSponsorModal) && (
+          <button
+            type="button"
+            onClick={onOpenContactModal || onOpenSponsorModal}
+            title={tText(
+              "联系作者 (微信 / Telegram / WhatsApp / LINE)",
+              "Contact Developer",
+              "開発者へ連絡",
+              "Entwickler kontaktieren"
+            )}
+            className={`w-full flex items-center rounded-md text-xs transition cursor-pointer ${
+              collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-1.5"
+            } text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-500/10 border border-transparent`}
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            {!collapsed && (
+              <span className="font-medium">
+                {tText(
+                  "联系作者",
+                  "Contact Developer",
+                  "開発者へ連絡",
+                  "Entwickler kontaktieren"
+                )}
+              </span>
+            )}
           </button>
         )}
 
         <button
           type="button"
           onClick={() => onSelectPage("settings")}
-          title={isZh ? "应用设置" : "Settings"}
+          title={tText("应用设置", "Settings", "設定", "Einstellungen")}
           className={`w-full flex items-center rounded-md text-xs transition ${
             collapsed ? "justify-center p-2" : "gap-2.5 px-3 py-1.5"
           } ${
@@ -372,7 +431,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               currentPage === "settings" ? "text-sky-500" : "text-theme-muted"
             }`}
           />
-          {!collapsed && <span>{isZh ? "应用设置" : "Settings"}</span>}
+          {!collapsed && <span>{tText("应用设置", "Settings", "設定", "Einstellungen")}</span>}
         </button>
 
         {!collapsed ? (
@@ -383,14 +442,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   isHealthy ? "bg-emerald-500" : "bg-amber-500"
                 }`}
               />
-              <span>{isZh ? (isHealthy ? "系统正常运行" : "服务异常") : (isHealthy ? "Engine Ready" : "Standby")}</span>
+              <span>
+                {isHealthy
+                  ? tText("系统正常运行", "Engine Ready", "システム正常稼働中", "System bereit")
+                  : tText("服务异常", "Standby", "サービス待機中", "Standby")}
+              </span>
             </span>
-            <span className="text-[10px]">v1.3.1</span>
+            <span className="text-[10px]">v1.3.2</span>
           </div>
         ) : (
           <div
             className="py-1 flex justify-center"
-            title={isZh ? (isHealthy ? "系统正常运行" : "服务异常") : (isHealthy ? "Engine Ready" : "Standby")}
+            title={
+              isHealthy
+                ? tText("系统正常运行", "Engine Ready", "システム正常稼働中", "System bereit")
+                : tText("服务异常", "Standby", "サービス待機中", "Standby")
+            }
           >
             <span
               className={`w-2 h-2 rounded-full ${

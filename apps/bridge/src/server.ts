@@ -594,6 +594,47 @@ export const UNIVERSAL_META_TOOLS = [
       required: ["tool"],
     },
   },
+  {
+    name: "nexus_skills",
+    description: "[状态: 🟢 极致 Token 优化] 【统一技能元工具 · 跨 Agent 智能工作流】管理、检索、加载并依循技能 (Skills) 工作流规范。支持操作 action: 'match' (智能意图匹配) | 'load' (读取技能完整规范与代码步骤) | 'list' (列出可用技能清单) | 'read_file' (读取技能内辅助文档/脚本)。收到工程任务或领域要求时，推荐首先调用 match 匹配最贴合的 Skill 指导流程，以获得最高执行质量与零幻觉保障。",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: {
+          type: "string",
+          enum: ["match", "load", "list", "read_file", "search", "status"],
+          description: "操作类型: match (匹配最佳技能), load (加载技能完整指令与步骤), list (列出所有可用技能), read_file (读取技能辅助文件)",
+        },
+        query: {
+          type: "string",
+          description: "用于匹配技能的用户自然语言任务或意图描述 (action='match' 或 'search' 时使用)",
+        },
+        name: {
+          type: "string",
+          description: "技能标识 ID 或名称 (如 'nexus.run-tests', 'nexus.meta-orchestrator', action='load'/'read_file' 时必填)",
+        },
+        skillId: {
+          type: "string",
+          description: "兼容参数，等同于 name",
+        },
+        path: {
+          type: "string",
+          description: "技能内部相对文档路径 (action='read_file' 时使用，例如 'references/guide.md')",
+        },
+        documentPath: {
+          type: "string",
+          description: "兼容参数，等同于 path",
+        },
+        mode: {
+          type: "string",
+          enum: ["summary", "full"],
+          default: "summary",
+          description: "加载模式: full 模式将一并返回所有关联的文档内容",
+        },
+      },
+      required: ["action"],
+    },
+  },
 ];
 
 export const CANONICAL_TOOL_MAP = new Map<string, CanonicalToolDefinition>(
@@ -855,9 +896,10 @@ export function createMcpServer(nexusClient: NexusClient, targetProviderId?: str
   * Playwright (:9100) : ${policyManager.isProviderTokenOptimization("playwright") ? "🟢 SAVING ON (nexus.browser / discover)" : "⚪ SAVING OFF (Native tools exposed)"}
   * Telegram (:9119)   : ${policyManager.isProviderTokenOptimization("telegram-mcp") ? "🟢 SAVING ON (nexus.telegram / discover)" : "⚪ SAVING OFF (Native tools exposed)"}
 - Token Efficiency Rules (Strictly Follow to Conserve Context):
-  1. Single-Turn Batching (Recommended): For complex or multi-step tasks (Unity scene setup, Blender modeling/rendering, CAD drafting, batch file operations, test automation), NEVER loop atomic tools step-by-step. ALWAYS write a cohesive Python script and invoke via 'nexus_run_script(script=...)'. This delivers full tasks in a single turn and cuts token usage by 95%+.
-  2. Targeted Discovery: Call 'nexus_discover_tools(query=...)' with clear intent keywords to get exact tool names and signatures. Avoid redundant or broad discovery queries.
-  3. Atomic Invocation (Lightweight Only): Use 'nexus_execute_action(tool=..., arguments=...)' ONLY for single-point status inspection or quick atomic actions. Large payloads (screenshots/logs) are automatically saved to local files and middle-truncated by Nexus Token Guardrail.
+  1. Skill-Guided Execution: Call 'nexus_skills(action="match", query=...)' to load established recipes and step-by-step guidelines for non-trivial tasks.
+  2. Single-Turn Batching (Recommended): For complex or multi-step tasks (Unity scene setup, Blender modeling/rendering, CAD drafting, batch file operations, test automation), NEVER loop atomic tools step-by-step. ALWAYS write a cohesive Python script and invoke via 'nexus_run_script(script=...)'. This delivers full tasks in a single turn and cuts token usage by 95%+.
+  3. Targeted Discovery: Call 'nexus_discover_tools(query=...)' with clear intent keywords to get exact tool names and signatures. Avoid redundant or broad discovery queries.
+  4. Atomic Invocation (Lightweight Only): Use 'nexus_execute_action(tool=..., arguments=...)' ONLY for single-point status inspection or quick atomic actions. Large payloads (screenshots/logs) are automatically saved to local files and middle-truncated by Nexus Token Guardrail.
 `.trim();
   } else {
     instructionsText = `
@@ -1052,6 +1094,27 @@ export function createMcpServer(nexusClient: NexusClient, targetProviderId?: str
           isError: !execRes.success,
           structuredContent: structuredRes,
         }, { sourceTool: "nexus_run_script", full: Boolean(args.full), args });
+      }
+
+      if (name === "nexus_skills") {
+        const action = String(args.action || "list").trim();
+        const skillArgs: Record<string, any> = {
+          action,
+          query: args.query || args.name,
+          name: args.name || args.skillId,
+          skillId: args.skillId || args.name,
+          path: args.path || args.documentPath,
+          documentPath: args.documentPath || args.path,
+          mode: args.mode || "summary",
+          projectId: args.projectId,
+        };
+
+        const res = await nexusClient.callNexusTool("nexus_skills", skillArgs);
+        return TokenGuardrail.sanitizeToolResult(res, {
+          sourceTool: "nexus_skills",
+          full: true,
+          args: skillArgs,
+        });
       }
 
       // P3 On-Demand Tool Schema Resolution
@@ -1611,6 +1674,9 @@ export function createMcpServer(nexusClient: NexusClient, targetProviderId?: str
         }
         if (actionTool === "nexus_checkpoint_list" || actionTool === "checkpoint_list") {
           return executeCallTool({ params: { name: "nexus_checkpoint_list", arguments: actionArgs } });
+        }
+        if (actionTool === "nexus_skills" || actionTool === "skills") {
+          return executeCallTool({ params: { name: "nexus_skills", arguments: actionArgs } });
         }
 
         // Auto-inherit browserSessionId if missing or placeholder

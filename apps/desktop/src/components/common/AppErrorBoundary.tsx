@@ -137,13 +137,14 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
   render() {
     if (this.state.hasError) {
       const isZh = this.props.isZh ?? true;
+      const isMainRoute = this.props.componentName === "MainRoute";
       const title = isZh
-        ? (this.props.fallbackTitleZh || "连接页面发生错误")
-        : (this.props.fallbackTitleEn || "Something went wrong in ChatGPT Connection");
+        ? (this.props.fallbackTitleZh || (isMainRoute ? "页面发生渲染异常" : "连接页面发生错误"))
+        : (this.props.fallbackTitleEn || (isMainRoute ? "Something went wrong in this page" : "Something went wrong in ChatGPT Connection"));
 
-      const subtitle = isZh ? "Nexus 仍在运行。" : "Nexus is still running.";
+      const subtitle = isZh ? "Nexus 核心服务仍在后台正常运行。" : "Nexus core services are still running in the background.";
       const retryText = isZh ? "重试" : "Retry";
-      const backText = isZh ? "返回 ChatGPT 连接" : "Back to ChatGPT Connection";
+      const backText = isZh ? (isMainRoute ? "刷新恢复" : "返回 ChatGPT 连接") : (isMainRoute ? "Reload" : "Back to ChatGPT Connection");
       const copyText = isZh ? "复制错误详情" : "Copy error details";
       const copiedText = isZh ? "已复制" : "Copied";
 

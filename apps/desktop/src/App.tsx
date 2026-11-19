@@ -16,7 +16,6 @@ import { RuntimePage } from "./pages/execution/RuntimePage.js";
 import { McpServersPage } from "./pages/mcp/McpServersPage.js";
 import { McpToolsPage } from "./pages/mcp/McpToolsPage.js";
 import { ToolRegistryPage } from "./pages/mcp/ToolRegistryPage.js";
-import { PromptPage } from "./pages/PromptPage.js";
 import { JobsPage } from "./pages/JobsPage.js";
 import { ConnectionsPage } from "./pages/ConnectionsPage.js";
 import { TokensPage } from "./pages/TokensPage.js";
@@ -57,7 +56,7 @@ import type {
 import { applyServerPollResult } from "./polling-state.js";
 
 export const App: React.FC = () => {
-  const { t, language } = useTranslation();
+  const { t, language, tText } = useTranslation();
   const isZh = language.startsWith("zh");
   const [currentPage, setCurrentPage] = useState<NavPage>("overview");
 
@@ -99,6 +98,7 @@ export const App: React.FC = () => {
 
   // Modals
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+  const [contactModalCategory, setContactModalCategory] = useState<"community" | "contact">("community");
   const [isAuthorizeModalOpen, setIsAuthorizeModalOpen] = useState(false);
   const [isCreateTokenModalOpen, setIsCreateTokenModalOpen] = useState(false);
   const [isEmergencyStopModalOpen, setIsEmergencyStopModalOpen] = useState(false);
@@ -361,108 +361,103 @@ export const App: React.FC = () => {
 
   const pageTitles: Record<NavPage, { title: string; subtitle: string; breadcrumb?: string }> = {
     overview: {
-      title: isZh ? "工作台概览" : "Workspace Overview",
-      subtitle: isZh ? "确定性本地执行桥接中心" : "Deterministic Execution Bridge",
-      breadcrumb: isZh ? "工作区" : "WORKSPACE",
+      title: tText("工作台概览", "Workspace Overview", "概要", "Übersicht"),
+      subtitle: tText("确定性本地执行桥接中心", "Deterministic Execution Bridge", "確定的なローカル実行ブリッジセンター", "Deterministische Ausführungsbrücke"),
+      breadcrumb: tText("工作区", "WORKSPACE", "ワークスペース", "ARBEITSBEREICH"),
     },
     projects: {
-      title: isZh ? "已授权项目" : "Authorized Projects",
-      subtitle: isZh ? "项目工作区与本地目录范围" : "Project Roots & Local Directory Scope",
-      breadcrumb: isZh ? "工作区" : "WORKSPACE",
+      title: tText("已授权项目", "Authorized Projects", "許可されたプロジェクト", "Autorisierte Projekte"),
+      subtitle: tText("项目工作区与本地目录范围", "Project Roots & Local Directory Scope", "プロジェクトルートとローカルディレクトリ範囲", "Projekt-Roots & Verzeichnisbereich"),
+      breadcrumb: tText("工作区", "WORKSPACE", "ワークスペース", "ARBEITSBEREICH"),
     },
     unity: {
       title: "Unity",
-      subtitle: isZh ? "Unity 工程 IDE 工作区 • 双向 IPC 执行桥接" : "Unity IDE Workspace",
-      breadcrumb: isZh ? "应用" : "APPLICATIONS",
+      subtitle: tText("Unity 工程 IDE 工作区 • 双向 IPC 执行桥接", "Unity IDE Workspace", "Unity IDE ワークスペース", "Unity IDE-Arbeitsbereich"),
+      breadcrumb: tText("应用", "APPLICATIONS", "アプリケーション", "ANWENDUNGEN"),
     },
     desktop: {
-      title: isZh ? "电脑桌面预览" : "Computer Desktop",
-      subtitle: isZh ? "Windows 桌面主机与受控交互界面" : "Windows Host & Interactive Control Surface",
-      breadcrumb: isZh ? "电脑控制" : "COMPUTER",
+      title: tText("电脑桌面预览", "Computer Desktop", "デスクトッププレビュー", "Desktop-Vorschau"),
+      subtitle: tText("Windows 桌面主机与受控交互界面", "Windows Host & Interactive Control Surface", "Windows ホスト & インタラクティブ制御サーフェス", "Windows-Host & Interaktive Steuerung"),
+      breadcrumb: tText("电脑控制", "COMPUTER", "コンピューター制御", "COMPUTER"),
     },
     files: {
-      title: isZh ? "文件浏览器" : "Files Explorer",
-      subtitle: isZh ? "按需资源检索与工作区目录" : "On-Demand Resource Navigation",
-      breadcrumb: isZh ? "电脑控制" : "COMPUTER",
+      title: tText("文件浏览器", "Files Explorer", "ファイルエクスプローラー", "Datei-Explorer"),
+      subtitle: tText("按需资源检索与工作区目录", "On-Demand Resource Navigation", "オンデマンドリソースナビゲーション", "Ressourcennavigation"),
+      breadcrumb: tText("电脑控制", "COMPUTER", "コンピューター制御", "COMPUTER"),
     },
     applications: {
-      title: isZh ? "托管应用与窗口" : "Managed Applications",
-      subtitle: isZh ? "原生桌面应用与窗口自动化控制" : "Desktop Application & Window Automation",
-      breadcrumb: isZh ? "电脑控制" : "COMPUTER",
+      title: tText("托管应用与窗口", "Managed Applications", "管理対象アプリとウィンドウ", "Verwaltete Anwendungen"),
+      subtitle: tText("原生桌面应用与窗口自动化控制", "Desktop Application & Window Automation", "デスクトップアプリとウィンドウ自動化", "Anwendungs- & Fensterautomatisierung"),
+      breadcrumb: tText("电脑控制", "COMPUTER", "コンピューター制御", "COMPUTER"),
     },
     "nexus-apps": {
-      title: isZh ? "Nexus 专属应用中心" : "Nexus Dedicated Apps",
-      subtitle: isZh ? "深度定制的本地高频生产力工具 • 原生环境与数据沙箱隔离" : "Native AI Productivity Apps & Data Sandboxes",
-      breadcrumb: isZh ? "电脑控制" : "COMPUTER",
+      title: tText("Nexus 专属应用中心", "Nexus Dedicated Apps", "Nexus 専用アプリセンター", "Nexus Dedizierte Apps"),
+      subtitle: tText("深度定制的本地高频生产力工具 • 原生环境与数据沙箱隔离", "Native AI Productivity Apps & Data Sandboxes", "ネイティブAI生産性アプリとデータサンドボックス", "Native KI-Produktivitäts-Apps & Sandboxes"),
+      breadcrumb: tText("电脑控制", "COMPUTER", "コンピューター制御", "COMPUTER"),
     },
     browser: {
-      title: isZh ? "浏览器自动化" : "Browser Automation",
-      subtitle: isZh ? "Chromium CDP 确定性网页自动化工作台" : "Chromium CDP Automation Workspace",
-      breadcrumb: isZh ? "电脑控制" : "COMPUTER",
+      title: tText("浏览器自动化", "Browser Automation", "ブラウザ自動化", "Browser-Automatisierung"),
+      subtitle: tText("Chromium CDP 确定性网页自动化工作台", "Chromium CDP Automation Workspace", "Chromium CDP 自動化ワークスペース", "Chromium CDP Automatisierungs-Arbeitsbereich"),
+      breadcrumb: tText("电脑控制", "COMPUTER", "コンピューター制御", "COMPUTER"),
     },
     execution: {
-      title: isZh ? "执行管道" : "Execution Pipeline",
-      subtitle: isZh ? "实时工具调用流程与确定性证据网格" : "Active Tool Execution & Verification Flow",
-      breadcrumb: isZh ? "执行管理" : "EXECUTION",
+      title: tText("执行管道", "Execution Pipeline", "実行パイプライン", "Ausführungs-Pipeline"),
+      subtitle: tText("实时工具调用流程与确定性证据网格", "Active Tool Execution & Verification Flow", "リアルタイムツール実行と検証フロー", "Tool-Ausführung & Überprüfungsfluss"),
+      breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG"),
     },
     ledger: {
-      title: isZh ? "操作审计账本" : "Action Ledger",
-      subtitle: isZh ? "不可变操作履历与 WAL 审计留痕" : "Immutable Action History & Audit Log",
-      breadcrumb: isZh ? "执行管理" : "EXECUTION",
+      title: tText("操作审计账本", "Action Ledger", "アクション台帳", "Aktions-Ledger"),
+      subtitle: tText("不可变操作履历与 WAL 审计留痕", "Immutable Action History & Audit Log", "不変のアクション履歴とWAL監査ログ", "Unveränderliche Aktionshistorie & Audit-Log"),
+      breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG"),
     },
     runtime: {
-      title: isZh ? "运行时基础设施" : "Runtime Infrastructure",
-      subtitle: isZh ? "Node.js 引擎、Runner 守护与 LSP 服务状态" : "Node.js Engine, Runner & LSP Status",
-      breadcrumb: isZh ? "执行管理" : "EXECUTION",
+      title: tText("运行时基础设施", "Runtime Infrastructure", "ランタイムインフラ", "Laufzeit-Infrastruktur"),
+      subtitle: tText("Node.js 引擎、Runner 守护与 LSP 服务状态", "Node.js Engine, Runner & LSP Status", "Node.js エンジン、Runner、LSP 状態", "Node.js Engine, Runner & LSP Status"),
+      breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG"),
     },
     "mcp-servers": {
-      title: isZh ? "MCP 服务节点" : "MCP Servers",
-      subtitle: isZh ? "活动协议端点与安全网关" : "Active Protocol Endpoints & Gateways",
-      breadcrumb: isZh ? "MCP 协议" : "MCP",
+      title: tText("MCP 服务节点", "MCP Servers", "MCP サーバーノード", "MCP-Server"),
+      subtitle: tText("活动协议端点与安全网关", "Active Protocol Endpoints & Gateways", "アクティブなプロトコルエンドポイントとゲートウェイ", "Aktive Protokoll-Endpunkte & Gateways"),
+      breadcrumb: "MCP",
     },
     "mcp-tools": {
-      title: isZh ? "MCP 工具库" : "MCP Tools Registry",
-      subtitle: isZh ? "332 个经权威验证的规范执行工具" : "332 Canonical Verified Execution Tools",
-      breadcrumb: isZh ? "MCP 协议" : "MCP",
+      title: tText("MCP 工具库", "MCP Tools Registry", "MCP ツールレジストリ", "MCP-Tools-Register"),
+      subtitle: tText("经权威验证的规范执行工具", "Canonical Verified Execution Tools", "検証済みの正規実行ツール", "Kanonisch verifizierte Ausführungstools"),
+      breadcrumb: "MCP",
     },
     "mcp-registry": {
-      title: isZh ? "注册表与能力矩阵" : "Capability Matrix",
-      subtitle: isZh ? "Provider 执行绑定与证据交付契约" : "Provider Mappings & Evidence Contracts",
-      breadcrumb: isZh ? "MCP 协议" : "MCP",
+      title: tText("注册表与能力矩阵", "Capability Matrix", "機能マトリックス", "Funktionsmatrix"),
+      subtitle: tText("Provider 执行绑定与证据交付契约", "Provider Mappings & Evidence Contracts", "プロバイダーマッピングと証拠契約", "Provider-Zuordnungen & Nachweisverträge"),
+      breadcrumb: "MCP",
     },
     skills: {
-      title: isZh ? "技能中心" : "Executable Skills",
-      subtitle: isZh ? "确定性本地任务工作流与执行规范" : "Deterministic Workflows & Automation Tasks",
-      breadcrumb: isZh ? "智能管理" : "INTELLIGENCE",
+      title: tText("技能中心", "Executable Skills", "スキルセンター", "Skill-Zentrum"),
+      subtitle: tText("确定性本地任务工作流与执行规范", "Deterministic Workflows & Automation Tasks", "確定的なローカルタスクワークフローと実行仕様", "Deterministische Workflows & Automatisierungsaufgaben"),
+      breadcrumb: tText("智能管理", "INTELLIGENCE", "インテリジェンス", "INTELLIGENZ"),
     },
     memory: {
-      title: isZh ? "记忆库运行时" : "Memory Store",
-      subtitle: isZh ? "服务端权威 SQLite/WAL 智能持久化事实源" : "SQLite Authoritative Fact & Knowledge Store",
-      breadcrumb: isZh ? "智能管理" : "INTELLIGENCE",
+      title: tText("记忆库运行时", "Memory Store", "メモリリポジトリ", "Gedächtnis-Speicher"),
+      subtitle: tText("服务端权威 SQLite/WAL 智能持久化事实源", "SQLite Authoritative Fact & Knowledge Store", "SQLite/WAL 事実と知識ストア", "SQLite Fakten- & Wissensspeicher"),
+      breadcrumb: tText("智能管理", "INTELLIGENCE", "インテリジェンス", "INTELLIGENZ"),
     },
     knowledge: {
-      title: isZh ? "知识文档库" : "Knowledge Documents",
-      subtitle: isZh ? "自动化摄取、智能分类与去重机制" : "Indexed Documents & Deduplicated Chunks",
-      breadcrumb: isZh ? "智能管理" : "INTELLIGENCE",
-    },
-    prompts: {
-      title: isZh ? "提示词管理" : "Prompt Management",
-      subtitle: isZh ? "系统级、项目级与执行指令提示词维护" : "System, Project & Execution Directives",
-      breadcrumb: isZh ? "智能管理" : "INTELLIGENCE",
+      title: tText("知识文档库", "Knowledge Documents", "ナレッジベース文書", "Wissensdokumente"),
+      subtitle: tText("自动化摄取、智能分类与去重机制", "Indexed Documents & Deduplicated Chunks", "インデックス付きドキュメントと重複排除チャンク", "Indizierte Dokumente & Deduplizierte Chunks"),
+      breadcrumb: tText("智能管理", "INTELLIGENCE", "インテリジェンス", "INTELLIGENZ"),
     },
     settings: {
-      title: isZh ? "应用设置" : "Settings",
-      subtitle: isZh ? "系统配置、安全策略与本地基础设施" : "Configuration, System Trust & Local Infrastructure",
-      breadcrumb: isZh ? "设置" : "SETTINGS",
+      title: tText("应用设置", "Settings", "設定", "Einstellungen"),
+      subtitle: tText("系统配置、安全策略与本地基础设施", "Configuration, System Trust & Local Infrastructure", "システム設定、セキュリティポリシー、ローカルインフラ", "Konfiguration, Systemsicherheit & Infrastruktur"),
+      breadcrumb: tText("设置", "SETTINGS", "設定", "EINSTELLUNGEN"),
     },
     // Compatibility
-    jobs: { title: isZh ? "后台任务" : "Jobs", subtitle: isZh ? "异步任务执行列表" : "Background Tasks", breadcrumb: isZh ? "执行管理" : "EXECUTION" },
-    connections: { title: isZh ? "AI 连接中心" : "Connections", subtitle: isZh ? "ChatGPT & 隧道连接" : "External Endpoints", breadcrumb: isZh ? "MCP 协议" : "MCP" },
-    tokens: { title: isZh ? "访问令牌" : "API Tokens", subtitle: isZh ? "安全认证与授权凭证" : "Access Control", breadcrumb: isZh ? "设置" : "SETTINGS" },
-    approvals: { title: isZh ? "审批中心" : "Approvals", subtitle: isZh ? "待处理的敏感操作" : "Pending Authorizations", breadcrumb: isZh ? "执行管理" : "EXECUTION" },
-    activity: { title: isZh ? "活动记录" : "Activity", subtitle: isZh ? "系统操作历史" : "Audit History", breadcrumb: isZh ? "执行管理" : "EXECUTION" },
-    rules: { title: isZh ? "全局规则" : "Global Rules", subtitle: isZh ? "策略层级与安全边界" : "Policy Hierarchy", breadcrumb: isZh ? "智能管理" : "INTELLIGENCE" },
-    storage: { title: isZh ? "本地存储" : "Storage", subtitle: isZh ? "磁盘与持久化管理" : "Local Disk Partitions", breadcrumb: isZh ? "设置" : "SETTINGS" },
+    jobs: { title: tText("后台任务", "Jobs", "ジョブ", "Aufgaben"), subtitle: tText("异步任务执行列表", "Background Tasks", "バックグラウンドタスク", "Hintergrundaufgaben"), breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG") },
+    connections: { title: tText("AI 连接中心", "Connections", "AI 接続センター", "KI-Verbindungen"), subtitle: tText("ChatGPT & 隧道连接", "External Endpoints", "外部エンドポイント", "Externe Endpunkte"), breadcrumb: "MCP" },
+    tokens: { title: tText("访问令牌", "API Tokens", "アクセストークン", "API-Tokens"), subtitle: tText("安全认证与授权凭证", "Access Control", "アクセス制御", "Zugriffskontrolle"), breadcrumb: tText("设置", "SETTINGS", "設定", "EINSTELLUNGEN") },
+    approvals: { title: tText("审批中心", "Approvals", "承認センター", "Genehmigungen"), subtitle: tText("待处理的敏感操作", "Pending Authorizations", "保留中の承認", "Ausstehende Autorisierungen"), breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG") },
+    activity: { title: tText("活动记录", "Activity", "アクティビティ履歴", "Aktivitäten"), subtitle: tText("系统操作历史", "Audit History", "監査ログ", "Audit-Protokoll"), breadcrumb: tText("执行管理", "EXECUTION", "実行管理", "AUSFÜHRUNG") },
+    rules: { title: tText("全局规则", "Global Rules", "グローバルルール", "Globale Regeln"), subtitle: tText("策略层级与安全边界", "Policy Hierarchy", "ポリシー階層", "Richtlinienhierarchie"), breadcrumb: tText("智能管理", "INTELLIGENCE", "インテリジェンス", "INTELLIGENZ") },
+    storage: { title: tText("本地存储", "Storage", "ローカルストレージ", "Lokaler Speicher"), subtitle: tText("磁盘与持久化管理", "Local Disk Partitions", "ディスク管理", "Lokale Festplattenpartitionen"), breadcrumb: tText("设置", "SETTINGS", "設定", "EINSTELLUNGEN") },
   };
 
   const handleNavigate = (page: NavPage) => {
@@ -497,7 +492,18 @@ export const App: React.FC = () => {
         serverStatus={serverStatus}
         runnersCount={serverStatus?.runners_connected ?? 0}
         uxMode={uxMode}
-        onOpenSponsorModal={() => setIsSponsorModalOpen(true)}
+        onOpenSponsorModal={() => {
+          setContactModalCategory("contact");
+          setIsSponsorModalOpen(true);
+        }}
+        onOpenCommunityModal={() => {
+          setContactModalCategory("community");
+          setIsSponsorModalOpen(true);
+        }}
+        onOpenContactModal={() => {
+          setContactModalCategory("contact");
+          setIsSponsorModalOpen(true);
+        }}
       />
 
       {/* Main Container */}
@@ -564,9 +570,9 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto">
+        <main className={`flex-1 min-h-0 flex flex-col ${currentPage === "skills" ? "overflow-hidden" : "overflow-y-auto"}`}>
           <AppErrorBoundary
-            isZh={t.common ? true : false}
+            isZh={isZh}
             componentName="MainRoute"
             onReset={loadData}
           >
@@ -632,8 +638,7 @@ export const App: React.FC = () => {
 
             {currentPage === "knowledge" && <KnowledgeImportPage />}
 
-            {currentPage === "prompts" && <PromptPage projects={projects} />}
-
+            
             {currentPage === "settings" && (
               <SettingsPage
                 tunnelStatus={tunnelStatus}
@@ -737,6 +742,7 @@ export const App: React.FC = () => {
 
       <SponsorModal
         isOpen={isSponsorModalOpen}
+        initialTab={contactModalCategory}
         onClose={() => setIsSponsorModalOpen(false)}
       />
 

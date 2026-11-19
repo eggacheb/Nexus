@@ -62,6 +62,7 @@ export class ProviderRuntime {
   private connectionManager: MCPConnectionManager;
   private batchExecutor: MCPBatchExecutor;
   private initialized = false;
+  private deletedProviders: Set<string> = new Set();
 
   private constructor() {
     this.catalog = DynamicCatalog.getInstance();
@@ -91,7 +92,7 @@ export class ProviderRuntime {
     this.lastDefaultInitTime = now;
 
     const unityHandle = this.providers.get("unity-gamedev");
-    if (!unityHandle) {
+    if (!unityHandle && !this.deletedProviders.has("unity-gamedev")) {
       // 1. Register Unity GameDev MCP (Port 20705, Streamable HTTP)
       const unityConfig: ProviderConfig = {
         providerId: "unity-gamedev",
@@ -377,6 +378,7 @@ export class ProviderRuntime {
    * Remove a provider and atomically retract its tools
    */
   public removeProvider(providerId: string): boolean {
+    this.deletedProviders.add(providerId);
     const handle = this.providers.get(providerId);
     if (!handle) return false;
     if (handle.reconnectTimer) clearTimeout(handle.reconnectTimer);

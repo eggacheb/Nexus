@@ -53,7 +53,7 @@ export type SkillYamlInput = z.infer<typeof SkillYamlSchema>;
 export const SkillListParamsSchema = z.object({
   projectId: z.string().optional(),
   collectionId: z.string().optional(),
-  source: z.enum(["builtin", "user", "project"]).optional(),
+  source: z.enum(["builtin", "user", "project", "external"]).optional(),
   enabledOnly: z.boolean().optional(),
   type: z.enum(["nexus", "raw"]).optional(),
 });
@@ -83,3 +83,12 @@ export const SkillBatchImportParamsSchema = z.object({
   overwrite: z.boolean().optional(),
 });
 
+
+export const NexusSkillsSchema = z.object({
+  action: z.enum(["list", "search", "load", "read_file", "refresh", "status"]).describe("Skill action to perform"),
+  query: z.string().optional().describe("Search keyword for search action"),
+  name: z.string().optional().describe("Target skill name or ID (supports 'source/name' for disambiguation)"),
+  path: z.string().optional().describe("Relative file path within skill directory for read_file action"),
+  source: z.string().optional().describe("Filter by skill source (e.g. claude, cursor, gemini-user, gemini-builtin, codex)"),
+  mode: z.enum(["compact", "full"]).optional().describe("Mode for load action: compact (text only) or full (includes directory inventory)"),
+});

@@ -37,6 +37,7 @@ import type {
   SkillDefinition,
   SkillMatchResult,
   SkillSource,
+  ExternalSkillSourceConfig,
   SkillImportPreview,
   SkillImportResult,
   SkillBatchImportParams,
@@ -920,6 +921,46 @@ class ApiBridge {
       }
     }
     return null;
+  }
+
+  
+  // External Host Agent Skills Sources (Zero-Copy)
+  async getExternalSkillSources(): Promise<{ sources: ExternalSkillSourceConfig[] }> {
+    return this.fetchJson<{ sources: ExternalSkillSourceConfig[] }>("/api/skills/external-sources");
+  }
+
+  async toggleExternalSkillSource(id: string, enabled: boolean): Promise<{ success: boolean; sources: ExternalSkillSourceConfig[] }> {
+    return this.fetchJson<{ success: boolean; sources: ExternalSkillSourceConfig[] }>("/api/skills/external-sources/toggle", {
+      method: "POST",
+      body: JSON.stringify({ id, enabled }),
+    });
+  }
+
+  async addExternalSkillSource(path: string, name?: string): Promise<{ success: boolean; sources: ExternalSkillSourceConfig[] }> {
+    return this.fetchJson<{ success: boolean; sources: ExternalSkillSourceConfig[] }>("/api/skills/external-sources/add", {
+      method: "POST",
+      body: JSON.stringify({ path, name }),
+    });
+  }
+
+  async removeExternalSkillSource(id: string): Promise<{ success: boolean; sources: ExternalSkillSourceConfig[] }> {
+    return this.fetchJson<{ success: boolean; sources: ExternalSkillSourceConfig[] }>("/api/skills/external-sources/remove", {
+      method: "POST",
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  async rescanExternalSkillSources(): Promise<{ success: boolean; sources: ExternalSkillSourceConfig[] }> {
+    return this.fetchJson<{ success: boolean; sources: ExternalSkillSourceConfig[] }>("/api/skills/external-sources/rescan", {
+      method: "POST",
+    });
+  }
+
+  async executeNexusSkills(params: any): Promise<any> {
+    return this.fetchJson<any>("/api/skills/nexus-skills", {
+      method: "POST",
+      body: JSON.stringify(params),
+    });
   }
 
   // Skills Management

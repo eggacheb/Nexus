@@ -176,7 +176,9 @@ export class TokenGuardrail {
     });
 
     // 3. Middle-truncation for long outputs (prevent context blowup)
-    if (text.length > maxChars) {
+    // NOTE: Skills and documentation reads are exempted to preserve full, unmodified instruction text
+    const isExempted = Boolean(options.full) || /nexus_skills|skill_get|localbridge_skill_get/i.test(options.sourceTool || "");
+    if (!isExempted && text.length > maxChars) {
       const headLength = Math.floor(maxChars * 0.55); // ~8,800 chars
       const tailLength = Math.floor(maxChars * 0.35); // ~5,600 chars
       const omitted = text.length - headLength - tailLength;
