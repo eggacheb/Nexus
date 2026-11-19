@@ -280,28 +280,58 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
 
 ---
 
-## 9. 开发者社区与技术支持
+## 9. 官方技术社群与开发者联系方式
 
-欢迎加入 Nexus 开发者技术交流群，获取最新功能体验、提 issue 与反馈：
+### 官方技术交流群
+欢迎加入 Nexus 开发者技术交流群，获取最新功能体验、提 issue 与实时交流：
 
 <div align="center">
   <table>
     <tr>
-      <td width="50%">
-        <img src="docs/assets/showcase/community-groups.png" alt="官方技术社群" />
-        <p align="center">
-          <b>官方技术社群</b><br>
-          QQ 官方交流群：<b>1131916140</b><br>
-          Telegram 交流群：<a href="https://t.me/YSUN_WEBAI"><b>@YSUN_WEBAI</b></a>
-        </p>
+      <td align="center" width="280">
+        <img src="docs/assets/community/qq-group.jpg" width="220" alt="QQ 官方交流群" style="border-radius: 12px;" /><br>
+        <br>
+        <b>QQ 官方交流群</b><br>
+        <code>1131916140</code>
       </td>
-      <td width="50%">
-        <img src="docs/assets/showcase/developer-contact.png" alt="开发者直连联系" />
-        <p align="center">
-          <b>开发者直连联系</b><br>
-          微信：<b>（应用内扫码添加）</b><br>
-          Telegram / WhatsApp / LINE
-        </p>
+      <td align="center" width="280">
+        <img src="docs/assets/community/tg-group.png" width="220" alt="Telegram 交流群" style="border-radius: 12px;" /><br>
+        <br>
+        <b>Telegram 交流群</b><br>
+        <a href="https://t.me/YSUN_WEBAI"><code>@YSUN_WEBAI</code></a>
+      </td>
+    </tr>
+  </table>
+</div>
+
+### 开发者直连联系方式
+如有商业合作、深度技术交流或定制需求，可直接联系作者：
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="220">
+        <img src="docs/assets/contact/wechat.jpg" width="180" alt="微信" style="border-radius: 12px;" /><br>
+        <br>
+        <b>微信 (WeChat)</b><br>
+        <code>sunny</code>
+      </td>
+      <td align="center" width="220">
+        <img src="docs/assets/contact/telegram.jpg" width="180" alt="Telegram" style="border-radius: 12px;" /><br>
+        <br>
+        <b>Telegram</b><br>
+        <a href="https://t.me/SUNNY744"><code>@SUNNY744</code></a>
+      </td>
+      <td align="center" width="220">
+        <img src="docs/assets/contact/whatsapp.png" width="180" alt="WhatsApp" style="border-radius: 12px;" /><br>
+        <br>
+        <b>WhatsApp</b><br>
+        <code>sunny</code>
+      </td>
+      <td align="center" width="220">
+        <img src="docs/assets/contact/line.jpg" width="180" alt="LINE" style="border-radius: 12px;" /><br>
+        <br>
+        <b>LINE</b>
       </td>
     </tr>
   </table>
@@ -309,32 +339,7 @@ Header 添加：`Authorization: Bearer lb_your_token_here`
 
 ---
 
-## 10. ☕ Sponsor & Support (赞助与支持)
-
-如果 Nexus 对您的研发工作流、学术研究或日常开发有所帮助，欢迎请作者喝杯咖啡 ☕！
-
-您的慷慨赞助将持续推动项目的活跃开源维护与新特性迭代。
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="260">
-        <img src="docs/assets/wechat-pay.jpg" width="220" alt="WeChat Pay (微信支付)" /><br />
-        <br />
-        <b>微信支付 (WeChat Pay)</b>
-      </td>
-      <td align="center" width="260">
-        <img src="docs/assets/alipay.jpg" width="220" alt="Alipay (支付宝)" /><br />
-        <br />
-        <b>支付宝 (Alipay)</b>
-      </td>
-    </tr>
-  </table>
-</div>
-
----
-
-## 11. 质量保障与验证指令
+## 10. 质量保障与验证指令
 
 ```powershell
 # 全局 7 个工作区强类型校验（0 错误）
@@ -352,7 +357,7 @@ cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ---
 
-## 12. 开源许可证、署名与安全说明
+## 11. 开源许可证、署名与安全说明
 
 - **软件许可证**：Nexus v1.3.2 依据 [GNU AGPL-3.0](LICENSE) 发布，允许个人与商业使用、学习、修改和再分发，但须遵守许可证原文。
   - **源码提供义务的适用范围**：分发受 AGPL 约束的程序或修改版，以及让用户通过网络与修改版交互等适用情形，可能触发相应源码和许可声明义务。仅在本地私下修改、不进行相应分发或网络交互服务，并不当然要求公开源码。具体以 AGPL 第 4–6、13 条等规定为准。
